@@ -17,6 +17,8 @@
   --grid-color: rgba(0, 0, 0, 0.06);
   --warning: #d4af37;
   --paper: #fafaf8;
+  --suspended-bg: #fce4e4;
+  --suspended-border: #c41e3a;
 }
 
 /* ========== 基础 ========== */
@@ -85,7 +87,7 @@ body {
   padding: 28px 36px;
   display: grid;
   grid-template-columns: 280px 1fr;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto auto auto 1fr auto;
   gap: 20px;
   position: relative;
   z-index: 1;
@@ -156,6 +158,43 @@ header {
   0% { left: -100%; }
   20% { left: 100%; }
   100% { left: 100%; }
+}
+
+/* ========== 账号状态提示（新增）========== */
+.account-status {
+  grid-column: 1 / 3;
+  background: var(--suspended-bg);
+  border: 2px solid var(--suspended-border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--accent-dark);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(196, 30, 58, 0.15);
+  border-radius: 4px;
+}
+
+.account-status::before {
+  content: "⛔";
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.status-warning {
+  flex: 1;
+}
+
+.status-warning span {
+  background: var(--accent-dark);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 3px;
+  margin-right: 12px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 /* ========== 搜索区 ========== */
@@ -286,7 +325,7 @@ aside h3::before {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: calc(100vh - 300px);
+  max-height: calc(100vh - 380px);
   overflow-y: auto;
 }
 
@@ -459,17 +498,14 @@ main {
 
 /* 普通段落 */
 .doc-paragraph {
-  /* 移除text-indent: 2em; */
-  padding-left: 2em; /* 整段左侧缩进2em，换行后也生效 */
+  padding-left: 2em;
   margin-bottom: 12px;
   text-align: justify;
-  /* 若需要用\n换行，保留这行；仅用<br>则可删 */
   white-space: pre-line; 
 }
 
-/* 无缩进段落单独重置 */
 .doc-paragraph.no-indent {
-  padding-left: 0; /* 无缩进段落取消左侧padding */
+  padding-left: 0;
 }
 
 /* 列表项 */
@@ -697,7 +733,6 @@ footer {
 }
 </style>
 </head>
-
 <body>
 
 <!-- 背景装饰 -->
@@ -718,6 +753,13 @@ footer {
     </div>
     <div class="badge">内部系统</div>
   </header>
+
+  <!-- 账号状态提示（新增） -->
+  <div class="account-status">
+    <div class="status-warning">
+      <span>停职状态</span> 当前该账号所属用户处于停职状态，页面仅支持浏览已上传内容，无法进行上传、编辑、删除等操作；并且，针对系统中文档字数大于1000字的上传内容（如笔录），仅可查看该内容的前20%。
+    </div>
+  </div>
 
   <div class="search-area">
     <div class="search-label">案件编码</div>
@@ -791,13 +833,11 @@ const docTypeMap = {
   'D': { name: '电子数据', fullName: '电子数据取证报告' },
   'L': { name: '系统手册', fullName: '系统使用手册' },
   'M': { name: '监控数据', fullName: '监控视频与轨迹数据' },
-  // 新增员工名单类型E
   'E': { name: '员工名单', fullName: '提希丰会所员工信息表' }
 };
 
 /* ========== 案件类型映射 ========== */
 const caseTypeMap = {
-  // 一、刑事案件（刑事警察/侦查部门使用）
   '01': '故意杀人案',
   '02': '抢劫案',
   '03': '盗窃案',
@@ -808,16 +848,12 @@ const caseTypeMap = {
   '08': '计算机网络犯罪案',
   '09': '涉黑涉恶案',
   '10': '其他刑事案件',
-  
-  // 二、行政（治安）案件（治安警察/派出所使用）
   '11': '扰乱秩序案（原治安案细化）',
   '12': '寻衅滋事案',
   '13': '殴打他人案',
   '14': '盗窃（治安）案',
   '15': '毒品（行政）案',
   '16': '其他治安案件',
-  
-  // 三、交通与消防（交警/消防/派出所）
   '17': '交通事故案',
   '18': '交通肇事案（刑事）',
   '19': '火灾事故案',
@@ -825,343 +861,189 @@ const caseTypeMap = {
 };
 
 /* ========== 案件25111101001完整档案数据库 ========== */
+/* 内容完全替换为南山市11·11刑事案件警方资料汇总-2.docx 的内容 */
 const documents = {
-  // ==================== 1. 报案记录 ====================
+  // ==================== 1. 报案记录（编号：25111101001B） ====================
   "25111101001B": {
     code: "25111101001B",
     date: "2025-11-11",
     caseType: "01",
-    caseTypeName: "杀人案",
+    caseTypeName: "故意杀人案",
     seq: "001",
     docType: "B",
     docTypeName: "报案记录",
-    title: "报案登记表",
+    title: "报案登记表（编号：25111101001B）",
     caseNo: "A440305202511110001",
     location: "南山市南山区提希丰会所",
     isKeyCase: true,
     content: [
-      {
-        type: "text",
-        text: "报案时间：2025年11月11日 06时47分。报案人：刘某某，提希丰会所夜班经理。报案方式：110电话报警。案发地点：南山区提希丰会所VIP理疗舱03号舱室。"
-      },
-      {
-        type: "section",
-        title: "案情摘要"
-      },
-      {
-        type: "text",
-        text: "报案人称当日早晨6时30分进行日常巡检时，发现VIP理疗舱03号舱室内有一名女性客人失去意识，颈部有血迹。经初步确认，该客人已死亡。"
-      },
-      {
-        type: "text",
-        text: "死者身份：林静怡，女，40岁，千禧会计事务所高级会计师。入住记录显示：11月10日23时15分通过SBTP合作渠道入住，电子授权书已签署。会所立即封锁现场，禁止人员出入，等待警方到达。"
-      },
-      {
-        type: "text",
-        text: "报案人强调：会所所有出入口监控正常运行，夜间仅有一名前台值班；VIP区域监控因\"客户预约隐私保护\"处于关闭状态。"
-      },
-      {
-        type: "section",
-        title: "初步处置"
-      },
-      {
-        type: "list",
-        items: [
-          "06时52分 辖区派出所民警到达现场，初步确认死亡",
-          "07时10分 刑侦大队技术中队派员到场",
-          "07时35分 现场初步勘验开始，发现颈部创口及血迹异常",
-          "08时00分 法医初步检查确认他杀嫌疑，案件移交刑警支队",
-          "08时30分 现场全面封锁，技术大队正式介入"
-        ]
-      },
-      {
-        type: "section",
-        title: "特殊标记"
-      },
-      {
-        type: "text",
-        text: "死者血型：AB型Rh阴性（熊猫血），罕见血型，占人群比例不足0.5%。死者身份敏感：千禧会计事务所项目质量控制复核人，近期负责翊尘投资审计项目。系统关联：死者通过SBTP智慧商旅通系统预订并改签，案发全程处于系统监控范围内。建议：同步调取SBTP系统后台数据，排查信息操控痕迹。"
-      }
+      { type: "section", title: "一、报案记录（编号：25111101001B）" },
+      { type: "text", text: "案件编号：A440305202511110001，故意杀人案，报案日期2025年11月11日，案发于南山市南山区提希丰会所VIP理疗舱03号，系重点案件。报案人刘某某（会所VIP区域保洁），接警单位为南山分局XX派出所，接警民警张XX、李XX。" },
+      { type: "subtitle", title: "（一）报案基本信息" },
+      { type: "text", text: "2025年11月11日06时47分，刘某某拨打110报警，称其06时30分保洁巡检时，发现03号理疗舱内一女性无呼吸、颈部有血迹，已联系会所负责人封锁现场，等待警方处置。案发地点为南山区科技园南区XX路XX号会所2层东侧VIP区03号舱。" },
+      { type: "subtitle", title: "（二）案情摘要" },
+      { type: "text", text: "死者林静怡（40岁，千禧会计事务所高级会计师），于2025年11月10日23时通过SBTP智慧商旅通，从南山国际酒店转至该会所03号理疗舱入住。现场初步勘查显示，死者颈部有锐器创口，血迹分布异常，无打斗痕迹，疑似他杀。" },
+      { type: "subtitle", title: "（三）初步处置情况" },
+      { type: "list", items: [
+        "06时52分，民警抵达现场保护现场；",
+        "07时10分，刑侦技术人员到场开展前期工作；",
+        "07时35分启动初步勘验，发现他杀嫌疑；",
+        "08时法医到场，案件移交刑警支队；",
+        "08时30分全面封锁现场，开展勘验、物证提取及监控调取工作。"
+      ] },
+      { type: "subtitle", title: "（四）特殊说明及工作建议" },
+      { type: "text", text: "死者系千禧会计事务所审计项目复核人，负责翊尘投资审计，不排除案件与工作相关，其行程全程处于SBTP系统监控。建议：调取SBTP后台数据、核查死者社会及工作关系、全面提取现场物证并送检。" },
+      { type: "signature", text: "报案人、接警民警、记录人签字：__________ 日期：2025年11月11日" }
     ]
   },
-
-  // ==================== 2. 现场勘查 ====================
+  // ==================== 2. 现场勘查（编号：25111101001K） ====================
   "25111101001K": {
     code: "25111101001K",
     date: "2025-11-11",
     caseType: "01",
-    caseTypeName: "杀人案",
+    caseTypeName: "故意杀人案",
     seq: "001",
     docType: "K",
     docTypeName: "现场勘查",
-    title: "现场勘验检查笔录",
+    title: "现场勘查记录（编号：25111101001K）",
     caseNo: "A440305202511110001",
     location: "南山市南山区提希丰会所VIP区03号理疗舱",
+    isKeyCase: true,
     content: [
-      {
-        type: "text",
-        text: "案发时间：2025年11月10日23时50分至11月11日01时15分（推断）。勘查时间：2025年11月11日09时15分至12时30分。勘查地点：南山区提希丰会所VIP区03号量子生物反馈理疗舱。环境条件：室内恒温24℃，相对湿度55%，密闭空间。"
-      },
-      {
-        type: "section",
-        title: "现场方位及环境"
-      },
-      {
-        type: "text",
-        text: "提希丰会所位于南山区科技园南区，独立建筑共3层。VIP区位于2层东侧，共6个独立理疗舱。03号舱位于VIP区最内侧，面积约15平方米，内设水晶舱外观理疗设备一台、休憩躺椅、独立卫浴。舱门为电子密码锁，刷卡进入。案发时门处于关闭状态，无撬压痕迹。会所大堂、走廊监控覆盖完整，但VIP区域监控处于\"隐私保护模式\"（23时50分至01时15分时段）。"
-      },
-      {
-        type: "section",
-        title: "尸体位置及状态"
-      },
-      {
-        type: "text",
-        text: "死者位于理疗舱中央水晶舱内，仰卧位，盖有白色浴巾。颈部左侧见3处短刺创，呈直线排列，间距约1.5厘米。创缘整齐，创角上锐下钝。现场血迹异常稀少：水晶舱底部见少量血泊（15cm×10cm），舱侧面内壁见擦拭状血痕（Luminol阳性）。死者右手食指指甲缝提取到微量金属碎屑及皮肤组织。左手腕部见轻微束缚痕迹（宽1.5cm，软质束缚带特征）。休憩躺椅呈展开状态，寝具上有轻微压痕，呈人体仰卧形态。"
-      },
-      {
-        type: "section",
-        title: "痕迹物证提取"
-      },
-      {
-        type: "list",
-        items: [
-          "物证1：水晶舱内提取毛发3根（已编号送检）",
-          "物证2：死者指甲缝提取物（金属碎屑+人体表皮细胞）",
-          "物证3：舱内空气过滤系统提取微量气溶胶样本",
-          "物证4：理疗舱温控系统记录芯片（关键电子证据）",
-          "物证5：门锁刷卡记录（23时15分入住刷卡，次日无外出记录）",
-          "物证6：死者随身物品：iPhone 16 Pro 1部（未锁屏）、身份证、会议资料、现金2300元",
-          "物证7：垃圾桶内一次性蓝色医用口罩1个",
-          "物证8：探针组件收纳盒（标准4套，实存3套，缺失序列号-023）"
-        ]
-      },
-      {
-        type: "section",
-        title: "监控异常情况"
-      },
-      {
-        type: "text",
-        text: "大堂监控（23时00分至23时15分）：林静怡进入画面，与前台王某某交谈，低头操作手机约30秒，随后离开。西侧门接驳点（23时14分至23时30分）：志愿者李某带林静怡到达，核对车牌A-07后上车。司机钱某，电瓶车23时30分驶离。"
-      },
-      {
-        type: "text",
-        text: "VIP入口（23时44分至23时46分）：电瓶车停靠，一名穿深色西装、戴口罩男性接应，工牌隐约可见\"技术部\"字样。VIP走廊（23时50分至01时15分）：隐私保护模式，无画面。系统日志：\"客户预约-隐私模式-3号舱\"。理疗舱室内（00时00分至01时15分）：健康监测摄像头数据上传中断，系统日志显示\"维护关闭\"。外围停车区（01时22分）：一名男性驾驶无标识黑色电瓶车离开，身形与VIP入口接应者相似。"
-      },
-      {
-        type: "section",
-        title: "现场分析意见"
-      },
-      {
-        type: "text",
-        text: "作案手法高度专业：创口短而深（≤3cm），角度一致（水平向后偏内），符合医疗背景人员操作。现场清理痕迹明显：血迹量与创口数量不匹配（体内缺失约600ml血液），存在事后清理。监控盲区精准利用：隐私保护模式申请时间与案发时间高度吻合，存在预谋。"
-      },
-      {
-        type: "text",
-        text: "特殊发现：死者体内缺失血液约600ml，疑似被采集；死者为AB型Rh阴性熊猫血。建议重点排查：具备医疗背景、熟悉会所系统操作、当日22时45分前后在会所附近出现的人员；追查缺失探针组件下落。"
-      }
+      { type: "section", title: "二、现场勘查记录（编号：25111101001K）" },
+      { type: "text", text: "案件编号同前，故意杀人案，勘查日期2025年11月11日，地点为提希丰会所VIP区03号理疗舱。勘查单位为市公安局刑侦大队技术中队，主勘王XX、协勘赵XX，见证人王XX（会所负责人）、刘某某，记录人孙XX，天气晴，无勘查影响因素。" },
+      { type: "subtitle", title: "（一）基础信息" },
+      { type: "text", text: "推断案发时间为2025年11月10日23时45分左右（误差≤5分钟），勘查时间为11日09时15分至12时30分。03号理疗舱为密闭空间，恒温24℃，通风关闭，勘查期间保持现场原貌。" },
+      { type: "subtitle", title: "（二）案发现场周边情况" },
+      { type: "text", text: "提希丰会所为3层独立建筑，周边有大道、绿化区等，入口有安保及门禁，公共区域监控全覆盖。VIP区有6个独立密闭理疗舱，需刷卡进入，监控可开启隐私模式；夜间仅1名前台值班，保洁夜间不进入VIP区。" },
+      { type: "subtitle", title: "（三）现场方位及舱内环境情况" },
+      { type: "text", text: "03号舱位于VIP区最内侧，面积约15㎡，舱体、舱门均为医用级材质，无撬压痕迹；舱内有操作台、医用躺椅等设施，运行正常。死者入住后，VIP区监控于23时10分至23时55分开启隐私模式，系死者本人操作。" },
+      { type: "subtitle", title: "（四）尸体位置及状态" },
+      { type: "text", text: "死者仰卧于舱内躺椅，身着正装，衬衫领口有血迹，左手腕有软质束缚痕迹。颈部左侧有3处单刃锐器短刺创，现场血迹分布与失血量不匹配，有清理痕迹；死者指甲缝有微量金属碎屑，操作台收纳槽缺失1套探针组件。" },
+      { type: "subtitle", title: "（五）痕迹物证提取情况" },
+      { type: "list", items: [
+        "现场提取7类物证：3根毛发、死者指甲缝金属碎屑、舱内气溶胶样本、温控系统芯片、门锁刷卡记录、死者随身物品、探针收纳盒（缺失1套，序列号-023），均规范封装送检。"
+      ] },
+      { type: "subtitle", title: "（六）监控及电子设备异常情况" },
+      { type: "text", text: "1. 国际酒店监控：22时40分死者入住受阻，22时54分由志愿者陪同前往接驳点，乘坐钱某驾驶的电瓶车离开，无异常人员跟随；2. 会所监控：23时死者由身着深色西装、疑似技术部的女性接应进入，VIP走廊及舱内监控分别因隐私模式、远程关闭无画面，23时58分该女性驾驶无标识电瓶车离开。" },
+      { type: "subtitle", title: "（七）现场分析意见" },
+      { type: "text", text: "1. 作案手法：具备医疗背景，用单刃小型锐器（疑似缺失探针）精准刺击颈部，案发后清理现场，有反侦查意识；2. 预谋性：利用监控盲区，通过气溶胶导入隐蔽药物使死者失去反抗能力，系有预谋作案；3. 排查建议：重点排查具备医疗背景、熟悉会所系统，案发时段在周边出现的165cm左右偏瘦女性，追查缺失探针、药物渠道等。" },
+      { type: "text", text: "主勘人、协勘人、见证人、记录人签字：__________ 日期：2025年11月11日" }
     ]
   },
-
-  // ==================== 3. 尸检报告 ====================
+  // ==================== 3. 尸检报告（编号：25111101001S） ====================
   "25111101001S": {
     code: "25111101001S",
     date: "2025-11-12",
     caseType: "01",
-    caseTypeName: "杀人案",
+    caseTypeName: "故意杀人案",
     seq: "001",
     docType: "S",
     docTypeName: "尸检报告",
-    title: "法医学尸体检验鉴定书",
+    title: "法医学尸体检验鉴定书（编号：25111101001S）",
     caseNo: "A440305202511110001",
     location: "南山市公安局法医检验中心",
+    isKeyCase: true,
     content: [
-      {
-        type: "text",
-        text: "死者姓名：林静怡，女，40岁，汉族，千禧会计事务所高级会计师。身份证号：4403XXXXXXXXXXXXXX。尸体发现时间：2025年11月11日06时30分。尸检时间：2025年11月11日14时30分至18时30分。主检法医：陈志明（主任法医师）。"
-      },
-      {
-        type: "section",
-        title: "尸表检验"
-      },
-      {
-        type: "text",
-        text: "一般情况：尸长165cm，体重58kg，发育正常，营养良好。尸斑：淡红色，位于背侧未受压部位，指压褪色。尸僵：存在于全身各大关节，强度中等。衣着：深蓝色Theory西装外套、白色真丝衬衫、黑色西装裤。衬衫领口左侧有血迹浸润（3cm×2cm）。特殊体表：双侧眼结膜轻度充血（疲劳状态）；左前臂外侧陈旧性疤痕（2cm，接种疤痕）。"
-      },
-      {
-        type: "section",
-        title: "颈部创口检验"
-      },
-      {
-        type: "text",
-        text: "创口分布：颈部左侧，胸锁乳突肌前缘，共3处刺入创，呈直线排列，间距约1.5cm。"
-      },
-      {
-        type: "table",
-        headers: ["创口", "距锁骨上缘", "长度", "深度", "方向"],
-        rows: [
-          ["A", "3.2cm", "2.8cm", "3.0cm", "水平向后偏内"],
-          ["B", "4.8cm", "2.9cm", "3.1cm", "水平向后偏内"],
-          ["C", "6.3cm", "2.7cm", "3.0cm", "水平向后偏内"]
-        ]
-      },
-      {
-        type: "text",
-        text: "创口特征：创缘整齐，无拖拽痕迹；创角上锐下钝（单刃锐器）；创道深度一致，全层刺入；周围无表皮剥脱（快速精准操作）。致伤工具推断：单刃小型锐器，刀刃宽度≤3cm，薄而锋利，符合手术刀或战地医疗器具特征。"
-      },
-      {
-        type: "section",
-        title: "内部检验与死因"
-      },
-      {
-        type: "text",
-        text: "颈部解剖：创道穿透颈阔肌、胸锁乳突肌，达颈动脉鞘；左侧颈总动脉完全断裂，颈内静脉部分断裂；气管、食管未受损。死因：左侧颈部锐器刺创致颈总动脉断裂，急性失血性休克死亡。"
-      },
-      {
-        type: "text",
-        text: "失血量评估：颈部软组织内积血约150ml；现场血迹约400ml；估测总失血量应超1000ml，但体内仅存留约400ml → 缺失约600ml血液。"
-      },
-      {
-        type: "section",
-        title: "特殊发现"
-      },
-      {
-        type: "text",
-        text: "血型：AB型Rh阴性（熊猫血），占人群比例不足0.5%。采血痕迹：左肘正中静脉穿刺点，符合医疗采血操作，采血量估计约200-400ml。指甲缝残留：灰白色金属样微粒，成分分析为不锈钢316L（铬18%、镍8%、铁72%），与提希丰会所理疗舱探针组件材质一致。死亡时间：2025年11月11日00时45分至01时15分。镇静痕迹：脂肪组织中检出环苯扎林代谢物，提示死前2-4小时曾接触该镇静剂。"
-      },
-      {
-        type: "section",
-        title: "鉴定意见"
-      },
-      {
-        type: "list",
-        items: [
-          "林静怡系被他人用单刃锐器（刀刃长≤3cm）多次刺击颈部，致颈总动脉断裂、失血性休克死亡",
-          "死亡时间：2025年11月11日00时45分至01时15分",
-          "死者生前曾接受静脉采血，采血量约200-400ml，采血时间在死亡前1小时内",
-          "死者体内缺失血液约600ml，结合现场血迹分析，疑似被采集带走",
-          "死者指甲缝检出金属微粒，与现场探针组件材质一致，提示与作案工具有直接接触",
-          "案件性质：他杀，作案人员具备医疗专业背景，熟悉现场环境及系统操作"
-        ]
-      }
+      { type: "section", title: "三、尸检报告（编号：25111101001S）" },
+      { type: "text", text: "案件编号同前，故意杀人案，尸检日期2025年11月11日，地点为市公安局法医检验中心。主检法医陈志明，协检刘XX、张XX，送检单位为市公安局刑警支队，死者身份经DNA确认为林静怡。" },
+      { type: "subtitle", title: "（一）基础信息" },
+      { type: "text", text: "死者林静怡，女，40岁，千禧会计事务所高级会计师，2025年11月11日06时30分于03号舱被发现，11日10时30分至14时30分进行全面尸检。" },
+      { type: "subtitle", title: "（二）尸表检验" },
+      { type: "text", text: "尸长165cm，体重58kg，尸斑、尸僵符合死后6-8小时特征，角膜轻度混浊。衣着完整无拖拽痕迹，左前臂有卡介苗陈旧疤痕，左手腕有短时间软质束缚痕迹，眼结膜轻度充血。" },
+      { type: "subtitle", title: "（三）颈部创口检验" },
+      { type: "text", text: "颈部左侧有3处直线排列的单刃锐器刺创，创缘整齐、上锐下钝，刃宽≤3cm，与会所缺失的探针组件材质吻合，推测致伤工具为该探针（序列号-023）。" },
+      { type: "subtitle", title: "（四）内部检验与死因认定" },
+      { type: "text", text: "解剖显示，死者左侧颈总动脉断裂，其他脏器无异常，死因系急性失血性休克。总失血量超1000ml，缺失约600ml，疑似被采集；左肘有规范穿刺点，死前1小时内被采血200-400ml。" },
+      { type: "subtitle", title: "（五）特殊发现及实验室检测" },
+      { type: "text", text: "死者血型为AB型Rh阴性，指甲缝金属碎屑与探针材质一致，死亡时间推断为10日23时45分左右。常规毒物检测无异常，结合现场气溶胶检测，确认作案人员使用常规检测无法检出的隐蔽性药物辅助作案。" },
+      { type: "subtitle", title: "（六）鉴定意见" },
+      { type: "text", text: "死者系被单刃锐器刺击颈部致失血性休克死亡，死亡时间10日23时45分左右，死前曾被采血，缺失血液疑似被带走；作案人员具备医疗背景及隐蔽药物使用经验，系他杀。" },
+      { type: "text", text: "主检法医、协检法医签字：__________ 鉴定单位盖章：南山市公安局法医检验中心 日期：2025年11月12日" }
     ]
   },
-
-  // ==================== 4. 物证报告 ====================
+  // ==================== 4. 物证报告（编号：25111101001W） ====================
   "25111101001W": {
     code: "25111101001W",
     date: "2025-11-13",
     caseType: "01",
-    caseTypeName: "杀人案",
+    caseTypeName: "故意杀人案",
     seq: "001",
     docType: "W",
     docTypeName: "物证报告",
-    title: "物证检验鉴定书",
+    title: "物证检验鉴定书（编号：25111101001W）",
     caseNo: "A440305202511110001",
     location: "南山市公安局刑事科学技术研究所",
+    isKeyCase: true,
     content: [
-      {
-        type: "section",
-        title: "送检材料"
-      },
-      {
-        type: "list",
-        items: [
-          "检材1：死者指甲缝提取物（金属碎屑及皮肤组织）",
-          "检材2：现场提取毛发3根",
-          "检材3：理疗舱温控系统记录芯片",
-          "检材4：垃圾桶内一次性蓝色医用口罩",
-          "检材5：探针组件收纳盒（剩余3套）",
-          "检材6：现场气溶胶样本",
-          "比对样本1：嫌疑人宋绪静血样、指纹、DNA",
-          "比对样本2：礼宾员陈明血样、指纹",
-          "比对样本3：会所其他员工生物样本"
-        ]
-      },
-      {
-        type: "section",
-        title: "DNA检验结果"
-      },
-      {
-        type: "text",
-        text: "死者指甲缝皮肤组织：检出DNA与嫌疑人宋绪静血样在D8S1179等20个基因座分型一致，似然比率3.45×10²³。现场毛发：1根检出DNA与宋绪静认定同一；另外2根与死者认定同一。结论：宋绪静曾与死者发生肢体接触，且存在被动防御动作（指甲抓挠）。口罩内侧：检出DNA与宋绪静认定同一。"
-      },
-      {
-        type: "section",
-        title: "微量物证分析"
-      },
-      {
-        type: "text",
-        text: "金属碎屑成分：不锈钢316L医用级合金，与提希丰会所理疗舱标配医疗探针组件材质完全一致。气溶胶分析：检出环苯扎林成分，证实该药物通过理疗舱温控系统雾化导入。探针组件：剩余3套序列号分别为-021、-022、-024，缺失-023号。缺失组件与死者指甲缝金属碎屑材质一致。口罩：普通蓝色医用口罩，品牌为稳健医疗，批号与会所采购批次一致。"
-      },
-      {
-        type: "section",
-        title: "电子数据检验"
-      },
-      {
-        type: "text",
-        text: "理疗舱温控芯片记录：23时05分系统启动，温度设定38.5℃；23时06分检测到异常物质注入（环苯扎林凝胶，通过温控系统雾化）；23时30分舱内人员生命体征下降（心率、呼吸频率降低）；00时00分健康监测摄像头数据上传中断；01时15分系统强制关闭，数据上传恢复。"
-      },
-      {
-        type: "text",
-        text: "门锁记录：23时15分死者刷卡进入；23时42分维护账号'test'远程开启（异常记录）；01时18分维护账号'test'远程关闭。"
-      },
-      {
-        type: "section",
-        title: "鉴定意见"
-      },
-      {
-        type: "list",
-        items: [
-          "现场提取生物检材与嫌疑人宋绪静认定同一，证实其案发时在现场并与死者发生肢体冲突",
-          "作案工具为理疗舱标配医疗探针组件（序列号-023），该组件缺失，其材质与死者指甲缝金属碎屑一致",
-          "药物通过温控系统雾化导入，死者体内检出环苯扎林代谢物",
-          "系统日志显示案发时段有未授权账号'test'远程操作理疗舱门锁及摄像头",
-          "建议追查'test'账号使用者及权限来源，排查SBTP系统安全漏洞"
-        ]
-      }
+      { type: "section", title: "四、物证报告（编号：25111101001W）" },
+      { type: "text", text: "案件编号同前，故意杀人案，检验日期2025年11月12-13日，地点为市公安局刑事科学技术研究所，检验人员李XX、王XX，送检单位为市公安局刑警支队。" },
+      { type: "subtitle", title: "（一）送检材料" },
+      { type: "text", text: "送检材料共9类，包括死者指甲缝提取物、现场毛发、温控芯片、纤维样本、探针收纳盒、气溶胶样本，及会所员工、接驳车司机等相关人员的比对样本。" },
+      { type: "subtitle", title: "（二）检验方法" },
+      { type: "text", text: "按照规范采用DNA检验、微量物证分析、气溶胶专项检测、电子证据检验、指纹检验等方法开展检测。" },
+      { type: "subtitle", title: "（三）检验结果" },
+      { type: "list", items: [
+        "1. DNA：1根现场毛发检出不明女性DNA，其余与死者一致，比对样本均无匹配；",
+        "2. 微量物证：金属碎屑与探针材质一致，纤维为聚酯纤维（非会所制服），探针缺失序列号-023；",
+        "3. 气溶胶：检出隐蔽性镇静药物，可使人体短暂失能；",
+        "4. 电子证据：理疗舱曾被未授权账号\"test\"远程注入药物、关闭监控。"
+      ] },
+      { type: "subtitle", title: "（四）鉴定意见" },
+      { type: "text", text: "不明女性DNA及纤维指向同一重点嫌疑人；作案工具为缺失的探针-023；作案人员用隐蔽药物辅助作案，通过未授权账号操控设备；会所员工等相关人员排除嫌疑。" },
+      { type: "subtitle", title: "（五）工作建议" },
+      { type: "text", text: "扩大DNA比对范围，追查缺失探针、药物渠道、无标识电瓶车及\"test\"账号来源，排查系统安全漏洞。" },
+      { type: "text", text: "检验人员、审核人签字：__________ 鉴定单位盖章：南山市公安局刑事科学技术研究所 日期：2025年11月13日" }
     ]
   },
-
-  // ==================== 5. 询问笔录 ====================
+  // ==================== 5. 询问笔录（编号：25111101001X） ====================
   "25111101001X": {
     code: "25111101001X",
-    date: "2025-11-11",
+    date: "2025-11-12",
     caseType: "01",
-    caseTypeName: "杀人案",
+    caseTypeName: "故意杀人案",
     seq: "001",
     docType: "X",
     docTypeName: "询问笔录",
-    title: "询问笔录（关键证人合集）",
+    title: "询问笔录（合集，编号：25111101001X）",
     caseNo: "A440305202511110001",
-    location: "南山公安分局刑警大队",
+    location: "南山市公安局刑警大队询问室",
+    isKeyCase: true,
     content: [
-      {
+      { type: "section", title: "五、询问笔录（编号：25111101001X）" },
+      { type: "text", text: "案件编号：A440305202511110001，案件性质为故意杀人案，询问日期为2025年11月11日至11月12日，询问地点为南山市公安局刑警大队询问室，询问人员为张XX、李XX（均为刑警大队民警），记录人为王XX（刑警大队文员）。本次共询问相关证人10名，经核实，所有被询问证人均有明确不在场证明，暂无作案嫌疑；另有部分与死者相关的人员（含死者同事、亲属等）暂未取得联系，后续将持续跟进询问。所有询问过程均严格遵循法定程序，告知证人权利义务，证人自愿陈述，陈述内容真实有效，无刑讯逼供、诱供等违规情形。" },
+{
         type: "section",
         title: "证人一：酒店前台王某某（女，26岁）"
       },
       {
         type: "text",
-        text: "询问时间：2025年11月11日16时至18时。"
+        text: "询问时间：2025年11月11日13时至14时。"
       },
       {
         type: "quote",
         header: "问：请描述接待林静怡的过程。",
-        content: "答：她大概晚上11点到前台，拖着行李箱，看起来挺累的。我查系统，显示商务房已满。"
+        content: "答：她大约在2025年11月10日22时40分抵达我们酒店大堂前台，当时拖着一个黑色行李箱，神色略显疲惫，身上穿着深蓝色西装外套。我通过酒店预订系统查询，发现她预订了我们酒店的商务房，但当时系统显示商务房已无空余，我便第一时间将该情况如实告知了她。"
       },
       {
         type: "quote",
-        header: "问：然后提供了什么选项？",
-        content: "答：三个选项：A等空房，B升级套房差价480，C免费转提希丰会所VIP理疗舱。系统显示\"合作方案已确认\"。"
+        header: "问：然后你和她交流了什么？",
+        content: "答：我共向她提供了三个备选方案，均如实告知其具体细节：A选项为等待空房释放，预计需等待2-3小时，空房释放后将第一时间通知她；B选项为升级至套房，需现场补差价480元，可通过手机支付、现金支付两种方式结算；C选项为免费转至我们酒店的合作单位——提希丰会所VIP理疗舱入住，该方案包含基础过夜服务，需签署电子授权书确认。当时系统弹出“合作方案已确认”提示，我便将这三个选项详细告知了她。"
       },
       {
         type: "quote",
         header: "问：她怎么选择的？",
-        content: "答：她问了一句\"授权书是在手机上签吗\"，我说是。她看了眼手机，然后就选C了。"
+        content: "答：她起初明确表示想要选择B选项，即升级至套房，随后便操作手机尝试支付差价，但多次支付均提示失败。我告知其可重启手机支付界面或更换微信、支付宝等其他支付方式，她尝试后仍未成功，神色略显无奈，随后向我询问“电子授权书是否可在手机端签署”，我给予肯定答复并告知其操作流程后，她查看了片刻手机，最终选择了C选项，并在手机端完成了电子授权书的签署。"
       },
       {
         type: "quote",
-        header: "问：后来发现什么异常？",
-        content: "答：第二天发现商务房其实没满，凌晨有人取消。还有支付失败提示，重启就好了，挺奇怪的。"
+        header: "问：后续是否发现异常情况？",
+        content: "答：次日（11月11日）我核对酒店房态时发现，商务房实际并未住满，凌晨2时左右有2间客人取消预订，该情况与当晚系统显示的“无空余商务房”存在矛盾；此外，当时林静怡女士支付差价时出现的支付失败提示，我重启前台系统后便恢复正常，无其他异常，该支付异常情况较为可疑，但我不清楚具体原因。"
+      },
+      {
+        type: "quote",
+        header: "问：你当晚的工作轨迹是什么？",
+        content: "答：我当晚19时上班，一直在前台值班，未离开过前台区域；23时30分交接班后下班。......."
       },
       {
         type: "section",
@@ -1169,17 +1051,17 @@ const documents = {
       },
       {
         type: "text",
-        text: "询问时间：2025年11月11日19时30分至20时15分。"
+        text: "询问时间：2025年11月11日12时30分至13时15分。"
       },
       {
         type: "quote",
-        header: "问：带林静怡去接驳点的情况？",
-        content: "答：前台叫我的，说SBTP贵宾要去提希丰。我帮她拎行李，带她去西侧门。"
+        header: "问：请描述你陪同林静怡前往接驳点的相关情况。",
+        content: "答：当时酒店前台的工作人员通知我，有一位SBTP商旅贵宾需前往提希丰会所，我便按照酒店志愿者工作要求，协助其拎取行李箱，陪同她从酒店大堂前往酒店西侧门接驳点，全程约5分钟，未停留"
       },
       {
         type: "quote",
-        header: "问：路上聊天了吗？",
-        content: "答：没怎么聊，她挺累的。快到的时候她看了眼手机，表情放松了一点，可能是授权书签完了。"
+        header: "问：途中是否与她有过交谈？",
+        content: "答：并未进行过多交谈，她当时看起来比较疲惫，一直低头走路，偶尔看一眼手机。"
       },
       {
         type: "section",
@@ -1187,185 +1069,53 @@ const documents = {
       },
       {
         type: "text",
-        text: "询问时间：2025年11月11日20时30分至21时30分。"
+        text: "询问时间：2025年11月11日11时30分至12时30分。"
       },
       {
         type: "quote",
-        header: "问：描述一下当晚情况。",
-        content: "答：我开电瓶车，车牌A-07。23时30分从酒店西侧门出发，送到提希丰VIP入口。"
+        header: "问：请详细描述你当晚的工作情况。",
+        content: "答：我当晚驾驶车牌为A-07的专用接驳车执行国际酒店至其合作单位的接驳任务，工作时间为18时00分至23时30分。22时58分，我接到酒店调度通知，前往酒店西侧门接驳点接送一位前往提希丰会所的贵宾，于23时00分抵达。"
       },
       {
         type: "quote",
-        header: "问：送到后发生了什么？",
-        content: "答：开到VIP入口，一个穿西装戴口罩的男人在门口等。他接过行李，林静怡看了他一眼，就跟他进去了。"
+        header: "问：送达后有发生什么情况吗？",
+        content: "答：车辆停靠VIP入口后，一名身着深色西装、佩戴口罩的女性人员已在门口等候。该女性人员主动上前接过林静怡女士的行李箱，林静怡女士看了她一眼后，便跟随其进入会所。我确认客人安全送达后，便驾驶接驳车返回酒店，23时15分抵达酒店接驳点，之后未再外出，23时30分下班回家。"
       },
       {
         type: "quote",
-        header: "问：看清那个男人了吗？",
-        content: "答：灯挺暗的，没看清脸。他工牌晃了一下，好像是技术部的？我还奇怪礼宾部怎么让技术部接客人。"
+        header: "问：你是否看清该女性人员的样貌、身形特征？",
+        content: "答：当时现场光线较暗，该女性人员全程佩戴口罩，未能看清其具体样貌。其佩戴的工牌在灯光下晃动了一下。"
       },
-      {
-        type: "section",
-        title: "证人四：提希丰礼宾员孙某（男，28岁）"
-      },
-      {
-        type: "text",
-        text: "询问时间：2025年11月12日9时至11时。"
-      },
-      {
-        type: "quote",
-        header: "问：接待林静怡的经过？",
-        content: "答：系统弹窗提示\"SBTP商旅会员-合作升级-理疗舱预留\"，3号舱，最高优先级。显示\"电子授权书已签署\"。"
-      },
-      {
-        type: "quote",
-        header: "问：你见到她时的情况？",
-        content: "答：她从VIP入口进来，我过去的时候，旁边有个穿西装的男人已经走了，就她一个人。她正在看手机。"
-      },
-      {
-        type: "quote",
-        header: "问：你跟她说了什么？",
-        content: "答：我介绍这是合作升级包含的深度放松疗程，舱里可以过夜。我还说了一句\"系统维护员刚做过检测，设备都是好的\"。她问了一句\"安全吗\"，我说\"您锁好舱门就行，隐私模式开启后监控会关闭\"。她点点头就进去了。"
-      },
-      {
-        type: "quote",
-        header: "问：后来呢？",
-        content: "答：系统显示凌晨1点15分\"客户已自主离舱\"，我以为她临时有事走了，就没再过问。"
-      }
+      { type: "text", text: "证人、询问人员、记录人签字：__________ 日期：2025年11月12日" }
     ]
   },
-
-  // ==================== 6. 电子数据取证 ====================
+  // ==================== 6. 电子数据取证报告（编号：25111101001D） ====================
   "25111101001D": {
     code: "25111101001D",
     date: "2025-11-12",
     caseType: "01",
-    caseTypeName: "杀人案",
+    caseTypeName: "故意杀人案",
     seq: "001",
     docType: "D",
     docTypeName: "电子数据",
-    title: "电子数据取证报告",
+    title: "电子数据取证报告（编号：25111101001D）",
     caseNo: "A440305202511110001",
-    location: "南山市公安局网络安全保卫支队",
+    location: "南山市公安局网安支队",
+    isKeyCase: true,
     content: [
-      {
-        type: "section",
-        title: "取证对象"
-      },
-      {
-        type: "list",
-        items: [
-          "对象1：死者林静怡 iPhone 16 Pro（IMEI：354601080768234）",
-          "对象2：SBTP智慧商旅通系统后台日志",
-          "对象3：提希丰会所服务器访问记录",
-          "对象4：南山市国际酒店预订系统数据"
-        ]
-      },
-      {
-        type: "section",
-        title: "短信记录提取"
-      },
-      {
-        type: "sms",
-        time: "14:23",
-        sender: "铁路12306",
-        content: "【退改签通知】G6011次取消，改签至G6028次（21:15-23:14）"
-      },
-      {
-        type: "sms",
-        time: "17:08",
-        sender: "周变",
-        content: "公司临时有事，我11号才能到。你改签了？晚上住哪？"
-      },
-      {
-        type: "sms",
-        time: "17:11",
-        sender: "林静怡",
-        content: "改到今晚10点多，到南山北就11点。酒店订的国际酒店会场店。"
-      },
-      {
-        type: "sms",
-        time: "20:47",
-        sender: "南山市国际酒店",
-        content: "【商旅会员专享】基于您的高频出行记录与战略合作协议，免费升级至提希丰VIP理疗舱"
-      },
-      {
-        type: "sms",
-        time: "22:03",
-        sender: "2025智能会计前沿峰会组委会",
-        content: "【重要提醒】请于今日24:00前完成会议材料预提交"
-      },
-      {
-        type: "sms",
-        time: "22:47",
-        sender: "南山市国际酒店",
-        content: "【支付失败提醒】房型升级订单因系统支付接口冲突失败"
-      },
-      {
-        type: "sms",
-        time: "23:12",
-        sender: "SBTP智慧商旅通",
-        content: "【接驳服务确认】23:30酒店西侧门乘坐电瓶车A-07"
-      },
-      {
-        type: "sms",
-        time: "23:15",
-        sender: "林静怡",
-        content: "刚到酒店，前台说房型有问题，让我去合作会所住，免费的，说是你说的那家提希丰。"
-      },
-      {
-        type: "sms",
-        time: "23:16",
-        sender: "周变",
-        content: "提希丰？环境挺好的，我之前年会去过。安全没问题，放心住。"
-      },
-      {
-        type: "sms",
-        time: "23:44",
-        sender: "林静怡",
-        content: "到会所了，有礼宾接。舱里能直接睡，明早车送。你忙完早点休息。【最后一条】"
-      },
-      {
-        type: "section",
-        title: "电子数据授权书"
-      },
-      {
-        type: "text",
-        text: "文件名称：SBTP_授权书_20251110_林静怡.pdf。生成时间：2025年11月10日23时12分47秒。文件哈希：3A7F9B21C4D8E6521F039A87B4C25D61。授权编号：SBTP-20251110-0842。"
-      },
-      {
-        type: "text",
-        text: "授权内容：授权南山市国际酒店与提希丰会所共享本人信息用于商旅服务结算验证，包括基础身份信息、行程信息、健康监测数据。有效期至2025年11月12日24时。电子签名：林静怡。签名IP：172.21.43.108（提希丰会所内网IP）。验真码：SBTP-2025-1110-0842-9F3A。"
-      },
-      {
-        type: "section",
-        title: "系统操控痕迹（关键发现）"
-      },
-      {
-        type: "list",
-        items: [
-          "22:38 test账号查询林静怡身份证号、手机号",
-          "22:40 test账号修改酒店房态：商务房标记为\"满房\"（实际有房）",
-          "22:42 test账号修改林静怡预订标签为\"合作升级\"",
-          "22:43 test账号触发\"支付失败\"提示",
-          "22:44 test账号发送合作短信至林静怡手机",
-          "22:45 test账号修改会所内网门户显示规则，对酒店IP段显示\"正式运营\"",
-          "22:46 test账号向峰会组委会系统发送\"材料预提交提醒\"（实际截止时间为次日12:00）",
-          "23:42 test账号远程开启03号舱门锁",
-          "01:18 test账号远程关闭03号舱门锁，标记\"客户已自主离舱\""
-        ]
-      },
-      {
-        type: "section",
-        title: "时间线重构"
-      },
-      {
-        type: "text",
-        text: "22:34 暗网订单接收（宋绪静笔记本恢复数据）。22:38 test账号开始查询林静怡信息（间隔4分钟）。23:12 林静怡签署电子授权书。23:30 电瓶车接驳。23:44 到达提希丰VIP入口，被\"技术部\"人员接应。23:50 进入03号舱，隐私模式开启。00:00 理疗舱启动，摄像头中断。00:45-01:15 死亡时间窗口。01:15 系统标记\"自主离舱\"。01:22 嫌疑人驾驶电瓶车离开。"
-      }
+      { type: "section", title: "六、电子数据取证报告（编号：25111101001D）" },
+      { type: "text", text: "案件编号同前，故意杀人案，取证日期2025年11月12日，地点为市公安局网安支队电子数据取证实验室，取证人员赵XX、孙XX，送检单位为市公安局刑警支队。" },
+      { type: "subtitle", title: "（一）取证对象" },
+      { type: "text", text: "死者iPhone 16 Pro手机、提希丰会所服务器记录、国际酒店预订系统数据。" },
+      { type: "subtitle", title: "（二）取证方法" },
+      { type: "text", text: "采用专业设备提取手机数据并备份，依法调取系统日志、服务器数据，制作镜像备份，排查异常痕迹。" },
+      { type: "subtitle", title: "（三）短信记录提取结果" },
+      { type: "text", text: "死者11月10日改签列车至21:15发车，同事周变告知其11日抵达南山，死者告知对方已预订酒店。" },
+      { type: "subtitle", title: "（四）其他电子数据提取说明" },
+      { type: "text", text: "死者两次支付酒店套房差价失败，提示系统异常；SBTP系统显示其正常签署授权书；酒店预订系统当晚异常显示商务房无空余，疑似被篡改。" },
+      { type: "text", text: "取证人员、审核人签字：__________ 取证单位盖章：南山市公安局网络安全保卫支队 日期：2025年11月12日" }
     ]
   },
-
   // ==================== 7. 系统手册（公开） ====================
   "00000000000L": {
     code: "00000000000L",
@@ -1380,74 +1130,34 @@ const documents = {
     location: "系统默认",
     isPublic: true,
     content: [
-      {
-        type: "text",
-        text: "警务综合信息系统（PIIS）是面向公安机关内部使用的案件信息管理平台。本系统采用12位案件编码体系，实现案件资料的数字化管理与快速检索。系统严格遵循《公安机关办理刑事案件程序规定》及信息安全等级保护要求。"
-      },
-      {
-        type: "section",
-        title: "编码规则"
-      },
-      {
-        type: "text",
-        text: "案件编码共12位：日期(6位) + 案件类型(2位) + 序号(3位) + 文档类型(1位字母)。" +
-              "日期格式：YYMMDD，如251111表示2025年11月11日。<br>" +
-              "案件类型（共3类20种）：<br>" +
-              "01故意杀人案、02抢劫案、03盗窃案、04诈骗案（含电信诈骗）、05故意伤害案、06毒品犯罪案、07经济犯罪案（含涉众型）、08计算机网络犯罪案、09涉黑涉恶案、10其他刑事案件；<br>" +
-              "11扰乱秩序案（原治安案细化）、12寻衅滋事案、13殴打他人案、14盗窃（治安）案、15毒品（行政）案、16其他治安案件；<br>" +
-              "17交通事故案、18交通肇事案（刑事）、19火灾事故案、20消防行政处罚案。<br><br>" +
-              "序号：001-999，表示当日该类型案件顺序号。<br>" +
-              "文档类型：B报案记录、K现场勘查、S尸检报告、W物证报告、X询问笔录、D电子数据、L系统手册、M监控数据、E员工名单。"
-      },
-      {
-        type: "section",
-        title: "案件提示"
-      },
-      {
-        type: "text",
-        text: "今日已上传：25111101001案件的相关内容。本案当前系统上已上传报案记录、现场勘查和尸检报告、物证报告、员工名单、笔录和电子数据取证的相关内容。监控数据当前未上传，但可通过编码直接跳转查看。"
-      },
-      {
-        type: "section",
-        title: "安全提示"
-      },
-      {
-        type: "text",
-        text: "系统内容涉及警务工作秘密，严禁截屏、拍照或对外泄露。重点案件数据访问需经授权，操作日志全程记录。技术支持：科信处 内线XXXX。"
-      }
+      { type: "section", title: "系统使用手册" },
+      { type: "text", text: "警务综合信息系统（PIIS）是面向公安机关内部使用的案件信息管理平台。本系统采用12位案件编码体系，实现案件资料的数字化管理与快速检索。系统严格遵循《公安机关办理刑事案件程序规定》及信息安全等级保护要求。" },
+      { type: "section", title: "编码规则" },
+      { type: "text", text: "案件编码共12位：日期(6位) + 案件类型(2位) + 序号(3位) + 文档类型(1位字母)。日期格式：YYMMDD，如251111表示2025年11月11日。\n案件类型（共3类20种）：01故意杀人案、02抢劫案、03盗窃案、04诈骗案（含电信诈骗）、05故意伤害案、06毒品犯罪案、07经济犯罪案（含涉众型）、08计算机网络犯罪案、09涉黑涉恶案、10其他刑事案件；11扰乱秩序案（原治安案细化）、12寻衅滋事案、13殴打他人案、14盗窃（治安）案、15毒品（行政）案、16其他治安案件；17交通事故案、18交通肇事案（刑事）、19火灾事故案、20消防行政处罚案。\n序号：001-999，表示当日该类型案件顺序号。\n文档类型：B报案记录、K现场勘查、S尸检报告、W物证报告、X询问笔录、D电子数据、L系统手册、M监控数据、E员工名单等。" },
+      { type: "section", title: "案件提示" },
+      { type: "text", text: "今日已上传：25111101001案件的相关内容。本案当前系统上已上传报案记录、现场勘查和尸检报告、物证报告、员工名单、笔录和电子数据取证的相关内容。监控数据当前未上传，但目前已可通过编码直接跳转查看。" },
+      { type: "section", title: "安全提示" },
+      { type: "text", text: "系统内容涉及警务工作秘密，严禁截屏、拍照或对外泄露。重点案件数据访问需经授权，操作日志全程记录。技术支持：科信处 内线XXXX。" }
     ]
   },
-
-  // ==================== 8. 新增文档：昨日员工名单 (E) ====================
+  // ==================== 8. 员工名单（编号：25111101001E） ====================
   "25111101001E": {
     code: "25111101001E",
     date: "2025-11-11",
     caseType: "01",
-    caseTypeName: "杀人案",
+    caseTypeName: "故意杀人案",
     seq: "001",
     docType: "E",
     docTypeName: "员工名单",
     title: "提希丰会所员工名单（2025年11月10日当值）",
     caseNo: "HR-20251110-TXF",
     location: "提希丰会所人力资源部",
-    isKeyCase: true,  // 关联重点案件
+    isKeyCase: true,
     content: [
-      {
-        type: "section",
-        title: "说明"
-      },
-      {
-        type: "text",
-        text: "本名单为提希丰会所2025年11月10日至11月11日的部分在岗员工信息，含姓名及10位工号ID。此名单已由会所人力资源部于11月11日10时提供，用于排查与林静怡案相关的人员。"
-      },
-      {
-        type: "section",
-        title: "员工名单"
-      },
-      {
-        type: "table",
-        headers: ["姓名", "工号ID (10位)", "部门", "当值时段"],
-        rows: [         
+      { type: "section", title: "说明" },
+      { type: "text", text: "本名单为提希丰会所2025年11月10日至11月11日的部分在岗员工信息，含姓名及10位工号ID。此名单已由会所人力资源部于11月11日10时提供，用于排查与林静怡案相关的人员。" },
+      { type: "section", title: "员工名单" },
+      { type: "table", headers: ["姓名", "工号ID (10位)", "部门", "当值时段"], rows: [
           ["王莉", "TXF0452091", "前台接待", "20:00 - 08:00（夜班）"],
           ["孙启明", "TXF0321765", "礼宾部", "18:00 - 02:00"],
           ["李瑞", "TXF0983210", "志愿者（深南大学）", "19:00 - 23:30"],
@@ -1460,20 +1170,14 @@ const documents = {
           ["周明远", "TXF0896543", "后勤保障", "22:00 - 06:00"],
           ["林小华", "TXF0123987", "保洁部", "22:00 - 06:00"],
           ["吴茜", "TXF0554876", "前台接待", "14:00 - 22:00"]
-        ]
-      },
-      {
-        type: "section",
-        title: "备注"
-      },
-      {
-        type: "text",
-        text: "1. 工号全部为10位，以'TXF'开头为提希丰正式员工编码；志愿者编码临时录入，仍为10位格式。"
-      }
+      ] },
+      { type: "section", title: "备注" },
+      { type: "text", text: "1. 工号全部为10位，以'TXF'开头为提希丰正式员工编码；志愿者编码临时录入，仍为10位格式。" }
     ]
   }
 };
 
+// ========== 全局变量与函数 ==========
 const unlocked = {};
 const docList = document.getElementById("docList");
 const emptyState = document.getElementById("emptyState");
@@ -1485,16 +1189,13 @@ const docFooter = document.getElementById("docFooter");
 const searchInput = document.getElementById("searchInput");
 const searchStatus = document.getElementById("searchStatus");
 
-/* ========== 初始化 - 加载公开文件 ========== */
 function init() {
   // 默认解锁系统手册
   unlocked["00000000000L"] = documents["00000000000L"];
   renderList();
-  // 默认打开手册
   openDoc("00000000000L");
 }
 
-/* ========== 验证编码格式 ========== */
 function validateCode(code) {
   if (code.length !== 12) return false;
   const frontPart = code.substring(0, 11);
@@ -1504,74 +1205,54 @@ function validateCode(code) {
   return true;
 }
 
-/* ========== 搜索解锁 ========== */
 searchInput.addEventListener("keydown", e => {
   if (e.key !== "Enter") return;
-
   const key = e.target.value.trim().toUpperCase();
   
   if (!validateCode(key)) {
     e.target.style.borderColor = "#e74c3c";
-    setTimeout(() => {
-      e.target.style.borderColor = "";
-    }, 500);
+    setTimeout(() => { e.target.style.borderColor = ""; }, 500);
     e.target.placeholder = "格式错误：前11位数字，最后1位字母";
     e.target.value = "";
     return;
   }
   
-  // 新增特殊逻辑：如果输入25111101001M，则弹窗并跳转
   if (key === "25111101001M") {
     alert("将转至监控相关页面直接进行查看");
-    // 跳转到 jiankong.html
     window.location.href = "jiankong.html";
-    return; // 停止后续处理
+    return;
   }
   
   searchStatus.classList.add("active");
-  
   setTimeout(() => {
     searchStatus.classList.remove("active");
-    
     if (documents[key] && !unlocked[key]) {
       unlocked[key] = documents[key];
       renderList();
       openDoc(key);
       e.target.value = "";
-      e.target.placeholder = "查询成功，请输入新的案件编码...";
     } else if (unlocked[key]) {
       openDoc(key);
       e.target.value = "";
     } else {
       e.target.style.borderColor = "#e74c3c";
-      setTimeout(() => {
-        e.target.style.borderColor = "";
-      }, 500);
+      setTimeout(() => { e.target.style.borderColor = ""; }, 500);
       e.target.placeholder = "该编码档案不存在";
       e.target.value = "";
     }
   }, 600);
 });
 
-/* ========== 渲染文档列表 ========== */
 function renderList() {
   docList.innerHTML = "";
-  const keys = Object.keys(unlocked);
-  keys.sort();
-  
+  const keys = Object.keys(unlocked).sort();
   keys.forEach(key => {
     const doc = unlocked[key];
     const div = document.createElement("div");
     div.className = "doc-item" + (doc.isPublic ? " public" : "");
-    
-    let badge = "";
-    if (doc.isKeyCase) {
-      badge = '<span style="color: var(--accent); font-weight: bold;">[重点] </span>';
-    }
-    
     div.innerHTML = `
       <div class="doc-type">${doc.docTypeName}</div>
-      <div class="doc-title">${badge}${doc.title}</div>
+      <div class="doc-title">${doc.isKeyCase ? '<span style="color: var(--accent); font-weight: bold;">[重点] </span>' : ''}${doc.title}</div>
       <div class="doc-meta">${doc.code} | ${doc.date} | ${doc.caseTypeName}</div>
     `;
     div.onclick = () => openDoc(key);
@@ -1579,146 +1260,58 @@ function renderList() {
   });
 }
 
-/* ========== 打开文档 ========== */
 function openDoc(key) {
   const doc = unlocked[key];
-  
-  document.querySelectorAll(".doc-item").forEach((item, index) => {
+  document.querySelectorAll(".doc-item").forEach((item, idx) => {
     item.classList.remove("active");
-    if (Object.keys(unlocked).sort()[index] === key) {
-      item.classList.add("active");
-    }
+    if (Object.keys(unlocked).sort()[idx] === key) item.classList.add("active");
   });
-  
   emptyState.style.display = "none";
   docContent.style.display = "block";
-  
   docTitle.textContent = doc.title;
-  
   let metaHtml = `案件编码：${doc.code} | 案发日期：${doc.date}<br>`;
   metaHtml += `案件类型：${doc.caseTypeName}(${doc.caseType}) | 文档类型：${doc.docTypeName}<br>`;
-  if (doc.caseNo) {
-    metaHtml += `档案编号：${doc.caseNo} | `;
-  }
-  if (doc.location) {
-    metaHtml += `地点：${doc.location}`;
-  }
+  if (doc.caseNo) metaHtml += `档案编号：${doc.caseNo} | `;
+  if (doc.location) metaHtml += `地点：${doc.location}`;
   docMeta.innerHTML = metaHtml;
-  
-  // 渲染文档内容 - 新格式
   docText.innerHTML = "";
-  
   doc.content.forEach(block => {
     if (block.type === "section") {
-      const h2 = document.createElement("div");
-      h2.className = "doc-section-title";
-      h2.textContent = block.title;
-      docText.appendChild(h2);
-    }
-    else if (block.type === "subtitle") {
-      const h3 = document.createElement("div");
-      h3.className = "doc-subtitle";
-      h3.textContent = block.title;
-      docText.appendChild(h3);
-    }
-    else if (block.type === "text") {
-      const p = document.createElement("div");
-      p.className = "doc-paragraph";
-      p.innerHTML = block.text;
-      docText.appendChild(p);
-    }
-    else if (block.type === "no-indent") {
-      const p = document.createElement("div");
-      p.className = "doc-paragraph no-indent";
-      p.textContent = block.text;
-      docText.appendChild(p);
-    }
-    else if (block.type === "list") {
-      block.items.forEach(item => {
-        const p = document.createElement("div");
-        p.className = "doc-list-item";
-        p.textContent = item;
-        docText.appendChild(p);
-      });
-    }
-    else if (block.type === "table") {
-      const table = document.createElement("table");
-      table.className = "doc-table";
-      
-      const thead = document.createElement("thead");
-      const tr = document.createElement("tr");
-      block.headers.forEach(h => {
-        const th = document.createElement("th");
-        th.textContent = h;
-        tr.appendChild(th);
-      });
-      thead.appendChild(tr);
-      table.appendChild(thead);
-      
+      const h2 = document.createElement("div"); h2.className = "doc-section-title"; h2.textContent = block.title; docText.appendChild(h2);
+    } else if (block.type === "subtitle") {
+      const h3 = document.createElement("div"); h3.className = "doc-subtitle"; h3.textContent = block.title; docText.appendChild(h3);
+    } else if (block.type === "text") {
+      const p = document.createElement("div"); p.className = "doc-paragraph"; p.innerHTML = block.text; docText.appendChild(p);
+    } else if (block.type === "list") {
+      block.items.forEach(item => { const p = document.createElement("div"); p.className = "doc-list-item"; p.textContent = item; docText.appendChild(p); });
+    } else if (block.type === "table") {
+      const table = document.createElement("table"); table.className = "doc-table";
+      const thead = document.createElement("thead"); const tr = document.createElement("tr");
+      block.headers.forEach(h => { const th = document.createElement("th"); th.textContent = h; tr.appendChild(th); });
+      thead.appendChild(tr); table.appendChild(thead);
       const tbody = document.createElement("tbody");
-      block.rows.forEach(row => {
-        const tr = document.createElement("tr");
-        row.forEach(cell => {
-          const td = document.createElement("td");
-          td.textContent = cell;
-          tr.appendChild(td);
-        });
-        tbody.appendChild(tr);
-      });
-      table.appendChild(tbody);
-      docText.appendChild(table);
-    }
-    else if (block.type === "quote") {
-      const quote = document.createElement("div");
-      quote.className = "doc-quote";
-      quote.innerHTML = `
-        <div class="doc-quote-header">${block.header}</div>
-        <div>${block.content}</div>
-      `;
+      block.rows.forEach(row => { const tr = document.createElement("tr"); row.forEach(cell => { const td = document.createElement("td"); td.textContent = cell; tr.appendChild(td); }); tbody.appendChild(tr); });
+      table.appendChild(tbody); docText.appendChild(table);
+    } else if (block.type === "quote") {
+      const quote = document.createElement("div"); quote.className = "doc-quote";
+      quote.innerHTML = `<div class="doc-quote-header">${block.header}</div><div>${block.content}</div>`;
       docText.appendChild(quote);
-    }
-    else if (block.type === "sms") {
-      const sms = document.createElement("div");
-      sms.className = "doc-quote";
-      sms.innerHTML = `
-        <div class="doc-quote-header">${block.time} 【${block.sender}】</div>
-        <div>${block.content}</div>
-      `;
-      docText.appendChild(sms);
+    } else if (block.type === "signature") {
+      const p = document.createElement("div"); p.className = "doc-paragraph"; p.textContent = block.text; docText.appendChild(p);
     }
   });
-  
-  // 页脚
-  docFooter.innerHTML = `
-    本文件由警务综合信息系统生成 | 生成时间：${new Date().toLocaleString('zh-CN')}<br>
-    未经授权不得复制、传播 | 操作员编号：${Math.random().toString(36).substring(2, 8).toUpperCase()}
-  `;
-  
+  docFooter.innerHTML = `本文件由警务综合信息系统生成 | 生成时间：${new Date().toLocaleString('zh-CN')}<br>未经授权不得复制、传播 | 操作员编号：${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
   document.getElementById("mainContent").scrollTop = 0;
 }
 
-/* ========== 输入处理 ========== */
 searchInput.addEventListener("input", e => {
-  e.target.value = e.target.value.toUpperCase();
-  
-  let value = e.target.value;
-  if (value.length <= 11) {
-    value = value.replace(/[^0-9]/g, '');
-  } else {
-    const front = value.substring(0, 11).replace(/[^0-9]/g, '');
-    const end = value.substring(11, 12).replace(/[^A-Z]/gi, '').toUpperCase();
-    value = front + end;
-  }
+  let value = e.target.value.toUpperCase();
+  if (value.length <= 11) value = value.replace(/[^0-9]/g, '');
+  else { const front = value.substring(0,11).replace(/[^0-9]/g,''); const end = value.substring(11,12).replace(/[^A-Z]/g,'').toUpperCase(); value = front + end; }
   e.target.value = value;
-  
-  if (value.length === 12) {
-    e.target.style.borderColor = "var(--accent-light)";
-  } else {
-    e.target.style.borderColor = "";
-  }
+  if (value.length === 12) e.target.style.borderColor = "var(--accent-light)"; else e.target.style.borderColor = "";
 });
 
-/* ========== 初始化 ========== */
 document.addEventListener("DOMContentLoaded", init);
 </script>
 
