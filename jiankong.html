@@ -1048,7 +1048,7 @@
                               [...selectedNumbers].every(num => correctAnswers.has(num));
 
             if (isCorrect) {
-                hintArea.textContent = '图像重组成功！正确片段：4 | 6 | 1';
+                hintArea.textContent = '图像重组成功！正确编码：4 | 6 | 1';
                 hintArea.className = 'hint-area success';
                 nextBtn.style.display = 'block';
             } else if (selectedNumbers.size === maxSelectCount && !isCorrect) {
