@@ -549,31 +549,146 @@
         updateTime();
 
         // 登录处理
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const idCard = document.getElementById('idCard').value.trim();
-            const accountName = document.getElementById('accountName').value.trim();
-            const errorMsg = document.getElementById('errorMsg');
-            
-            // 验证ID卡号格式（10位数字）
-            if (!/^\d{10}$/.test(idCard)) {
-                showError('ID卡号必须为10位数字');
-                return;
-            }
-            
-            // 验证账号
-            const account = validAccounts[idCard];
-            if (account && account.name === accountName) {
-                // 登录成功
-                errorMsg.classList.add('hidden');
-                showLogs(account);
-            } else {
-                // 登录失败
-                showError('验证失败：ID卡号或账号名称不匹配');
-            }
-        });
+        // 登录处理
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const idCard = document.getElementById('idCard').value.trim();
+    const accountName = document.getElementById('accountName').value.trim();
+    const errorMsg = document.getElementById('errorMsg');
+    
+    // 验证ID卡号格式（10位数字）
+    if (!/^\d{10}$/.test(idCard)) {
+        showError('ID卡号必须为10位数字');
+        return;
+    }
 
+    // 新增：特殊账号（1990032478 + 宋绪静.test）的提示逻辑
+    if (idCard === '1990032478' && accountName === '宋绪静.test') {
+        // 1. 创建遮罩层（匹配页面风格）
+        const mask = createMaskLayer();
+        // 2. 创建自定义确认浮层（匹配页面粗野主义风格）
+        createConfirmModal(mask, idCard);
+        return; // 终止后续逻辑，先处理提示
+    }
+    
+    // 原有的通用账号验证逻辑
+    const account = validAccounts[idCard];
+    if (account && account.name === accountName) {
+        // 登录成功
+        errorMsg.classList.add('hidden');
+        showError(''); // 清空错误提示
+        showLogs(account);
+    } else {
+        // 登录失败
+        showError('验证失败：ID卡号或账号名称不匹配');
+    }
+});
+
+// 辅助函数：创建遮罩层（匹配页面风格）
+function createMaskLayer() {
+    const mask = document.createElement('div');
+    mask.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.8); /* 深色遮罩匹配页面黑色主调 */
+        z-index: 9998;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: none; /* 移除模糊，匹配页面硬边缘风格 */
+    `;
+    document.body.appendChild(mask);
+    return mask;
+}
+
+// 辅助函数：创建自定义确认浮层（匹配页面粗野主义风格）
+function createConfirmModal(mask, targetIdCard) {
+    // 创建浮层容器（完全匹配页面卡片风格）
+    const confirmModal = document.createElement('div');
+    confirmModal.style.cssText = `
+        background: var(--white);
+        border: 4px solid var(--black);
+        box-shadow: 6px 6px 0px 0px var(--black);
+        padding: 2rem;
+        width: 90vw;
+        max-width: 500px;
+        font-family: 'Noto Sans SC', sans-serif;
+        z-index: 9999;
+        position: relative;
+    `;
+
+    // 浮层内容（匹配页面排版和样式）
+    confirmModal.innerHTML = `
+        <!-- 几何装饰元素 -->
+        <div style="position: absolute; top: -12px; right: -12px; width: 24px; height: 24px; background: var(--black); transform: rotate(15deg);"></div>
+        <div style="position: absolute; bottom: -8px; left: -8px; width: 16px; height: 16px; border: 3px solid var(--black); transform: rotate(-10deg);"></div>
+        
+        <!-- 标题 -->
+        <h3 style="font-family: 'Noto Sans SC', sans-serif; font-weight: 900; font-size: 1.5rem; margin-bottom: 1.5rem; border-bottom: 3px solid var(--black); padding-bottom: 0.8rem; tracking-widest;">
+            提示
+        </h3>
+        
+        <!-- 内容文本 -->
+        <p style="font-weight: 700; line-height: 1.6; margin-bottom: 2rem; font-size: 1rem; tracking-wider;">
+            并不是这么直接的手段哦，要不要再看看这个页面？
+        </p>
+        
+        <!-- 按钮容器 -->
+        <div style="display: flex; justify-content: flex-end;">
+            <button id="closeBtn" style="
+                background: var(--black);
+                color: var(--white);
+                font-family: 'Noto Sans SC', sans-serif;
+                font-weight: 900;
+                padding: 0.8rem 2rem;
+                border: 4px solid var(--black);
+                box-shadow: 4px 4px 0px 0px var(--black);
+                        transition: all 0.2s ease;
+                        font-size: 1rem;
+                        tracking-widest;
+                        cursor: pointer;
+                    ">
+                        我知道了
+                    </button>
+                </div>
+            `;
+
+            // 将浮层添加到遮罩层中
+            mask.appendChild(confirmModal);
+
+            // 绑定关闭按钮交互（匹配页面按钮hover/active效果）
+            const closeBtn = document.getElementById('closeBtn');
+            closeBtn.addEventListener('mouseover', function() {
+                this.style.boxShadow = '2px 2px 0px 0px var(--black)';
+                this.style.transform = 'translate(1px, 1px)';
+            });
+            closeBtn.addEventListener('mouseout', function() {
+                this.style.boxShadow = '4px 4px 0px 0px var(--black)';
+                this.style.transform = 'translate(0, 0)';
+            });
+            closeBtn.addEventListener('mousedown', function() {
+                this.style.boxShadow = '0px 0px 0px 0px var(--black)';
+                this.style.transform = 'translate(3px, 3px)';
+            });
+            closeBtn.addEventListener('mouseup', function() {
+                this.style.boxShadow = '2px 2px 0px 0px var(--black)';
+                this.style.transform = 'translate(1px, 1px)';
+            });
+            
+            // 关闭按钮点击事件
+            closeBtn.addEventListener('click', function() {
+                mask.remove(); // 移除遮罩和浮层
+                // 如需点击关闭后展示日志，可取消下面这行注释
+                // showLogs(validAccounts[targetIdCard]);
+            });
+        }
+
+        
+        
         function showError(msg) {
             const errorMsg = document.getElementById('errorMsg');
             if (errorMsg) {
