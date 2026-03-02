@@ -407,7 +407,7 @@
             
             // 验证密码是否正确
             if (password !== userConfig[username].password) {
-                errorEl.textContent = `密码错误，林静怡的正确密码是：888888`;
+                errorEl.textContent = `密码错误，字母全大写且没有空格`;
                 errorEl.classList.remove('hidden');
                 return;
             }
