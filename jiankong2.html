@@ -293,9 +293,10 @@
         }
 
         .letter-grids-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            align-items: start;
         }
 
         /* 网格包装器 */
@@ -705,8 +706,11 @@
 
             <!-- 主监控容器 -->
             <div class="monitor-container">
-                <!-- 左侧：三个字母九宫格 -->
-                <div class="target-section">
+
+
+                <!-- 右侧：6个颜色九宫格 + 结果文字 -->
+                <div class="analysis-section">
+                    
                     <div class="section-label">字母编码矩阵</div>
                     <div class="letter-grids-container">
                         <!-- 字母九宫格 1 -->
@@ -723,7 +727,7 @@
                                 <div class="grid-item">I</div>
                             </div>
                             <div class="label-box">
-                                <span class="target-label">矩阵-A</span>
+                                <span class="target-label">A-I</span>
                             </div>
                         </div>
 
@@ -741,7 +745,7 @@
                                 <div class="grid-item">R</div>
                             </div>
                             <div class="label-box">
-                                <span class="target-label">矩阵-B</span>
+                                <span class="target-label">J-R</span>
                             </div>
                         </div>
 
@@ -759,16 +763,12 @@
                                 <div class="grid-item">-</div>
                             </div>
                             <div class="label-box">
-                                <span class="target-label">矩阵-C</span>
+                                <span class="target-label">S-Z</span>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 右侧：6个颜色九宫格 + 结果文字 -->
-                <div class="analysis-section">
-                    <div class="section-label">色彩分析样本</div>
-
+                <div class="section-label">色彩分析样本</div>
                     <!-- 6个颜色九宫格 -->
                     <div class="color-grids-container">
                         <!-- 颜色九宫格 1 -->
@@ -874,7 +874,7 @@
                         <div class="result-content">
                             <div class="result-row">
                                 <span class="result-label">分析状态:</span>
-                                <span class="result-value">已完成<span style="color: #e60012; font-weight: bold;">12位编码</span>的构成</span>
+                                <span class="result-value">已完成<span style="color: #e60012; font-weight: bold;">12位编码</span>的构成<br>（提示：不记得可以回去刚刚的地方看看哦！）</span>
                             </div>
                             <div class="result-row">
                                 <span class="result-label">色彩通道:</span>
@@ -882,11 +882,11 @@
                             </div>
                             <div class="result-row">
                                 <span class="result-label">第一行<span style="color: #e60012; font-weight: bold;">监控</span>结果:</span>
-                                <span class="result-value">□□□□□ □□□□：□□□ □□□□ □□□□□□</span>
+                                <span class="result-value">□□□□□ □□□□：□□□ □□□□ □□□□□□<br>->ERROR TIME：□□□ □□□□ □□□□□□</span>
                             </div>
                             <div class="result-row">
                                 <span class="result-label">第二行<span style="color: #e60012; font-weight: bold;">监控</span>结果:</span>
-                                <span class="result-value">□□：□□□.□□□□</span>
+                                <span class="result-value">□□：□□□.□□□□<br>->ID：□□□.□□□□</span>
                             </div>
                             <div class="result-row">
                                 <span class="result-label">最终结论（上述监控提示）:</span>
