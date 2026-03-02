@@ -597,11 +597,13 @@
                 <div class="max-w-md mx-auto">
                     <div class="mb-5">
                         <label for="login-username" class="block text-sm font-medium text-gray-700 mb-1">Account</label>
-                        <input type="text" id="login-username" placeholder="姓名汉字全称" class="fill-input w-full">
+                        <input type="text" id="login-username" placeholder="姓名全称" 
+                            class="fill-input w-full">
                     </div>
                     <div class="mb-6">
-                        <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input type="password" id="login-password" placeholder="••••••••" class="fill-input w-full">
+                        <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Password（仍然是输入中文+数字）</label>
+                        <input type="text" id="login-password" placeholder="请输入密码" 
+                            class="fill-input w-full">
                     </div>
                     <div class="text-center">
                         <button id="loginSubmitBtn" class="px-8 py-3 bg-[#1f4e45] text-white rounded hover:bg-[#163a33] transition">Login</button>
@@ -727,8 +729,8 @@
             // 支持多个账号密码
             const validCredentials = [
                 { username: '林怂恿', password: '甬0214' },
-                { username: '李叮咛', password: '李叮咛0813' },
-                { username: '于徘徊', password: '于徘徊1532' },
+                { username: '李叮咛', password: '李丁宁0813' },
+                { username: '于徘徊', password: '于非1532' },
                 { username: '佘噀噤', password: '人共2340' },
                 { username: '佘噀噤', password: '人共2345' }
             ];
