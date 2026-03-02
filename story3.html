@@ -291,7 +291,7 @@ header {
   letter-spacing: 0.05em;
 }
 
-/* ========== 文档列表 ========== */
+/* ========== 文档列表 + 清空按钮容器 ========== */
 aside {
   border-right: 1px solid #ddd;
   padding-right: 20px;
@@ -302,30 +302,56 @@ aside {
   border-right: none;
 }
 
-aside h3 {
+.aside-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 12px;
+}
+
+.aside-header h3 {
   font-size: 11px;
   letter-spacing: 0.15em;
-  margin: 0 0 16px 0;
+  margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
   color: var(--gray);
   font-weight: 600;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #eee;
 }
 
-aside h3::before {
+.aside-header h3::before {
   content: "●";
   color: var(--accent);
   font-size: 8px;
+}
+
+.clear-btn {
+  background: transparent;
+  border: 1px solid var(--gray);
+  color: var(--gray);
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+
+.clear-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
 }
 
 .doc-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: calc(100vh - 380px);
+  max-height: calc(100vh - 430px);
   overflow-y: auto;
 }
 
@@ -778,7 +804,10 @@ footer {
   </div>
 
   <aside>
-    <h3>已解锁档案</h3>
+    <div class="aside-header">
+      <h3>已解锁档案</h3>
+      <button class="clear-btn" id="clearArchiveBtn">清空存档</button>
+    </div>
     <div class="doc-list" id="docList">
       <!-- 文档列表将通过JavaScript动态生成 -->
     </div>
@@ -823,7 +852,7 @@ footer {
 </div>
 
 <script>
-/* ========== 文档类型映射 ========== */
+// ========== 文档类型映射 ==========
 const docTypeMap = {
   'B': { name: '报案记录', fullName: '报案登记表' },
   'K': { name: '现场勘查', fullName: '现场勘验检查笔录' },
@@ -987,12 +1016,12 @@ const documents = {
         "1. DNA：1根现场毛发检出不明女性DNA，其余与死者一致，比对样本均无匹配；",
         "2. 微量物证：金属碎屑与探针材质一致，纤维为聚酯纤维（非会所制服），探针缺失序列号-023；",
         "3. 气溶胶：检出隐蔽性镇静药物，可使人体短暂失能；",
-        "4. 电子证据：理疗舱曾被未授权账号\"test\"远程注入药物、关闭监控。"
+        "4. 电子证据：理疗舱曾被未知账号登录、远程注入药物、关闭监控。"
       ] },
       { type: "subtitle", title: "（四）鉴定意见" },
       { type: "text", text: "不明女性DNA及纤维指向同一重点嫌疑人；作案工具为缺失的探针-023；作案人员用隐蔽药物辅助作案，通过未授权账号操控设备；会所员工等相关人员排除嫌疑。" },
       { type: "subtitle", title: "（五）工作建议" },
-      { type: "text", text: "扩大DNA比对范围，追查缺失探针、药物渠道、无标识电瓶车及\"test\"账号来源，排查系统安全漏洞。" },
+      { type: "text", text: "扩大DNA比对范围，追查缺失探针、药物渠道、无标识电瓶车及未知账号来源，排查系统安全漏洞。" },
       { type: "text", text: "检验人员、审核人签字：__________ 鉴定单位盖章：南山市公安局刑事科学技术研究所 日期：2025年11月13日" }
     ]
   },
@@ -1178,7 +1207,9 @@ const documents = {
 };
 
 // ========== 全局变量与函数 ==========
-const unlocked = {};
+let unlocked = {};               // 当前会话解锁的文档
+const STORAGE_KEY = 'police_unlocked_archive';   // 文档解锁存储key
+const MONITOR_VISITED_KEY = 'police_monitor_visited';  // 监控访问标记key
 const docList = document.getElementById("docList");
 const emptyState = document.getElementById("emptyState");
 const docContent = document.getElementById("docContent");
@@ -1188,61 +1219,103 @@ const docText = document.getElementById("docText");
 const docFooter = document.getElementById("docFooter");
 const searchInput = document.getElementById("searchInput");
 const searchStatus = document.getElementById("searchStatus");
+const clearBtn = document.getElementById("clearArchiveBtn");
 
-function init() {
-  // 默认解锁系统手册
-  unlocked["00000000000L"] = documents["00000000000L"];
-  renderList();
-  openDoc("00000000000L");
+// 获取监控访问状态
+function getMonitorVisited() {
+  return localStorage.getItem(MONITOR_VISITED_KEY) === 'true';
 }
 
-function validateCode(code) {
-  if (code.length !== 12) return false;
-  const frontPart = code.substring(0, 11);
-  if (!/^\d{11}$/.test(frontPart)) return false;
-  const lastChar = code.substring(11, 12);
-  if (!/^[A-Z]$/.test(lastChar)) return false;
-  return true;
+// 设置监控访问状态
+function setMonitorVisited(visited) {
+  localStorage.setItem(MONITOR_VISITED_KEY, visited);
 }
 
-searchInput.addEventListener("keydown", e => {
-  if (e.key !== "Enter") return;
-  const key = e.target.value.trim().toUpperCase();
-  
-  if (!validateCode(key)) {
-    e.target.style.borderColor = "#e74c3c";
-    setTimeout(() => { e.target.style.borderColor = ""; }, 500);
-    e.target.placeholder = "格式错误：前11位数字，最后1位字母";
-    e.target.value = "";
-    return;
-  }
-  
-  if (key === "25111101001M") {
-    alert("将转至监控相关页面直接进行查看");
-    window.location.href = "jiankong.html";
-    return;
-  }
-  
-  searchStatus.classList.add("active");
-  setTimeout(() => {
-    searchStatus.classList.remove("active");
-    if (documents[key] && !unlocked[key]) {
-      unlocked[key] = documents[key];
-      renderList();
-      openDoc(key);
-      e.target.value = "";
-    } else if (unlocked[key]) {
-      openDoc(key);
-      e.target.value = "";
-    } else {
-      e.target.style.borderColor = "#e74c3c";
-      setTimeout(() => { e.target.style.borderColor = ""; }, 500);
-      e.target.placeholder = "该编码档案不存在";
-      e.target.value = "";
+// 本地存储：加载已解锁档案
+function loadUnlocked() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try {
+      const keys = JSON.parse(stored);  // 存储的是编码数组
+      unlocked = {};
+      // 只恢复存在于documents中的档案（防止脏数据）
+      keys.forEach(key => {
+        if (documents[key]) unlocked[key] = documents[key];
+      });
+    } catch (e) {
+      console.warn("解析存储失败", e);
+      unlocked = {};
     }
-  }, 600);
-});
+  }
+  // 无论如何确保系统手册始终存在（如果尚未解锁则添加）
+  if (!unlocked["00000000000L"]) {
+    unlocked["00000000000L"] = documents["00000000000L"];
+  }
+  saveUnlocked(); // 同步存储（确保存储中也有系统手册）
+}
 
+// 保存解锁状态到本地存储
+function saveUnlocked() {
+  const keys = Object.keys(unlocked);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(keys));
+}
+
+// 清空存档（保留系统手册，但清空监控访问标记）
+function clearUnlocked() {
+  // 清空已解锁文档，只保留系统手册
+  unlocked = {
+    "00000000000L": documents["00000000000L"]
+  };
+  saveUnlocked();
+  
+  // 同时清空监控访问标记
+  setMonitorVisited(false);
+  
+  renderList();
+  
+  // 如果当前打开的是被清除的文档，则跳转到系统手册
+  const activeItem = document.querySelector(".doc-item.active");
+  if (activeItem && activeItem.dataset.key) {
+    const currentKey = activeItem.dataset.key;
+    if (!unlocked[currentKey]) {
+      openDoc("00000000000L");
+    }
+  } else {
+    // 如果没有激活的文档，也显示系统手册
+    openDoc("00000000000L");
+  }
+  
+  // 显示提示信息（可选）
+  console.log("存档已清空，监控访问记录已清除");
+  
+  // 可以在页面上显示一个短暂的提示
+  const statusMsg = document.createElement("div");
+  statusMsg.textContent = "✓ 存档已清空，监控记录已清除";
+  statusMsg.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--accent-dark);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    z-index: 9999;
+    animation: fadeOut 2s forwards;
+  `;
+  document.body.appendChild(statusMsg);
+  setTimeout(() => {
+    statusMsg.remove();
+  }, 2000);
+}
+
+// 辅助：获取当前打开的文档key
+function getCurrentOpenKey() {
+  const activeItem = document.querySelector(".doc-item.active");
+  if (activeItem && activeItem.dataset.key) return activeItem.dataset.key;
+  return null;
+}
+
+// 渲染列表
 function renderList() {
   docList.innerHTML = "";
   const keys = Object.keys(unlocked).sort();
@@ -1250,6 +1323,7 @@ function renderList() {
     const doc = unlocked[key];
     const div = document.createElement("div");
     div.className = "doc-item" + (doc.isPublic ? " public" : "");
+    div.dataset.key = key;   // 保存key
     div.innerHTML = `
       <div class="doc-type">${doc.docTypeName}</div>
       <div class="doc-title">${doc.isKeyCase ? '<span style="color: var(--accent); font-weight: bold;">[重点] </span>' : ''}${doc.title}</div>
@@ -1260,12 +1334,45 @@ function renderList() {
   });
 }
 
+// 检查是否所有文档都已解锁
+function checkAllUnlocked() {
+  // 需要的案件档案编码（排除系统手册000...和监控M）
+  const required = [
+    "25111101001B",
+    "25111101001K",
+    "25111101001S",
+    "25111101001W",
+    "25111101001X",
+    "25111101001D",
+    "25111101001E"
+  ];
+  
+  const unlockedKeys = Object.keys(unlocked);
+  const allDocsUnlocked = required.every(code => unlockedKeys.includes(code));
+  
+  // 从localStorage读取监控访问状态
+  const monitorVisited = getMonitorVisited();
+  
+  console.log("检查完成状态:", { allDocsUnlocked, monitorVisited, unlockedKeys });
+  
+  if (allDocsUnlocked && monitorVisited) {
+    // 使用setTimeout确保alert不会阻塞渲染
+    setTimeout(() => {
+      alert("✓ 所有档案已解锁\n✓ 监控页面已访问\n\n根据监控的编码，是时候去找找所有异常情况的具体操作手段了。");
+    }, 100);
+  }
+}
+
 function openDoc(key) {
   const doc = unlocked[key];
-  document.querySelectorAll(".doc-item").forEach((item, idx) => {
-    item.classList.remove("active");
-    if (Object.keys(unlocked).sort()[idx] === key) item.classList.add("active");
-  });
+  if (!doc) return;
+  // 更新active样式
+  document.querySelectorAll(".doc-item").forEach(item => item.classList.remove("active"));
+  const activeItem = Array.from(document.querySelectorAll(".doc-item")).find(
+    item => item.dataset.key === key
+  );
+  if (activeItem) activeItem.classList.add("active");
+  
   emptyState.style.display = "none";
   docContent.style.display = "block";
   docTitle.textContent = doc.title;
@@ -1304,6 +1411,71 @@ function openDoc(key) {
   document.getElementById("mainContent").scrollTop = 0;
 }
 
+function validateCode(code) {
+  if (code.length !== 12) return false;
+  const frontPart = code.substring(0, 11);
+  if (!/^\d{11}$/.test(frontPart)) return false;
+  const lastChar = code.substring(11, 12);
+  if (!/^[A-Z]$/.test(lastChar)) return false;
+  return true;
+}
+
+// 搜索事件
+searchInput.addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  const key = e.target.value.trim().toUpperCase();
+  
+  if (!validateCode(key)) {
+    e.target.style.borderColor = "#e74c3c";
+    setTimeout(() => { e.target.style.borderColor = ""; }, 500);
+    e.target.placeholder = "格式错误：前11位数字，最后1位字母";
+    e.target.value = "";
+    return;
+  }
+  
+  if (key === "25111101001M") {
+    // 设置监控访问标记到localStorage
+    setMonitorVisited(true);
+    
+    // 保存当前解锁的文档状态（确保在跳转前保存）
+    saveUnlocked();
+    
+    // 检查是否满足条件
+    checkAllUnlocked();
+    
+    // 显示提示并跳转
+    alert("正在跳转至监控页面...\n\n提示：返回本系统后，系统将记住您已访问过监控。");
+    
+    window.location.href = "jiankong.html";
+    
+    // 演示模式：不跳转，只是模拟
+    console.log("监控页面访问已记录");
+    e.target.value = "";
+    return;
+  }
+  
+  searchStatus.classList.add("active");
+  setTimeout(() => {
+    searchStatus.classList.remove("active");
+    if (documents[key] && !unlocked[key]) {
+      unlocked[key] = documents[key];
+      saveUnlocked();               // 每次解锁新文档就保存
+      renderList();
+      openDoc(key);
+      e.target.value = "";
+      checkAllUnlocked();           // 添加后检查
+    } else if (unlocked[key]) {
+      openDoc(key);
+      e.target.value = "";
+    } else {
+      e.target.style.borderColor = "#e74c3c";
+      setTimeout(() => { e.target.style.borderColor = ""; }, 500);
+      e.target.placeholder = "该编码档案不存在";
+      e.target.value = "";
+    }
+  }, 600);
+});
+
 searchInput.addEventListener("input", e => {
   let value = e.target.value.toUpperCase();
   if (value.length <= 11) value = value.replace(/[^0-9]/g, '');
@@ -1311,6 +1483,25 @@ searchInput.addEventListener("input", e => {
   e.target.value = value;
   if (value.length === 12) e.target.style.borderColor = "var(--accent-light)"; else e.target.style.borderColor = "";
 });
+
+// 清空按钮事件
+clearBtn.addEventListener("click", () => {
+  if (confirm("确定清空所有已解锁档案？\n\n系统手册将保留，但监控访问记录将被清除。\n\n需要重新搜索监控编码才能触发完成提示。")) {
+    clearUnlocked();
+  }
+});
+
+// 初始化
+function init() {
+  loadUnlocked();          // 从localStorage加载
+  renderList();
+  openDoc("00000000000L"); // 默认显示系统手册
+  
+  // 每次初始化时都检查是否满足条件
+  setTimeout(() => {
+    checkAllUnlocked();
+  }, 500);
+}
 
 document.addEventListener("DOMContentLoaded", init);
 </script>
