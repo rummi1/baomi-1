@@ -1157,7 +1157,7 @@
         // 从外部JSON文件加载数据
         async function loadMailData() {
             try {
-                const response = await fetch('mail-data.json');
+                const response = await fetch('mail-data2.json');
                 const data = await response.json();
                 return data;
             } catch (error) {
@@ -1248,6 +1248,8 @@
                 currentOpenMailId: null,
                 currentGuideView: 'original', // 'original', 'forward', 'mark'
                 quizCompleted: false, // 案件梳理是否已完成
+                quizPhase1Completed: false,
+                showPhase2: false,
                 currentComposeContact: null // 当前正在写信的联系人
             };
 
@@ -1414,125 +1416,119 @@
                 }
             };
 
-            // 生成案件梳理选择题HTML
-            const generateQuizHTML = () => {
-                const questions = [
-                    {
-                        id: 'q1',
-                        question: '1. 凶手是谁？',
-                        options: ['请选择', '周变', '王磊', '赵鑫', '宋绪静'],
-                        correct: '宋绪静'
-                    },
-                    {
-                        id: 'q2',
-                        question: '2. 林静怡前往南山市的主要原因是？',
-                        options: ['请选择', '参加展会', '旅游度假', '探亲访友', '商务会议'],
-                        correct: '参加展会'
-                    },
-                    {
-                        id: 'q3',
-                        question: '3. 林静怡被杀的主要原因是什么？',
-                        options: ['请选择', '熊猫血（稀有血型）的非法需求', '情感纠纷', '审计翊尘投资', '丈夫周变的变态癖好被发现'],
-                        correct: '审计翊尘投资'
-                    },
-                    {
-                        id: 'q4',
-                        question: '4. 林静怡半夜前往提希丰高端养生会所的原因是？',
-                        options: ['请选择', '凶手利用SBTP系统造成了去会所的最佳选择', '凶手利用了她丈夫推荐过的心理', '凶手利用了会所地理位置的优越性说服了她', '凶手利用了她本身喜欢理疗的习惯'],
-                        correct: '凶手利用SBTP系统造成了去会所的最佳选择'
-                    },
-                    {
-                        id: 'q5',
-                        question: '5. 凶手的具体动手时间一共有多长？',
-                        options: ['请选择', '40分钟', '60分钟', '80分钟', '大于80分钟'],
-                        correct: '80分钟'
-                    },
-                    {
-                        id: 'q6',
-                        question: '6. 凶手的具体作案手法是什么？',
-                        options: ['请选择', '理疗舱和特定药物结合', '钝器击打', '刀具刺伤', '窒息'],
-                        correct: '理疗舱和特定药物结合'
-                    },
-                    {
-                        id: 'q7',
-                        question: '7. SBTP系统中可能存在什么问题？',
-                        options: ['请选择', '未被清理的幽灵账号', '系统升级', '数据备份', '用户权限'],
-                        correct: '未被清理的幽灵账号'
-                    },
-                    {
-                        id: 'q8',
-                        question: '8. 凶手的动手时间/方式有什么特殊之处吗？',
-                        options: ['请选择', '迎合了历史故事', '赶上了用户的紧急需求', '满足了自己的个人癖好', '同时完成了超过3件委托'],
-                        correct: '迎合了历史故事'
-                    }
-                ];
+            // 第一、二阶段问卷
+            const quizPhase1HTML = () => `
+                <div class="quiz-container">
+                    <div class="quiz-title">📋 第一阶段 · 基础梳理（1-8题）</div>
+                    <div class="quiz-question"><label>1. 凶手是谁？</label><select class="quiz-select" data-q="1"><option value="">请选择</option><option value="赵鑫">赵鑫</option><option value="宋绪静">宋绪静</option><option value="周变">周变</option><option value="王磊">王磊</option></select></div>
+                    <div class="quiz-question"><label>2. 林静怡前往南山市的主要原因是？</label><select class="quiz-select" data-q="2"><option value="">请选择</option><option value="参加展会">参加展会</option><option value="旅游">旅游</option><option value="商务会议">商务会议</option><option value="探亲">探亲</option></select></div>
+                    <div class="quiz-question"><label>3. 林静怡被杀的主要原因是什么？</label><select class="quiz-select" data-q="3"><option value="">请选择</option><option value="审计翊尘投资">审计翊尘投资</option><option value="情感纠纷">情感纠纷</option><option value="丈夫周变的变态癖好被发现">丈夫周变的变态癖好被发现</option><option value="熊猫血">熊猫血</option></select></div>
+                    <div class="quiz-question"><label>4. 林静怡半夜前往提希丰高端养生会所的原因是？</label><select class="quiz-select" data-q="4"><option value="">请选择</option><option value="凶手利用了会所地理位置的优越性说服了她">凶手利用了会所地理位置的优越性说服了她</option><option value="凶手利用SBTP系统造成了去会所的最佳选择">凶手利用SBTP系统造成了去会所的最佳选择</option><option value="凶手利用了她丈夫推荐过的心理">凶手利用了她丈夫推荐过的心理</option><option value="习惯">习惯</option></select></div>
+                    <div class="quiz-question"><label>5. 凶手的具体作案手法是什么？</label><select class="quiz-select" data-q="5"><option value="">请选择</option><option value="刀具刺伤">刀具刺伤</option><option value="理疗舱和特定药物结合">理疗舱和特定药物结合</option><option value="钝器击打">钝器击打</option><option value="窒息">窒息</option></select></div>
+                    <div class="quiz-question"><label>6. 凶手的杀人动机是什么？</label><select class="quiz-select" data-q="6"><option value="">请选择</option><option value="为了朋友">为了朋友</option><option value="为了信仰">为了信仰</option><option value="为了爱人">为了爱人</option><option value="为了钱">为了钱</option></select></div>
+                    <div class="quiz-question"><label>7. 凶手是几点动手杀死的林静怡？</label><select class="quiz-select" data-q="7"><option value="">请选择</option><option value="23:45">23:45</option><option value="23:40">23:40</option><option value="00:15">00:15</option><option value="01:40">01:40</option></select></div>
+                    <div class="quiz-question"><label>8. TWO SECONDS网站是什么？</label><select class="quiz-select" data-q="8"><option value="">请选择</option><option value="品牌网站">品牌网站</option><option value="暗网">暗网</option><option value="解谜网站">解谜网站</option><option value="广告网站">广告网站</option></select></div>
+                    <button class="quiz-submit" id="submitPhase1">提交第一阶段答案</button>
+                    <div class="quiz-result" id="phase1Result"></div>
+                </div>
+            `;
 
-                let html = `
-                    <div class="quiz-container">
-                        <div class="quiz-title">📋 案件梳理问卷</div>
-                        <p style="font-size: 12px; color: #666; margin-bottom: 16px;">请根据已收集的新闻线索，回答以下问题。全部答对后将获得重要情报。</p>
-                `;
-
-                questions.forEach(q => {
-                    html += `
-                        <div class="quiz-question">
-                            <label>${q.question}</label>
-                            <select class="quiz-select" name="${q.id}" data-correct="${q.correct}">
-                                ${q.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-                            </select>
-                        </div>
-                    `;
-                });
-
-                html += `
-                        <button type="button" class="quiz-submit" onclick="checkQuizAnswers()">提交答案</button>
-                        <div class="quiz-result" id="quizResult"></div>
+            const quizPhase2HTML = () => `
+                <div class="quiz-container" style="border-color: #28a745; margin-top:20px;">
+                    <div class="quiz-title" style="color:#28a745;">📋 第二阶段 · 深入（9-10题）</div>
+                    <div class="quiz-question"><label>9. 这个网站被利用做了什么？（多选）</label>
+                        <select class="quiz-select" data-q="9" multiple size="4">
+                            <option value="A">打开暗网</option>
+                            <option value="B">提交悬赏结果</option>
+                            <option value="C">寻找赏金杀手</option>
+                            <option value="D">暗中监控网上信息流动</option>
+                        </select>
+                        <p class="text-xs text-gray-500">按住Ctrl多选</p>
                     </div>
-                `;
+                    <div class="quiz-question"><label>10. 所有的悬赏使用了什么样的方式进行？</label>
+                        <select class="quiz-select" data-q="10">
+                            <option value="">请选择</option>         
+                            <option value="A">伪装成历史故事</option>
+                            <option value="C">致敬历史故事</option>
+                            <option value="B">复刻历史故事</option>
+                            <option value="D">企图创造新的历史故事</option>
+                        </select>
+                    </div>
+                    <button class="quiz-submit" id="submitPhase2">提交第二阶段答案</button>
+                    <div class="quiz-result" id="phase2Result"></div>
+                </div>
+            `;
 
-                return html;
+            const bindQuizPhase1 = () => {
+                const submitBtn = document.getElementById('submitPhase1');
+                if (!submitBtn) return;
+
+                submitBtn.addEventListener('click', () => {
+                    const selects = document.querySelectorAll('[data-q]');
+                    const correctMap = {
+                        1: '宋绪静',
+                        2: '商务会议',
+                        3: '审计翊尘投资',
+                        4: '凶手利用SBTP系统造成了去会所的最佳选择',
+                        5: '理疗舱和特定药物结合',
+                        6: '为了钱',
+                        7: '23:45',
+                        8: '品牌网站'
+                    };
+
+                    let allAnswered = true;
+                    let allCorrect = true;
+
+                    selects.forEach((sel) => {
+                        const value = sel.value;
+                        const q = sel.dataset.q;
+                        if (!value) {
+                            allAnswered = false;
+                            allCorrect = false;
+                            sel.style.borderColor = '#dc3545';
+                            return;
+                        }
+
+                        if (value !== correctMap[q]) {
+                            allCorrect = false;
+                            sel.style.borderColor = '#dc3545';
+                        } else {
+                            sel.style.borderColor = '#28a745';
+                        }
+                    });
+
+                    const resultDiv = document.getElementById('phase1Result');
+                    if (!allAnswered) {
+                        resultDiv.className = 'quiz-result error';
+                        resultDiv.textContent = '⚠️ 请先回答所有题目';
+                        showToast('⚠️ 请完成全部题目');
+                        return;
+                    }
+
+                    if (!allCorrect) {
+                        resultDiv.className = 'quiz-result error';
+                        resultDiv.textContent = '❌ 有错误，请根据线索重新选择。';
+                        showToast('❌ 答案有误，请重新思考');
+                        return;
+                    }
+
+                    resultDiv.className = 'quiz-result success';
+                    resultDiv.textContent = '✅ 全对！第二阶段解锁。';
+                    state.quizPhase1Completed = true;
+                    state.showPhase2 = true;
+                    showToast('🎉 第一阶段正确，请继续回答9、10题');
+                    openMail('draft-1');
+                });
             };
 
-            // 检查问卷答案
-            window.checkQuizAnswers = () => {
-                const selects = document.querySelectorAll('.quiz-select');
-                let allCorrect = true;
-                let allAnswered = true;
+            const completeDraftQuiz = () => {
+                if (state.quizCompleted) return;
+                state.quizCompleted = true;
 
-                selects.forEach(select => {
-                    const correct = select.dataset.correct;
-                    const value = select.value;
-                    
-                    if (value === '请选择') {
-                        allAnswered = false;
-                        select.style.borderColor = '#dc3545';
-                    } else if (value !== correct) {
-                        allCorrect = false;
-                        select.style.borderColor = '#dc3545';
-                    } else {
-                        select.style.borderColor = '#28a745';
-                    }
-                });
+                const inboxMails = mailData.inbox?.mails || [];
+                const hasRewardMail = inboxMails.some(mail => mail.id === 'mail-9');
 
-                const resultDiv = document.getElementById('quizResult');
-                
-                if (!allAnswered) {
-                    resultDiv.textContent = '⚠️ 请回答所有问题后再提交';
-                    resultDiv.className = 'quiz-result error';
-                    showToast('⚠️ 请回答所有问题');
-                } else if (!allCorrect) {
-                    resultDiv.textContent = '❌ 部分答案不正确，请根据新闻线索重新思考';
-                    resultDiv.className = 'quiz-result error';
-                    showToast('❌ 答案有误，请查看新闻线索');
-                } else {
-                    resultDiv.textContent = '✅ 全部正确！已获得重要情报';
-                    resultDiv.className = 'quiz-result success';
-                    showToast('🎉 案件梳理完成！获得新邮件');
-                    
-                    // 标记问卷已完成
-                    state.quizCompleted = true;
-                    
-                    // 添加新邮件到收件箱
+                if (!hasRewardMail) {
                     const newMail = {
                         "id": "mail-9",
                         "sender": "林静怡",
@@ -1544,18 +1540,61 @@
                         "body": "亲爱的朋友：\n\n当你看到这封邮件时，意味着我大概率已经发生了意外，这是我提前设置的定时发送邮件，触发条件为48小时内未手动取消发送。\n\n近期我在审计翊尘投资及旗下提希丰会所的财务账目时，发现了大量触目惊心的违法线索，预感此次调查会有极大风险。\n\n以防万一，我将部分加密的关键证据上传至了云盘，提取密码我做成图片以防止被外人发现（FZ.html）。\n\n我知道你一直坚守新闻的正义与真相，也相信你是唯一能将这些线索公之于众的人。如果我遭遇不测，恳请你务必保护好这些证据，联合可信的力量，将这条黑色产业链彻底揭露，让涉案人员受到法律的制裁，也让更多可能被盯上的人免于受害。\n\n最后，愿正义不被遮蔽，愿真相终能大白。\n\n静怡 绝笔\n2025年11月10日 晚",
                         "unread": true
                     };
-                    
-                    state.mails.unshift(newMail);
-                    renderMails();
-                    
-                    // 禁用提交按钮
-                    const submitBtn = document.querySelector('.quiz-submit');
-                    if (submitBtn) {
-                        submitBtn.textContent = '已完成';
-                        submitBtn.disabled = true;
-                        submitBtn.style.background = '#28a745';
-                    }
+                    inboxMails.unshift(newMail);
                 }
+
+                if (state.currentFolder === 'inbox') {
+                    state.mails = inboxMails;
+                }
+
+                renderMails();
+                showToast('🎉 案件梳理完成！获得新邮件');
+            };
+
+            const bindQuizPhase2 = () => {
+                const submitBtn = document.getElementById('submitPhase2');
+                if (!submitBtn) return;
+
+                submitBtn.addEventListener('click', () => {
+                    if (state.quizCompleted) return;
+
+                    const q9 = document.querySelector('[data-q="9"]');
+                    const q10 = document.querySelector('[data-q="10"]');
+                    if (!q9 || !q10) return;
+
+                    const selected9 = Array.from(q9.selectedOptions).map(opt => opt.value);
+                    const answer10 = q10.value;
+                    const correct9 = ['A', 'B'];
+                    const correct10 = 'B';
+
+                    const isQ9Correct = selected9.length === correct9.length &&
+                        selected9.slice().sort().join(',') === correct9.slice().sort().join(',');
+                    const isQ10Answered = !!answer10;
+                    const isQ10Correct = answer10 === correct10;
+
+                    const resultDiv = document.getElementById('phase2Result');
+
+                    if (selected9.length === 0 || !isQ10Answered) {
+                        resultDiv.className = 'quiz-result error';
+                        resultDiv.textContent = '⚠️ 请完成所有题目后再提交';
+                        showToast('⚠️ 第二阶段仍有题目未作答');
+                        return;
+                    }
+
+                    if (!isQ9Correct || !isQ10Correct) {
+                        resultDiv.className = 'quiz-result error';
+                        resultDiv.textContent = '❌ 答案有误，请再分析。';
+                        showToast('❌ 第二阶段答案不正确');
+                        return;
+                    }
+
+                    resultDiv.className = 'quiz-result success';
+                    resultDiv.textContent = '✅ 完全正确！请注意查收新邮件。';
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = '已完成';
+                    submitBtn.style.background = '#28a745';
+                    completeDraftQuiz();
+                });
             };
 
             // 邮件渲染
@@ -1633,12 +1672,25 @@
                 // 如果是草稿箱的案件梳理邮件，添加选择题
                 let bodyContent = formatBody(mail.body);
                 if (mail.id === 'draft-1' && !state.quizCompleted) {
-                    bodyContent += generateQuizHTML();
+                    if (!state.quizPhase1Completed) {
+                        bodyContent += quizPhase1HTML();
+                    } else if (state.showPhase2) {
+                        bodyContent += `<div class="game-hint">✅ 第一阶段已完成，请继续回答第9、10题</div>`;
+                        bodyContent += quizPhase2HTML();
+                    }
                 } else if (mail.id === 'draft-1' && state.quizCompleted) {
                     bodyContent += `<div class="quiz-container" style="border-color: #28a745;"><div class="quiz-title" style="color: #28a745;">✅ 案件梳理已完成</div><p style="font-size: 13px; color: #666;">您已获得新邮件，请查看收件箱。</p></div>`;
                 }
                 
                 readingBody.innerHTML = bodyContent;
+
+                if (mail.id === 'draft-1' && !state.quizCompleted) {
+                    if (!state.quizPhase1Completed) {
+                        bindQuizPhase1();
+                    } else if (state.showPhase2) {
+                        bindQuizPhase2();
+                    }
+                }
             };
 
             // 云盘渲染
