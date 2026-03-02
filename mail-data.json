@@ -197,9 +197,11 @@
           "forward": {
             "headerTitle": "申请日志指引",
             "level": "提示",
-            "title": "第二部分第二关（GPS2）提示",
+            "title": "第二部分第二关（GPS）提示",
             "content": [
-              "<strong>第二部分第二关—GPS2部分：</strong>根据路径决定单词的颜色，从上往下应该是绿、灰、黄色的凹形路径"
+              "<strong>第二部分第二关：GPS1部分：</strong>根据情况得出单词",
+              "<strong>第二部分第二关：GPS1-2部分：</strong>根据路径决定单词的颜色，从上往下应该是绿、灰、黄色的凹形路径",
+              "<strong>第二部分第二关：GPS2部分：</strong>根据路径决定单词的颜色，从上往下应该是绿、灰、黄色的凹形路径,且必须是单词"
             ]
           },
           "mark": {
@@ -207,7 +209,9 @@
             "level": "答案",
             "title": "第二部分第二关（GPS2）答案",
             "content": [
-              "<strong>第二部分第二关答案：</strong>",
+              "<strong>第二部分第二关：GPS1部分答案：SHINE</strong>",
+              "<strong>第二部分第二关：GPS1-2部分答案：SHINE</strong>",
+              "<strong>第二部分第二关：GPS2部分答案：</strong>",
               "  SHONE",
               "  THING",
               "  JACKY",
@@ -235,7 +239,7 @@
             "level": "提示",
             "title": "第二部分第三关（GPS3）提示",
             "content": [
-              "<strong>第二部分第三关—GPS3部分：</strong>行列"
+              "<strong>第二部分第三关—GPS3部分：</strong>行列交点"
             ]
           },
           "mark": {
@@ -269,7 +273,7 @@
             "content": [
               "<strong>第三部分第一关：</strong>根据邮箱中其他已有的邮件内容和归档，登录林静怡的邮箱和警务综合系统"
             ],
-            "tip": "💡 <strong>提示：</strong>注意归档邮件中的密码备忘和联系人备注信息。"
+            "tip": "💡 <strong>提示：</strong>注意归档邮件中的密码备忘录内容和联系人备注信息。"
           },
           "mark": {
             "headerTitle": "登录系统答案",
@@ -277,9 +281,8 @@
             "title": "第三部分第一关答案",
             "content": [
               "<strong>第三部分第一关答案：</strong>",
-              "  收件箱的邮件中有感谢当年在省专案组项目的时候，张本宇的帮助。另外提及希望他不要再用生日做密码了",
-              "  收件箱的邮件中有林静怡发过来的邮件内容，其中有林静怡的邮箱内容",
-              "  结合联系人中对两位的备注可以知道：",
+              "  收件箱的邮件中有感谢当年在省专案组项目的时候，张本宇的帮助。另外结合归档中苞米对密码的要求，和联系人里的备注可以推测张本宇应该是使用了生日做密码",
+              "  同理，收件箱的邮件中有林静怡发过来的邮件内容，其中有林静怡的邮箱名称，可以再结合联系人中对林的备注得到邮箱密码进行登录（并不包含太多内容）",
               "  张本宇生日：19770404",
               "  林静怡的邮箱密码是：决不后退的英文（Never retreat）"
             ]
@@ -345,7 +348,7 @@
             "title": "第三部分第三关答案",
             "content": [
               "<strong>第三部分第三关答案：</strong>",
-              "  搜索和第二关联动的新闻中的内容得到新页面",
+              "  搜索和第二关联动的新闻中的内容（GTIN-12）得到新页面",
               "  进入后输入警务系统的员工ID：TXF0231087",
               "  所属公司：提希丰高端养生会所",
               "  得到具体作案手法和时间",
@@ -371,10 +374,11 @@
             "level": "提示",
             "title": "第四部分第一关提示",
             "content": [
-              "<strong>第四部分第一关：</strong>根据相关网页，在浏览器主页进行搜索，可以得到两个新网站。其中一个可以登录另一个无法登录。根据可以登录的网站上的具体信息回答问卷，注意最后一题有陷阱。",
-              "  提示：搜索SBTP可以得到SBTP网站，搜索TWO SECONDS可以得到TWO SECONDS网站，登录TWO SECONDS"
+              "<strong>第四部分第一关：</strong>根据另一部分警务系统中的异常情况，在浏览器主页进行搜索，可以得到一个新网站。",
+              "结合监控内容进行登录，获得新提示，找到另一个网站，那个网站将帮助你获得新线索。",
+              "  提示：搜索SBTP可以得到SBTP网站，搜索TWO SECONDS可以得到TWO SECONDS网站"
             ],
-            "tip": "💡 <strong>提示：</strong>注意网站上的修改部分，最后一题有陷阱。"
+            "tip": "💡 <strong>提示：</strong>注意网站上的细节部分，发现QUIZ的话请注意所有标题以及最后一题有陷阱，可以结合新闻。"
           },
           "mark": {
             "headerTitle": "深入调查答案",
@@ -382,14 +386,27 @@
             "title": "第四部分第一关答案",
             "content": [
               "<strong>第四部分第一关：</strong>",
-              "答案：",
-              "  Executive, Signature, Bespoke",
-              "  Hidden in the yoke",
-              "  8-10pm",
-              "  Nanshan",
-              "  78% / Finance, Tech, Consulting",
-              "  Thermal imaging",
-              "  object impermanence 或者 看不见就是不存在/看不见的就是不存在"
+              "提示：",
+              "  I头部标语Instant,Immortal",
+              "  M核心定位Master motif",
+              "  P核心入口1Probing permanence",
+              "  E核心入口2Enduring edits, ever there",
+              "  R核心入口3Recognize our rooted reason",
+              "  M核心入口4Moving moments, meaningful makings",
+              "  A系列1 Alpha Assets",
+              "  N系列2 Now & Never",
+              "  E系列3 Ever Existing",
+              "  N穿搭主题1 Nest & Navigate",
+              "  C穿搭主题2 Carry & Compose",
+              "  E穿搭主题3 Edit & Exist",
+              "提示：",
+              "  BUSSINESS",
+              "  3个",
+              "  78%",
+              "  鞋子Kicks（ABOUT与Alpha Assets——A）",
+              "  工装裤Cargos（Carry & Compose与Cargos——C）",
+              "  夹克Shell（HOME）",
+              "  主旨：object Impermanence"
             ]
           }
         }
@@ -411,7 +428,8 @@
             "level": "提示",
             "title": "第四部分第二关提示",
             "content": [
-              "<strong>第四部分第二关——暗网部分：</strong>注意网站上修改的部分进行登录"
+              "<strong>第四部分第二关——暗网部分：</strong>注意网站上和TWO SECONDS不一样的的部分进行登录",
+              "提示：查看源代码"
             ]
           },
           "mark": {
@@ -420,10 +438,16 @@
             "title": "第四部分第二关答案",
             "content": [
               "<strong>第四部分第二关——暗网</strong>",
-              "答案：",
-              "  看两张图片的名字",
-              "  ID：shexunjin",
-              "  密码：人共"
+              "提示：",
+              "  查看源代码会发现部分照片的名称被替换。任意解出一个就能成功登录",
+              "  ID1：林怂恿",
+              "  密码：甬0214", 
+              "  ID2：李叮咛",
+              "  密码：李叮咛0813",
+              "  ID3：于徘徊",
+              "  密码：于徘徊1532",
+              "  ID4：余",
+              "  密码：人共2340或者人共2345"
             ]
           }
         }
