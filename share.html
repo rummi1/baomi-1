@@ -341,34 +341,65 @@
             padding-left: 20px;
         }
 
-        /* 加载/过渡文字 */
-        .transition-text {
-            display: none;
+        /* ========= 多行过渡文字 (黑屏上层) ========= */
+        .transition-text-container {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            z-index: 1001;
             color: #fff;
-            font-size: 38px;
+            font-size: 31px;
             letter-spacing: 0.5em;
             text-transform: uppercase;
-            z-index: 1001;
+            text-align: center;
+            line-height: 1.8;
+            display: none;          /* 默认隐藏 */
             opacity: 0;
             transition: opacity 0.5s ease;
+            width: 100%;
+            pointer-events: none;
         }
 
-        .transition-text.show {
+        .transition-text-container.show {
             display: block;
             opacity: 1;
         }
+
+        .transition-line {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            white-space: nowrap;
+        }
+
+        .transition-line.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 保留原有单行文字样式以防万一，但不再使用；我们改用上面的多行容器 */
+        .transition-text.old { 
+            display: none; 
+        }
+
     </style>
+<base target="_blank">
 </head>
 <body>
     <!-- 黑屏过渡层 -->
     <div class="black-screen" id="blackScreen"></div>
     
-    <!-- 过渡文字 -->
-    <div class="transition-text" id="transitionText">正在连接...</div>
+    <!-- 过渡文字容器 (多行) 替换原先的单行 -->
+    <div class="transition-text-container" id="transitionTextContainer">
+        <div class="transition-line" id="line1">正在连接...</div>
+        <div class="transition-line" id="line2">验证IP地址：深南市...</div>
+        <div class="transition-line" id="line3">验证电脑用户...</div>
+        <div class="transition-line" id="line4">发现特殊用户登录...</div>
+        <div class="transition-line" id="line5">强制管控该用户账号...</div>
+        <div class="transition-line" id="line6">管控成功...</div>
+        <div class="transition-line" id="line7">真是太感谢你了呢...</div>
+    </div>
 
     <!-- 几何装饰背景 -->
     <div class="geo-decoration">
@@ -406,7 +437,7 @@
                     class="key-input" 
                     id="keyInput" 
                     placeholder="请输入汉字密钥" 
-                    maxlength="4"
+                    maxlength="3"
                     autocomplete="off"
                     inputmode="text"
                 >
@@ -513,18 +544,29 @@
             const input = keyInput.value.trim();
             
             if (input === CORRECT_KEY) {
-                // 验证成功，黑屏3秒后跳转
-                showBlackScreenAndRedirect();
+                // 验证成功，黑屏并逐行显示文字，最终停留3秒跳转
+                showBlackScreenAndSequence();
             } else {
                 showError();
             }
         }
 
-        // 黑屏3秒后跳转
-        function showBlackScreenAndRedirect() {
+        // 黑屏后逐行显示文字，所有行显示完再停留3秒跳转
+        function showBlackScreenAndSequence() {
             const mainContainer = document.getElementById('mainContainer');
             const blackScreen = document.getElementById('blackScreen');
-            const transitionText = document.getElementById('transitionText');
+            const textContainer = document.getElementById('transitionTextContainer');
+            
+            // 获取所有行元素
+            const lines = [
+                document.getElementById('line1'),
+                document.getElementById('line2'),
+                document.getElementById('line3'),
+                document.getElementById('line4'),
+                document.getElementById('line5'),
+                document.getElementById('line6'),
+                document.getElementById('line7')
+            ];
             
             // 淡出主界面
             mainContainer.classList.add('fade-out');
@@ -533,16 +575,23 @@
                 // 显示黑屏
                 blackScreen.classList.add('active');
                 
-                // 显示过渡文字
-                setTimeout(() => {
-                    transitionText.classList.add('show');
-                }, 100);
+                // 显示文字容器
+                textContainer.classList.add('show');
                 
-                // 3秒后跳转到 radio.html
+                // 逐行显示，每行间隔1秒
+                lines.forEach((line, index) => {
+                    setTimeout(() => {
+                        line.classList.add('visible');
+                    }, index * 1000);
+                });
+                
+                // 所有行显示完毕后（第7行在6000ms时显示），再停留3秒跳转
+                // 总延时 = 6 * 1000 + 3000 = 9000ms
                 setTimeout(() => {
                     window.location.href = 'radio.html';
-                }, 3000);
-            }, 500);
+                }, 9000);
+                
+            }, 500); // 等待主界面淡出后 (0.5s) 显示黑屏
         }
 
         // 回车提交
