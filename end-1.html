@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我们来了 · 中央巨变</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            overflow: hidden;
+            font-family: "Microsoft YaHei", "SimHei", sans-serif;
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 中央核心文字 —— 从小变大 */
+        .core-text {
+            position: relative;
+            color: #ff0000;
+            font-weight: bold;
+            text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 60px #ff0000;
+            opacity: 0;
+            animation: coreAppear 3s ease-in-out forwards;
+            z-index: 30;
+            font-size: 0px;        /* 由动画控制尺寸 */
+            white-space: nowrap;
+            pointer-events: none;    /* 不干扰背景点击（但背景已有文字生成） */
+        }
+
+        @keyframes coreAppear {
+            0% {
+                opacity: 0;
+                font-size: 0px;
+                text-shadow: 0 0 0 #ff0000;
+            }
+            20% {
+                opacity: 0.6;
+                font-size: 40px;
+                text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+            }
+            50% {
+                opacity: 1;
+                font-size: 96px;
+                text-shadow: 0 0 30px #ff0000, 0 0 60px #ff0000, 0 0 90px #ff0000;
+            }
+            80% {
+                opacity: 1;
+                font-size: 110px;
+                text-shadow: 0 0 40px #ff0000, 0 0 80px #ff0000;
+            }
+            100% {
+                opacity: 1;
+                font-size: 120px;
+                text-shadow: 0 0 50px #ff0000, 0 0 100px #ff0000, 0 0 150px #ff0000;
+            }
+        }
+
+        /* 环绕的小字样式（从原代码继承） */
+        .text-element {
+            position: absolute;
+            color: #ff0000;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in forwards, flicker 2s infinite alternate;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes flicker {
+            0%, 100% {
+                opacity: 0.9;
+                text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000;
+            }
+            50% {
+                opacity: 0.4;
+                text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000;
+            }
+        }
+
+        .glitch {
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, #000 100%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .whisper {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #330000;
+            font-size: 12px;
+            opacity: 0;
+            animation: whisperFade 4s infinite;
+            z-index: 40;
+            pointer-events: none;
+        }
+
+        @keyframes whisperFade {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 跳转时隐藏所有小字? 不需要，跳转会直接离开页面 */
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div id="overlay"></div>
+    <div class="whisper">不要回头...</div>
+
+    <!-- 中央核心文字 —— 我们来了 (从小变大) -->
+    <div class="core-text" id="coreWeAreHere">我们来了</div>
+
+    <script>
+        (function() {
+            // 原有效果：小字纷飞
+            const text = "我们来了";
+            const body = document.body;
+            let count = 0;
+            const maxCount = 200;        // 减少一点避免过于拥挤 (原300)
+            let interval;
+
+            function getRandomPosition() {
+                const x = Math.random() * (window.innerWidth - 100);
+                const y = Math.random() * (window.innerHeight - 50);
+                return { x, y };
+            }
+
+            function getRandomSize() {
+                return Math.floor(Math.random() * 40) + 16;
+            }
+
+            function createTextElement() {
+                const el = document.createElement('div');
+                el.className = 'text-element';
+                el.textContent = text;
+
+                const pos = getRandomPosition();
+                const size = getRandomSize();
+
+                el.style.left = pos.x + 'px';
+                el.style.top = pos.y + 'px';
+                el.style.fontSize = size + 'px';
+
+                // 随机旋转角度，增加混乱感
+                const rotation = (Math.random() - 0.5) * 30;
+                el.style.transform = `rotate(${rotation}deg)`;
+
+                // 随机延迟闪烁
+                el.style.animationDelay = `${Math.random() * 2}s`;
+
+                // 偶尔添加故障效果
+                if (Math.random() > 0.8) {
+                    el.classList.add('glitch');
+                }
+
+                body.appendChild(el);
+                count++;
+
+                if (count >= maxCount) {
+                    clearInterval(interval);
+                    // 填满后加快闪烁频率
+                    document.querySelectorAll('.text-element').forEach(el => {
+                        el.style.animationDuration = '0.5s';
+                    });
+                }
+            }
+
+            // 快速生成文字 (稍微放慢一点，让中央文字更突出)
+            interval = setInterval(createTextElement, 70);  // 原50
+
+            // 点击屏幕添加更多 (保留)
+            document.addEventListener('click', () => {
+                for (let i = 0; i < 5; i++) {
+                    createTextElement();
+                }
+            });
+
+            // 鼠标移动时偶尔生成 (保留)
+            let lastMove = 0;
+            document.addEventListener('mousemove', (e) => {
+                const now = Date.now();
+                if (now - lastMove > 200 && Math.random() > 0.7) {
+                    const el = document.createElement('div');
+                    el.className = 'text-element';
+                    el.textContent = text;
+                    el.style.left = e.clientX + 'px';
+                    el.style.top = e.clientY + 'px';
+                    el.style.fontSize = '20px';
+                    el.style.color = '#aa0000';
+                    body.appendChild(el);
+                    lastMove = now;
+                }
+            });
+
+            // ---------- 中央文字变大后跳转 ----------
+            const coreEl = document.getElementById('coreWeAreHere');
+            
+            // 监听动画结束事件
+            coreEl.addEventListener('animationend', function(event) {
+                // 确保是 coreAppear 动画结束 (通常只有这一个动画)
+                if (event.animationName === 'coreAppear') {
+                    // 延迟一点点让最后的状态被看到，然后跳转
+                    setTimeout(() => {
+                        window.location.href = 'end-2.html';
+                    }, 8800);
+                }
+            });
+
+            // 备选方案：使用定时器，如果动画因为某些原因未触发，3.5秒后强制跳转
+            setTimeout(() => {
+                window.location.href = 'end-2.html';
+            }, 3800);  // 略长于动画时间(3s)
+        })();
+    </script>
+</body>
+</html>
