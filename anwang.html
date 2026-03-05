@@ -161,6 +161,45 @@
             background-color: #fef2f2;
         }
 
+        /* 图片文件名标签 */
+        .img-filename {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            font-size: 0.6rem;
+            text-align: center;
+            padding: 2px 0;
+            z-index: 5;
+            pointer-events: none;
+        }
+        /* 标红样式（适配页面色调，也可直接用纯红 #ef4444） */
+        .text-red-highlight {
+            color: #ef4444; /* 醒目红，也可改用品牌色 #8db596（青绿色） */
+            /* 可选：增加文字阴影强化突出 */
+            text-shadow: 0 0 2px rgba(239, 68, 68, 0.2);
+        }
+        /* 自定义下划线（比默认 <u> 更美观） */
+        .text-underline {
+            text-decoration: underline;
+            text-decoration-color: #8db596; /* 品牌色下划线 */
+            text-decoration-thickness: 2px; /* 下划线粗细 */
+            text-underline-offset: 4px; /* 下划线与文字间距 */
+        }
+        /* 加粗+标红组合类 */
+        .bold-red {
+            font-weight: 700;
+            color: #53c0b0;
+        }
+
+        .bold-large {
+            font-weight: 700;
+            font-size:  1.5rem;      /* 适度放大，更自然 */
+        }
+
+
         @media (min-width: 768px) and (max-width: 1024px) {
             .two-svg svg, .second-svg-container svg, .solid-s { height: 70px; font-size: 70px; }
             .seconds-container { height: 70px; }
@@ -224,7 +263,7 @@
                 </li>
                 <li><a href="#" data-tab="lookbook" class="tab-link hover:text-[#8db596] transition-colors">Lookbook</a></li>
                 <li><a href="#" data-tab="story" class="tab-link hover:text-[#8db596] transition-colors">Story</a></li>
-                <li><a href="#" data-tab="quiz" class="tab-link hover:text-[#8db596] transition-colors">Quiz</a></li>
+                <li><a href="#" data-tab="quiz" class="tab-link hover:text-[#8db596] transition-colors">Enter</a></li>
             </ul>
         </nav>
 
@@ -257,22 +296,15 @@
 
         <div class="bg-white w-full max-w-5xl rounded-sm shadow-2xl overflow-hidden mx-auto relative z-10 min-h-[500px]">
 
-            <!-- HOME Panel - 保留原设计风格，融合新文案 -->
+            <!-- HOME Panel - 右侧图片添加文件名 -->
             <div id="panel-home" class="content-panel active">
                 <div class="flex flex-col md:flex-row min-h-[500px]">
                     <div class="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center items-center md:items-start text-center md:text-left fade-in-up">
-                        <!-- 保留原有的装饰性小标语 -->
-                        <span class="text-sm tracking-[0.3em] text-[#8db596] mb-4">S   ,ORT L</span>
-                        
-                        <!-- 主标题 - 保持原有视觉层次 -->
+                        <span class="text-sm tracking-[0.3em] text-[#8db596] mb-4"><u>S   ,ORT L</u></span>
                         <h2 class="text-4xl md:text-5xl text-[#8db596] font-serif mb-2 leading-tight">TWO SECONDS</h2>
                         <p class="text-xl md:text-2xl text-[#1f4e45] font-light mb-4">ObjecT ImpermanencE</p>
                         <p class="text-base text-gray-500 mb-6 italic">看不见等于不存在</p>
-                        
-                        <!-- 金色分隔线 - 保留原设计元素 -->
                         <div class="w-16 h-1 bg-[#8db596] my-4 mx-auto md:mx-0"></div>
-                        
-                        <!-- 融合后的核心描述 - 保留原设计的排版，内容更新为新文案 -->
                         <p class="text-base text-gray-700 leading-relaxed max-w-md mb-4">
                             ·Shaping our beliefs around permanence, fashion for us is never about fleeting waves. ·Hidden within the details is the true essence of timelessness. 
                             <br>·Embracing this philosophy, TWO SECONDS merges classic silhouettes with contemporary aesthetics. 
@@ -281,39 +313,33 @@
                         <p class="text-sm text-gray-500 leading-relaxed max-w-md mb-6">
                             时尚从不是转瞬即逝的浪潮，而是藏在细节里的永恒。TWO SECONDS以“恒存”为信仰，将经典廓形与当代审美相融，让每一件单品，都成为跨越时间的陪伴，经得起反复审视，耐得住岁月沉淀。
                         </p>
-                        
-                        <!-- 核心定位 - 作为品牌定位单独呈现 -->
                         <div class="bg-[#f4f9f4] p-4 rounded-lg max-w-md mb-6 text-left border-l-4 border-[#8db596]">
-                            <p class="text-xs uppercase tracking-wider text-[#8db596] font-semibold mb-1">as er o if · 核心定位</p>
+                            <p class="text-xs uppercase tracking-wider text-[#8db596] font-semibold mb-1"><u>as er o if</u> · 核心定位</p>
                             <p class="text-sm text-gray-700">A fashion brand focusing on business travel scenarios, adhering to the tenet of "permanence", creating classic, high-quality and versatile items for business travelers.</p>
                             <p class="text-xs text-gray-500 mt-1">聚焦商旅场景的时尚品牌，秉持“恒存”主旨，为商旅人士打造经典、高品质、百搭的单品。</p>
                         </div>
-
-                        <!-- 四个入口引导 - 保持原设计风格，以按钮形式呈现 -->
                         <div class="grid grid-cols-2 gap-3 w-full max-w-md mb-6">
                             <a href="#" onclick="activateTab('about'); return false;" class="px-3 py-2 border border-[#8db596] text-[#1f4e45] hover:bg-[#8db596] hover:text-white transition-all duration-300 text-xs font-bold uppercase tracking-wider text-center rounded group">
-                                <div>obing ma   ce</div>
+                                <div><u>obing ma   ce</u></div>
                                 <div class="text-[10px] opacity-70 group-hover:text-white">探索品牌恒存理念</div>
                             </a>
                             <a href="#" onclick="activateTab('collections'); return false;" class="px-3 py-2 border border-[#8db596] text-[#1f4e45] hover:bg-[#8db596] hover:text-white transition-all duration-300 text-xs font-bold uppercase tracking-wider text-center rounded group">
-                                <div> ur  g  ts</div>
+                                <div><u> ur  g  ts</u></div>
                                 <div class="text-[10px] opacity-70 group-hover:text-white">发现恒存系列单品</div>
                             </a>
                             <a href="#" onclick="activateTab('lookbook'); return false;" class="px-3 py-2 border border-[#8db596] text-[#1f4e45] hover:bg-[#8db596] hover:text-white transition-all duration-300 text-xs font-bold uppercase tracking-wider text-center rounded group">
-                                <div>dy-to-we r ul s</div>
+                                <div><u>dy-to-we r ul s</u></div>
                                 <div class="text-[10px] opacity-70 group-hover:text-white">解锁商旅穿搭技巧</div>
                             </a>
                             <a href="#" onclick="activateTab('story'); return false;" class="px-3 py-2 border border-[#8db596] text-[#1f4e45] hover:bg-[#8db596] hover:text-white transition-all duration-300 text-xs font-bold uppercase tracking-wider text-center rounded group">
-                                <div>ving ments</div>
+                                <div><u>iving ments</u></div>
                                 <div class="text-[10px] opacity-70 group-hover:text-white">读懂品牌灵感故事</div>
                             </a>
                         </div>
-
-                        <!-- 底部辅助文本 - 保留原设计中的双行文案风格 -->
                         <p class="text-xs text-gray-400">世界上唯有独一无二才是真谛—— TWO SECONDS，为了您一切特别的想法而存在。</p>
                     </div>
                     
-                    <!-- 右侧图片区域 - 完全保留原设计 -->
+                    <!-- 右侧图片区域 + 文件名 -->
                     <div class="w-full md:w-1/2 relative bg-gray-100 flex items-end justify-center overflow-hidden group">
                         <img src="1352342342—YPH于非.jpg" alt="Fashion model" class="object-cover w-full h-full absolute inset-0 transition-transform duration-700 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#1f4e45]/40 to-transparent"></div>
@@ -321,53 +347,60 @@
                             <p class="text-sm tracking-widest">ObjecT ImpermanencE</p>
                             <p class="text-2xl font-serif">ObjecT ImpermanencE</p>
                         </div>
+                        <div class="img-filename">1352342342—YPH于非.jpg</div>
                     </div>
                 </div>
             </div>
 
-            <!-- ABOUT Panel (Brand Philosophy 段落式) -->
-            <div id="panel-about" class="content-panel p-8 md:p-12">
+            <!-- ABOUT Panel (无图片) 略 -->
+             <div id="panel-about" class="content-panel p-8 md:p-12">
                 <h3 class="text-3xl font-serif mb-2 text-[#8db596]">About TWO SECONDS</h3>
                 <p class="text-gray-500 mb-2">Brand Story & Philosophy</p>
                 <p class="text-sm text-gray-400 mb-8">品牌故事与理念</p>
                 <div class="mb-8">
                     <h4 class="font-bold text-xl mb-4 text-[#1f4e45]">Brand Story</h4>
                     <p class="text-sm text-gray-500 leading-relaxed">
-                        神圣的颂赞与罪恶往往出自同一地方。——《圣经.新约.雅各书》3.10
-                        <br>故相同即可掩盖
+                        <span class="bold-large">神圣的颂赞与罪恶往往出自同一地方。——《圣经.新约.雅各书》3.10
+                        <br>故相同即可掩盖</span>
                     </p>
                 </div>
 
             </div>
 
-            <!-- COLLECTIONS Overview Panel -->
+            <!-- COLLECTIONS Overview Panel - 每个卡片内图片加文件名 -->
             <div id="panel-collections" class="content-panel p-8 md:p-12">
                 <h3 class="text-3xl font-serif mb-2 text-[#8db596]">Collections</h3>
                 <p class="text-gray-500 mb-2">Three series of permanent essentials</p>
                 <p class="text-sm text-gray-400 mb-8">三大恒存系列单品</p>
 
                 <div class="grid md:grid-cols-3 gap-6">
-                    <div class="bg-[#f4f9f4] p-6 rounded-lg cursor-pointer hover:shadow-lg transition-all" onclick="activateTab('alpha')">
-                        <div class="h-40 bg-[#8db596]/20 rounded mb-4 overflow-hidden">
+                    <!-- Alpha Assets 卡片 -->
+                    <div class="bg-[#f4f9f4] p-6 rounded-lg cursor-pointer hover:shadow-lg transition-all relative" onclick="activateTab('alpha')">
+                        <div class="h-40 bg-[#8db596]/20 rounded mb-4 overflow-hidden relative">
                             <img src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Alpha Assets" class="object-cover w-full h-full">
+                            <div class="img-filename">1594938298603-c8148c4dae35</div>
                         </div>
                         <h4 class="font-bold text-xl mb-1">Alpha Assets</h4>
                         <p class="text-xs text-gray-500 mb-3">核心基础系列</p>
                         <p class="text-gray-700 text-sm">Return to the essence of business dressing and business travel needs, create indispensable core basic items for business travelers.</p>
                         <p class="text-xs text-gray-400 mt-2">回归商旅穿搭与差旅需求本质，打造商旅人士不可或缺的核心基础单品。</p>
                     </div>
-                    <div class="bg-[#f4f9f4] p-6 rounded-lg cursor-pointer hover:shadow-lg transition-all" onclick="activateTab('nownever')">
-                        <div class="h-40 bg-[#8db596]/20 rounded mb-4 overflow-hidden">
+                    <!-- Now & Never 卡片 -->
+                    <div class="bg-[#f4f9f4] p-6 rounded-lg cursor-pointer hover:shadow-lg transition-all relative" onclick="activateTab('nownever')">
+                        <div class="h-40 bg-[#8db596]/20 rounded mb-4 overflow-hidden relative">
                             <img src="https://images.unsplash.com/photo-1544022613-e87ca75a784a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Now & Never" class="object-cover w-full h-full">
+                            <div class="img-filename">1544022613-e87ca75a784a</div>
                         </div>
                         <h4 class="font-bold text-xl mb-1">Now & Never</h4>
                         <p class="text-xs text-gray-500 mb-3">瞬间与永恒系列</p>
                         <p class="text-gray-700 text-sm">Capture the contemporary business aesthetic inspiration, integrate classic business design logic, and make "instant professional charm" become "eternal business companion".</p>
                         <p class="text-xs text-gray-400 mt-2">捕捉当代商旅审美灵感，融入经典商旅设计逻辑，让"瞬间的专业魅力"成为"永恒的商旅陪伴"。</p>
                     </div>
-                    <div class="bg-[#f4f9f4] p-6 rounded-lg cursor-pointer hover:shadow-lg transition-all" onclick="activateTab('everexisting')">
-                        <div class="h-40 bg-[#8db596]/20 rounded mb-4 overflow-hidden">
+                    <!-- Ever Existing 卡片 -->
+                    <div class="bg-[#f4f9f4] p-6 rounded-lg cursor-pointer hover:shadow-lg transition-all relative" onclick="activateTab('everexisting')">
+                        <div class="h-40 bg-[#8db596]/20 rounded mb-4 overflow-hidden relative">
                             <img src="https://images.unsplash.com/photo-1593032465175-481ac7f401a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Ever Existing" class="object-cover w-full h-full">
+                            <div class="img-filename">1593032465175-481ac7f401a0</div>
                         </div>
                         <h4 class="font-bold text-xl mb-1">Ever Existing</h4>
                         <p class="text-xs text-gray-500 mb-3">恒存经典系列</p>
@@ -377,38 +410,38 @@
                 </div>
             </div>
 
-            <!-- ALPHA ASSETS Series -->
+            <!-- ALPHA ASSETS Series - 产品图片加文件名 -->
             <div id="panel-alpha" class="content-panel p-8 md:p-12">
                 <div class="mb-6">
                     <span class="text-sm tracking-widest text-[#8db596]">COLLECTION 01</span>
-                    <h3 class="text-3xl font-serif mt-2 mb-1 text-[#8db596]">lph A  ets</h3>
+                    <h3 class="text-3xl font-serif mt-2 mb-1 text-[#8db596]"><u> lpha   ets</u></h3>
                     <p class="text-gray-600">Core Basic Series</p>
                     <p class="text-sm text-gray-400">核心基础系列</p>
                 </div>
-
-                
-
                 <h4 class="font-bold text-lg mb-6 text-[#1f4e45]">Products</h4>
                 <div class="grid md:grid-cols-3 gap-6">
-                    <div class="border border-[#8db596]/20 p-5 rounded-lg">
-                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden">
+                    <div class="border border-[#8db596]/20 p-5 rounded-lg relative">
+                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden relative">
                             <img src="0313213314——LSY甬.avif" alt="Business Shirt" class="object-cover w-full h-full">
+                            <div class="img-filename">0313213314——LSY甬.avif</div>
                         </div>
                         <h5 class="font-bold mb-2">Business Slim Bottoming Shirt</h5>
                         <p class="text-sm text-gray-600 mb-2">Selected skin-friendly and wrinkle-resistant fabric, slim but not tight, multiple low-saturation business colors available. It can be worn inside suits or alone, washable and wear-resistant, the foundation of four-season business dressing, silently accompanying every business moment.</p>
                         <p class="text-xs text-gray-400">商务修身打底衫：精选亲肤抗皱面料，修身不紧绷，多种低饱和商旅色系可选，可内搭西装或单穿，耐洗耐穿，是四季商旅穿搭的基础，默默陪伴每一个商务瞬间。</p>
                     </div>
-                    <div class="border border-[#8db596]/20 p-5 rounded-lg">
-                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden">
+                    <div class="border border-[#8db596]/20 p-5 rounded-lg relative">
+                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden relative">
                             <img src="1213343445——SXJ人共.avif" alt="Travel Pants" class="object-cover w-full h-full">
+                            <div class="img-filename">1213343445——SXJ人共.avif</div>
                         </div>
                         <h5 class="font-bold mb-2">Lightweight Wrinkle-Resistant Travel Pants</h5>
                         <p class="text-sm text-gray-600 mb-2">Simple solid color, loose and comfortable version, lightweight and breathable fabric, wrinkle-resistant and easy to fold, suitable for business trips, commuting and other scenes, versatile and not picky about business tops, still as new after long-term wear.</p>
                         <p class="text-xs text-gray-400">轻薄抗皱差旅长裤：简约纯色，版型宽松舒适，面料轻薄透气，抗皱易折叠，适配差旅、通勤等多种场景，百搭不挑商务上衣，长久穿着依旧如新。</p>
                     </div>
-                    <div class="border border-[#8db596]/20 p-5 rounded-lg">
-                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden">
+                    <div class="border border-[#8db596]/20 p-5 rounded-lg relative">
+                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden relative">
                             <img src="https://images.unsplash.com/photo-1589810635657-74d63e46e53c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Business Socks" class="object-cover w-full h-full">
+                            <div class="img-filename">1589810635657-74d63e46e53c</div>
                         </div>
                         <h5 class="font-bold mb-2">Multi-Purpose Business Socks</h5>
                         <p class="text-sm text-gray-600 mb-2">Selected high-elastic and sweat-absorbent fabric, comfortable to wear without tightness, anti-slip and wear-resistant, suitable for business shoes of various styles. The color is simple and versatile, matching various business pants, and it is durable and not easy to deform, becoming an essential basic item for business travelers.</p>
@@ -417,36 +450,38 @@
                 </div>
             </div>
 
-            <!-- NOW & NEVER Series -->
+            <!-- NOW & NEVER Series - 产品图片加文件名 -->
             <div id="panel-nownever" class="content-panel p-8 md:p-12">
                 <div class="mb-6">
                     <span class="text-sm tracking-widest text-[#8db596]">COLLECTION 02</span>
-                    <h3 class="text-3xl font-serif mt-2 mb-1 text-[#8db596]">ow & v r</h3>
+                    <h3 class="text-3xl font-serif mt-2 mb-1 text-[#8db596]"><u>Now & v r</u></h3>
                     <p class="text-gray-600">Instant and Eternal Series</p>
                     <p class="text-sm text-gray-400">瞬间与永恒系列</p>
                 </div>
-
                 <h4 class="font-bold text-lg mb-6 text-[#1f4e45]">Products</h4>
                 <div class="grid md:grid-cols-3 gap-6">
-                    <div class="border border-[#8db596]/20 p-5 rounded-lg">
-                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden">
+                    <div class="border border-[#8db596]/20 p-5 rounded-lg relative">
+                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden relative">
                             <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Leather Briefcase" class="object-cover w-full h-full">
+                            <div class="img-filename">1548036328-c9fa89d128fa</div>
                         </div>
                         <h5 class="font-bold mb-2">Minimalist Leather Briefcase</h5>
                         <p class="text-sm text-gray-600 mb-2">Streamlined business design, selected full-grain leather, wear-resistant and scratch-resistant, with reasonable internal partitions, suitable for storing laptops, documents and other business necessities. The color is classic and versatile, not limited by years, and can be used for commuting and business trips, becoming a timeless business accessory.</p>
                         <p class="text-xs text-gray-400">简约真皮公文包：流线型商旅设计，精选头层牛皮，耐磨抗刮，内部分区合理，适配存放笔记本电脑、文件等商务必需品，颜色经典百搭，不挑年份，可用于通勤、差旅，成为永不过时的商旅配饰。</p>
                     </div>
-                    <div class="border border-[#8db596]/20 p-5 rounded-lg">
-                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden">
+                    <div class="border border-[#8db596]/20 p-5 rounded-lg relative">
+                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden relative">
                             <img src="https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Business Blazer" class="object-cover w-full h-full">
+                            <div class="img-filename">1592878904946-b3cd8ae243d0</div>
                         </div>
                         <h5 class="font-bold mb-2">Slim Fit Business Blazer</h5>
                         <p class="text-sm text-gray-600 mb-2">Classic business blazer silhouette, integrated with a slightly loose design, suitable for various body types of business travelers. The fabric is stiff and wrinkle-resistant, breathable and comfortable, can be used for business meetings, commuting and business trips, breaking the scene limit, becoming a "versatile core item" in the business wardrobe.</p>
                         <p class="text-xs text-gray-400">修身商务西装外套：经典西装廓形，融入微宽松设计，适配商旅人士多种身材，面料挺括抗皱，透气舒适，可用于商务会议、通勤、差旅，打破场景限制，成为商旅衣橱里的"万能核心单品"。</p>
                     </div>
-                    <div class="border border-[#8db596]/20 p-5 rounded-lg">
-                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden">
+                    <div class="border border-[#8db596]/20 p-5 rounded-lg relative">
+                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden relative">
                             <img src="6050708713——LDN李丁宁.png" alt="Polo Shirt" class="object-cover w-full h-full">
+                            <div class="img-filename">6050708713——LDN李丁宁.png</div>
                         </div>
                         <h5 class="font-bold mb-2">Wrinkle-Resistant Business Polo Shirt</h5>
                         <p class="text-sm text-gray-600 mb-2">Simple and elegant collar design, selected quick-drying and wrinkle-resistant fabric, comfortable to wear and easy to care for. It can be worn alone for business casual occasions or inside blazers for semi-formal scenes, with multiple classic colors available, which is both fashionable and practical, and can be worn for a long time without being outdated.</p>
@@ -455,37 +490,38 @@
                 </div>
             </div>
 
-            <!-- EVER EXISTING Series -->
+            <!-- EVER EXISTING Series - 产品图片加文件名 -->
             <div id="panel-everexisting" class="content-panel p-8 md:p-12">
                 <div class="mb-6">
                     <span class="text-sm tracking-widest text-[#8db596]">COLLECTION 03</span>
-                    <h3 class="text-3xl font-serif mt-2 mb-1 text-[#8db596]">v r Ex st ng</h3>
+                    <h3 class="text-3xl font-serif mt-2 mb-1 text-[#8db596]"><u>v r Ex st ng</u></h3>
                     <p class="text-gray-600">Permanent Classic Series</p>
                     <p class="text-sm text-gray-400">恒存经典系列</p>
                 </div>
-
-
                 <h4 class="font-bold text-lg mb-6 text-[#1f4e45]">Products</h4>
                 <div class="grid md:grid-cols-3 gap-6">
-                    <div class="border border-[#8db596]/20 p-5 rounded-lg">
-                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden">
+                    <div class="border border-[#8db596]/20 p-5 rounded-lg relative">
+                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden relative">
                             <img src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Formal Shirt" class="object-cover w-full h-full">
+                            <div class="img-filename">1602810318383-e386cc2a3ccf</div>
                         </div>
                         <h5 class="font-bold mb-2">Business Formal Shirt</h5>
                         <p class="text-sm text-gray-600 mb-2">Minimalist business silhouette, selected high-count cotton blend fabric, wrinkle-resistant and easy to care for, soft and breathable, not easy to deform. It can be matched with suits for formal occasions or worn alone for business casual, worn for many years, still neat and decent — this is the power of permanence for business travel.</p>
                         <p class="text-xs text-gray-400">商务正装衬衫：极简商旅廓形，精选高支棉混纺面料，抗皱易打理，柔软透气，不易变形，可搭配西装应对正式场合，也可单穿适配商务休闲，一件穿多年，依旧利落得体——这就是商旅恒存的力量。</p>
                     </div>
-                    <div class="border border-[#8db596]/20 p-5 rounded-lg">
-                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Suit Pants" class="object-cover w-full h-full">
+                    <div class="border border-[#8db596]/20 p-5 rounded-lg relative">
+                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden relative">
+                            <img src="1233345510——SXJ人共.avif" alt="Suit Pants" class="object-cover w-full h-full">
+                            <div class="img-filename">1233345510——SXJ人共.avif</div>
                         </div>
                         <h5 class="font-bold mb-2">Slim Fit Wrinkle-Resistant Suit Pants</h5>
                         <p class="text-sm text-gray-600 mb-2">Classic straight-leg version, tailored to fit the business figure, selected wrinkle-resistant fabric, no need for ironing after folding, wear-resistant and durable. It can be perfectly matched with business shirts and blazers, suitable for commuting and business trips, and each wear precipitates a more refined texture.</p>
                         <p class="text-xs text-gray-400">修身抗皱西装裤：经典直筒版型，贴合商旅人士身形剪裁，精选抗皱面料，折叠后无需熨烫，耐磨耐穿，可与商务衬衫、西装完美搭配，适配通勤、差旅等场景，每一次穿着都沉淀出更精致的质感。</p>
                     </div>
-                    <div class="border border-[#8db596]/20 p-5 rounded-lg">
-                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden">
+                    <div class="border border-[#8db596]/20 p-5 rounded-lg relative">
+                        <div class="h-48 bg-gray-200 rounded mb-4 overflow-hidden relative">
                             <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Double Breasted Blazer" class="object-cover w-full h-full">
+                            <div class="img-filename">1507679799987-c73779587ccf</div>
                         </div>
                         <h5 class="font-bold mb-2">Double-Breasted Business Blazer</h5>
                         <p class="text-sm text-gray-600 mb-2">Classic double-breasted design, not outdated for years, selected high-quality wool blend fabric, stiff and structured, warm and breathable. It can be matched with shirts and suit pants for formal business occasions, or with casual pants for semi-formal scenes, with strong versatility and long-lasting wear, interpreting the permanent charm of business wear.</p>
@@ -494,8 +530,8 @@
                 </div>
             </div>
 
-            <!-- LOOKBOOK Panel -->
-            <div id="panel-lookbook" class="content-panel p-8 md:p-12">
+            <!-- LOOKBOOK Panel (无图片) 略 -->
+             <div id="panel-lookbook" class="content-panel p-8 md:p-12">
                 <h3 class="text-3xl font-serif mb-2 text-[#8db596]">Lookbook</h3>
                 <p class="text-gray-500 mb-2">Styling Guide</p>
                 <p class="text-sm text-gray-400 mb-8">网站使用指南</p>
@@ -503,7 +539,7 @@
 
                 <div class="space-y-8">
                     <div class="border-l-4 border-[#8db596] pl-6 py-2">
-                        <h4 class="font-bold text-xl mb-2 text-[#1f4e45]">EST & VI GATE</h4>
+                        <h4 class="font-bold text-xl mb-2 text-[#1f4e45]"><u>EST & VI GATE</u></h4>
                         <p class="text-sm text-gray-500 mb-3">收放自如的穿搭</p>
                         <p class="text-gray-700 mb-4">
                             For business travelers, dressing needs both the rigor of formal occasions and the comfort of daily commuting. TWO SECONDS adheres to the tenet of "permanence", creating versatile items that can be flexible to adjust — tight for a neat professional look, loose for a relaxed state, easily switching between formal and casual, interpreting the flexible dressing attitude of business travelers.
@@ -513,87 +549,24 @@
                         </p>
                         <div class="bg-white p-4 rounded border border-[#8db596]/20">
                             <p class="text-sm text-gray-600">
-                                <span class="font-semibold">Example:</span> respond in accordance with the timeline upon completion of the commission to facilitate verification.
+                                <span class="font-semibold ">Example:</span> <span class="text-red-highlight">respond in accordance with the timeline upon completion of the commission to facilitate verification.</span>
                             <p class="text-xs text-gray-400 mt-2">
-                                完成的内容请通过修改图片内容来告知
+                                <span class="text-red-highlight">完成的内容请通过修改图片内容来告知(格式：时间——人)</span>。
                             </p>
                         </div>
                     </div>
 
-                    <div class="border-l-4 border-[#8db596] pl-6 py-2">
-                        <h4 class="font-bold text-xl mb-2 text-[#1f4e45]">A  Y &   MP SE</h4>
-                        <p class="text-sm text-gray-500 mb-3">组合无限可能</p>
-                        <p class="text-gray-700 mb-4">
-                            Each "permanent item" of TWO SECONDS is designed with versatility in mind. There is no fixed matching formula — different combinations of core items can unlock diverse styles, whether it is formal business, casual commuting or semi-formal occasions. With a few classic pieces, you can create infinite dressing possibilities, making every match full of surprises and practicality.
-                        </p>
-                        <p class="text-sm text-gray-500 mb-4">
-                            TWO SECONDS每一件"恒存单品"，都以百搭性为核心设计，没有固定的搭配公式——核心单品的不同组合，可解锁多样风格，无论是正式商务、休闲通勤，还是半正式场合，用几件经典单品，就能组合出无限穿搭可能，让每一次搭配都兼具惊喜与实用性。
-                        </p>
-                    </div>
-
-                    <div class="border-l-4 border-[#8db596] pl-6 py-2">
-                        <h4 class="font-bold text-xl mb-2 text-[#1f4e45]">D & X S</h4>
-                        <p class="text-sm text-gray-500 mb-3">精简行装，存在依然</p>
-                        <p class="text-gray-700 mb-4">
-                            For business travelers who often travel, streamlined luggage is the key to efficient travel. Following the concept of "permanence", our items are wrinkle-resistant, wear-resistant, versatile and easy to care for — a few core pieces can meet the dressing needs of the entire business trip, reducing luggage burden, while ensuring a neat and decent image, achieving efficient and high-quality business travel dressing.
-                        </p>
-                        <p class="text-sm text-gray-500 mb-4">
-                            对于经常出行的商旅人士而言，精简行装是高效出行的关键。我们遵循"恒存"理念，打造抗皱、耐穿、百搭且易打理的单品——几件核心单品，就能满足整个差旅的穿搭需求，减轻行李负担，同时保证形象利落得体，实现高效高品质的商旅穿搭。
-                        </p>
-                    </div>
                 </div>
             </div>
 
-            <!-- STORY Panel -->
-            <div id="panel-story" class="content-panel p-8 md:p-12">
-                <h3 class="text-3xl font-serif mb-2 text-[#8db596]">Story</h3>
-                <p class="text-gray-500 mb-2">Inspiration & Creative Process</p>
-                <p class="text-sm text-gray-400 mb-8">灵感起源与创作过程</p>
+            <!-- STORY Panel (无图片) 略 -->
 
-                <div class="grid md:grid-cols-2 gap-8 mb-12">
-                    <div>
-                        <h4 class="font-bold text-xl mb-4 flex items-center gap-2 text-[#1f4e45]">Inspiration Origin</h4>
-                        <p class="text-sm text-gray-500 mb-3">灵感起源</p>
-                        <div class="bg-[#f4f9f4] p-6 rounded-lg">
-                            <p class="text-gray-700 leading-relaxed">
-                            ·Capturing the "eternal moments" of life, our design inspiration flows from timeless scenes: the vintage architecture of old neighborhoods, the classic patterns within aged books, and the effortless grace found in people's daily attire. 
-                        <br>·Anchored in these elements that never fade with time, we infuse them into our creations.  
-                        <br>·Rendering each piece a vessel of warmth and story, made to last.
-                            <p class="text-sm text-gray-500 leading-relaxed mt-2">
-                                我们的设计灵感，大多来自生活中的"永恒瞬间"：老街区的复古建筑、旧书籍里的经典纹样、人们日常穿搭中的松弛感，这些不随时间流逝而褪色的元素，被我们融入设计，让每一件单品都承载着温度与故事。
-                            </p>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-xl mb-4 flex items-center gap-2 text-[#1f4e45]">Creative Process</h4>
-                        <p class="text-sm text-gray-500 mb-3">创作过程</p>
-                        <div class="bg-[#f4f9f4] p-6 rounded-lg">
-                            <p class="text-gray-700 mb-4 leading-relaxed">
-                                ·Guided by the principle of permanence, every TWO SECONDS piece undergoes meticulous refinement: from fabric selection—prioritizing natural, durable, and breathable materials—to silhouette design, repeatedly adjusted to ensure classic appeal and adaptability to various body types. 
-                        <br>·Overseeing every detail with precision, our craftsmanship guarantees enduring wearability through rigorous quality control.  
-                        <br>·Sustaining this commitment to excellence, we reject compromise to create pieces meant to accompany our users for years to come.
-                            <p class="text-sm text-gray-500 leading-relaxed">
-                                每一件TWO SECONDS的单品，都要经过反复打磨：从面料的筛选（优先选择天然、耐磨、透气的面料），到廓形的设计（反复调整，确保经典且适配多种身材），再到工艺的把控（注重每一处细节，确保耐穿耐用），我们始终以"恒存"为标准，拒绝敷衍，只为打造一件能陪伴用户多年的单品。
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-center py-8 border-t border-[#8db596]/20">
-                    <p class="text-2xl font-serif text-[#8db596] italic">"What doens't remain when you're not looking."</p>
-                    <p class="text-gray-500 mt-2">— The essence of permanence —</p>
-                    <p class="text-sm text-gray-400 mt-1">— 恒存之本质 —</p>
-                </div>
-            </div>
-
-            <!-- LOGIN Panel (formerly QUIZ) - 替换为登录面板，需正确账号密码 -->
+            <!-- LOGIN Panel (原QUIZ) 无图片，保持不变 -->
             <div id="panel-quiz" class="content-panel p-8 md:p-12">
-                <!-- 标题与品牌风格保持一致 -->
                 <h3 class="text-3xl font-serif mb-2 text-[#8db596]">🔐 Member Login</h3>
                 <p class="mb-2 text-gray-500">Enter your credentials to access exclusive area</p>
                 <p class="text-sm text-gray-400 mb-8">输入账号密码登录</p>
 
-                <!-- 简洁登录表单 -->
                 <div class="max-w-md mx-auto">
                     <div class="mb-5">
                         <label for="login-username" class="block text-sm font-medium text-gray-700 mb-1">Account</label>
@@ -608,7 +581,6 @@
                     <div class="text-center">
                         <button id="loginSubmitBtn" class="px-8 py-3 bg-[#1f4e45] text-white rounded hover:bg-[#163a33] transition">Login</button>
                     </div>
-                    <!-- 反馈信息区域 -->
                     <div class="feedback-message text-center my-4 text-sm font-medium text-red-500"></div>
                 </div>
             </div>
@@ -719,14 +691,13 @@
 
         activateTab('home');
 
-        // 登录验证逻辑 (正确的账号和密码)
+        // 登录验证逻辑
         const loginBtn = document.getElementById('loginSubmitBtn');
         const feedbackDiv = document.querySelector('#panel-quiz .feedback-message');
         const usernameInput = document.getElementById('login-username');
         const passwordInput = document.getElementById('login-password');
 
         if (loginBtn) {
-            // 支持多个账号密码
             const validCredentials = [
                 { username: '林怂恿', password: '甬0214' },
                 { username: '李叮咛', password: '李丁宁0813' },
@@ -735,14 +706,12 @@
                 { username: '佘噀噤', password: '人共2345' }
             ];
 
-            // 验证逻辑改为
             loginBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 
                 const username = usernameInput ? usernameInput.value.trim() : '';
                 const password = passwordInput ? passwordInput.value.trim() : '';
 
-                // 检查是否匹配任何一个有效账号
                 const isValid = validCredentials.some(cred => 
                     cred.username === username && cred.password === password
                 );
@@ -755,7 +724,6 @@
                     }
                 }
             });
-
         }
     </script>
 </body>
