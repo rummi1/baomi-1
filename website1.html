@@ -312,7 +312,7 @@
             }
 
             /* 搜索区域样式 - 放大版本 */
-            .-area-custom-large {
+            .search-area-custom-large {
                 background: white;
                 padding: 24px 28px;
                 display: flex;
@@ -322,7 +322,7 @@
                 position: relative;
             }
 
-            .-area-custom-large::before {
+            .search-area-custom-large::before {
                 content: '';
                 position: absolute;
                 left: 0;
@@ -604,7 +604,7 @@
                         <h3 class="text-lg font-semibold text-[#111111] mb-4 tracking-wider">快速访问</h3>
                         <div class="grid grid-cols-2 gap-4">
                             <!-- 修改：省新闻数据库卡片，点击后新标签页跳转 search.html -->
-                            <div class="bg-white rounded-xl p-6 border border-[#111111] hover-card cursor-pointer" onclick="openInNewTab('search.html')">
+                            <div class="bg-white rounded-xl p-6 border border-[#111111] hover-card cursor-pointer" onclick="openInNewTab('search1.html')">
                                 <div class="w-12 h-12 rounded-lg bg-[#4a8c2d] flex items-center justify-center text-white mb-4 text-xl">
                                     <i class="fa fa-newspaper-o"></i>  <!-- 新闻图标 -->
                                 </div>
@@ -876,18 +876,18 @@
         
         // 搜索关键词跳转映射（所有跳转改为新标签页）
         const searchRedirectMap = {
-            '南山市晨间新闻': { url: 'search.html', name: '南山市晨间新闻' },
+            '南山市晨间新闻': { url: 'search1.html', name: '南山市晨间新闻' },
             'SBTP': { url: 'SBTP.html', name: 'SBTP系统' },
             'TWO SECONDS': { url: 'two-seconds.html', name: 'TWO SECONDS时尚网站' },
             '监控': { url: 'jiankong.html', name: '多通道监控图像重组系统' },
             '提示': { url: 'mail1.html', name: '工作邮箱中有攻略' },
             'GTIN-12': { url: 'tech.html', name: '南山康泰医疗科技有限公司' },
             '南山市': { url: '建筑.html', name: '恭喜你发现了未完成版的南山市地图建模！' },
+            '彩蛋': { url: 'graph.html', name: '彩蛋地图！' },
             '云盘': { url: 'share.html', name: '安全云盘' },
             'GPS.html': { url: 'GPS1.html', name: 'GPS定位系统' },
-            'KZ1.html': { url: 'KZ1.html', name: '网页快照' },
             'FZ.html': { url: 'FZ.html', name: '汉字方阵' },
-            'GPS': { url: 'mail1.html', name: '请在工作邮箱中进行申请哦' }
+            'GPS': { url: 'mail1.html', name: '请在工作邮箱中进行申请/输入完整内容哦' }
         };
         
         // 初始化函数
@@ -1407,6 +1407,3 @@
     </script>
 </body>
 </html>
-
-
-
