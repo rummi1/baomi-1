@@ -1018,6 +1018,62 @@
             border-radius: 4px;
             text-align: center;
         }
+
+        /* 可折叠面板样式 */
+        .legend-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            margin-bottom: 8px;
+            cursor: pointer;
+            border-bottom: 1px solid #2a2a2a;
+            font-weight: bold;
+            font-size: 12px;
+            user-select: none;
+        }
+
+        .legend-header:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
+
+        .toggle-icon {
+            font-size: 14px;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .legend-content {
+            transition: max-height 0.3s ease, opacity 0.2s ease;
+            max-height: 300px;
+            opacity: 1;
+            overflow: hidden;
+        }
+
+        /* 修改这部分 - 让收起后更小 */
+        .legend-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+            border: none;
+            visibility: hidden;  /* 完全隐藏内容 */
+        }
+
+        /* 新增代码1 - 当内容收起时，header的下边距也消失 */
+        .legend-content.collapsed + * {
+            margin-top: 0;
+        }
+
+        /* 新增代码2 - 让整个legend-compact在收起时更紧凑 */
+        .legend-compact:has(.legend-content.collapsed) {
+            padding-bottom: 1px; /* 减少底部内边距 */
+        }
+
         .archive-btn.reset { background-color: #7f8c8d; }
         .archive-btn.import { background-color: #27ae60; }
         .archive-btn:hover { opacity: 0.85; }
@@ -1163,7 +1219,6 @@
                         <div class="tool-row">
                             <button class="panel-btn" onclick="deleteSelected()">🗑️ 删除选中</button>
                             <button class="panel-btn" onclick="toggleBookmark()">🔖 书签</button>
-                            <button class="panel-btn" onclick="toggleUnknown()">❓ 未知（01新闻初始设置为已知状态）</button>
                         </div>
                         <div class="tool-row">
                             <button class="panel-btn" onclick="toggleCluePanel()">💡 线索面板</button>
@@ -1173,18 +1228,25 @@
                         </div>
                     </div>
 
+                    <!-- 修改后 -->
                     <div class="legend-compact">
-                        <div class="legend-grid">
-                            <div class="legend-item"><div class="legend-symbol root">始</div> <span>调查起点</span></div>
-                            <div class="legend-item"><div class="legend-symbol" style="background:#e0e0e0;">地</div> <span>地点/机构</span></div>
-                            <div class="legend-item"><div class="legend-symbol">【】</div> <span>案件序号</span></div>
-                            <div class="legend-item"><div class="legend-symbol clue">💡</div> <span>合并线索</span></div>
-                            <div class="legend-item"><div class="legend-symbol bookmark">▌</div> <span>已书签</span></div>
-                            <div class="legend-item"><div class="legend-symbol" style="background:#fff;">?</div> <span>未知标记</span></div>
+                        <div class="legend-header" onclick="toggleLegend()">
+                            <span class="toggle-icon" id="legendToggleIcon">▼</span>
+                        
+                        <div id="legendContent" class="legend-content">
+                            <div class="legend-grid">
+                                <div class="legend-item"><div class="legend-symbol" style="background:#e0e0e0;">X</div> <span>地点/人物/开始调查</span></div>
+                                <div class="legend-item"><div class="legend-symbol">【】</div> <span>案件序号</span></div>
+                                <div class="legend-item"><div class="legend-symbol clue">💡</div> <span>合并线索</span></div>
+                                <div class="legend-item"><div class="legend-symbol bookmark">▌</div> <span>已书签</span></div>
+                                <div class="legend-item"><div class="legend-symbol" style="background:#fff;">?</div> <span>未知标记</span></div>
+                            </div>
+                            <div style="margin-top:10px; font-size:10px; color:#666; border-top:1px dashed #aaa; padding-top:6px;">
+                                <span>拖拽移动 | 双击编辑 | 右键菜单 | Shift多选 | Delete删除 | 滚轮缩放</span>
+                                <span><br>整个导图的详细使用教程详见邮箱</span>
+                                <span><br>01新闻初始设置为已知状态</span> 
+                            </div>
                         </div>
-                        <div style="margin-top:10px; font-size:10px; color:#666; border-top:1px dashed #aaa; padding-top:6px;">
-                            <span>拖拽移动 | 双击编辑 | 右键菜单 | Shift多选 | Delete删除 | 滚轮缩放</span>
-                            <span><br>整个导图的详细使用教程详见邮箱</span>
                         </div>
                     </div>
                 </div>
@@ -1192,8 +1254,8 @@
                 <!-- 模式指示器 -->
                 <div class="mode-indicator" id="modeIndicator">连接模式：点击两个节点创建连接</div>
 
-                <!-- 合并提示 -->
-                <div id="merge-hint">合并模式：选择两个节点进行线索合并</div>
+                <!-- 合并提示 
+                <div id="merge-hint">合并模式：选择两个节点进行线索合并</div>-->
 
                 <!-- 线索面板 -->
                 <div id="clue-panel">
@@ -1257,9 +1319,10 @@
         const CONFIG = {
             gridSize: 40,
             snapThreshold: 20,
-            scaleMin: 0.15,
+            scaleMin: 0.01,
             scaleMax: 3,
-            zoomStep: 0.1,
+            zoomStep: 0.02,
+
             colors: {
                 line: '#2a2a2a',
                 lineSelected: '#ff0040',
@@ -1273,7 +1336,8 @@
             { sources: ['n16', 'n15'], result: '确认记者"苞米"即为毕敏。', id: 'clue_1' },
             { sources: ['n3', 'n20'], result: '确认林静怡前往南山市的原因是为在间隙与翊尘投资开会。', id: 'clue_9' },
             { sources: ['n11', 'n12'], result: '确认林静怡将参与翊尘投资审计项目的复核工作。', id: 'clue_10' },
-            { sources: ['n19', 'n3'], result: '林静怡的行动路线，其10日晚是从深南市前往南山市的。', id: 'clue_2a', nextStep: { sources: ['clue_2a', 'n31'], result: '林静怡因车次取消，以及须前往南山市参加展会的原因，被迫改乘了其他车次。', id: 'clue_2' } },
+            { sources: ['n19', 'n3'], result: '林静怡的行动路线，其10日晚是从深南市前往南山市的。', id: 'clue_2a' },
+            { sources: ['clue_2a', 'n31'], result: '林静怡因车次取消，以及须前往南山市参加展会的原因，被迫改乘了其他车次。', id: 'clue_2' },
             { sources: ['n12', 'n14'], result: '确认林静怡为稀有血型（熊猫血）。', id: 'clue_3' },
             { sources: ['n24', 'n46'], result: '针对稀有血型的非法需求，可能构成杀人动机。', id: 'clue_4' },
             { sources: ['n20', 'n32'], result: '林静怡选择或可能入住国际酒店的原因。', id: 'clue_5a' },
@@ -1532,6 +1596,35 @@
             URL.revokeObjectURL(url);
         }
 
+        // 可折叠图例功能
+        function toggleLegend() {
+            const content = document.getElementById('legendContent');
+            const icon = document.getElementById('legendToggleIcon');
+            
+            content.classList.toggle('collapsed');
+            icon.classList.toggle('collapsed');
+            
+            // 保存状态到localStorage
+            const isCollapsed = content.classList.contains('collapsed');
+            localStorage.setItem('legend_collapsed', isCollapsed);
+        }
+
+        // 恢复上次的折叠状态
+        function restoreLegendState() {
+            const content = document.getElementById('legendContent');
+            const icon = document.getElementById('legendToggleIcon');
+            const isCollapsed = localStorage.getItem('legend_collapsed') === 'true';
+            
+            if (isCollapsed) {
+                content.classList.add('collapsed');
+                icon.classList.add('collapsed');
+            } else {
+                content.classList.remove('collapsed');
+                icon.classList.remove('collapsed');
+            }
+        }
+
+
         // ==================== 核心功能 ====================
         function init() {
             resizeCanvas();
@@ -1574,6 +1667,7 @@
 
             setupEventListeners();
             updateHistoryDisplay();
+            restoreLegendState();
         }
 
         async function loadNewsData() {
@@ -2111,12 +2205,6 @@
 
                 addClueToPanel(rule.result, rule.id);
 
-                if (rule.nextStep) {
-                    setTimeout(() => {
-                        tryMerge(rule.id, rule.nextStep.sources[1]);
-                    }, 500);
-                }
-
                 drawConnections();
                 updateStats();
 
@@ -2385,15 +2473,26 @@
                         nodes = nodes.filter(n => n.id !== nodeId);
                         connections = connections.filter(c => c.from !== nodeId && c.to !== nodeId);
                         selectedNodes = selectedNodes.filter(id => id !== nodeId);
-                        drawConnections();
-                        updateStats();
+                    } else {
+                        // 将最终屏幕坐标转换回世界坐标并保存
+                        const finalWorldPos = screenToWorld(parseFloat(dragNode.style.left), parseFloat(dragNode.style.top));
+                        if (dragNode) {
+                            dragNode.dataset.x = finalWorldPos.x;
+                            dragNode.dataset.y = finalWorldPos.y;
+                            // 使用updateNodePosition确保位置正确（它会应用当前的scale和offset）
+                            updateNodePosition(dragNode, finalWorldPos.x, finalWorldPos.y);
+                        }
                     }
-
-                    dragNode.classList.remove('dragging');
+                    
+                    if (dragNode) {
+                        dragNode.classList.remove('dragging');
+                    }
                     nodeLayer.classList.remove('dragging-node');
                     isDragging = false;
                     dragNode = null;
                     document.getElementById('trash-zone').classList.remove('active');
+                    drawConnections();
+                    updateStats();
                 }
 
                 isPanning = false;
@@ -2401,7 +2500,7 @@
 
             // 画布拖拽
             nodeLayer.addEventListener('mousedown', (e) => {
-                if (e.target === nodeLayer && !connectMode && !mergeMode) {
+                if (e.target === nodeLayer && !connectMode) {
                     isPanning = true;
                     panStart = { x: e.clientX, y: e.clientY };
                     panOffsetStart = { x: offsetX, y: offsetY };
@@ -2488,7 +2587,7 @@
         window.editNode = editNode;
         window.openNewsFromContext = openNewsFromContext;
         window.tryMergeFromContext = tryMergeFromContext;
+        window.toggleLegend = toggleLegend;
     </script>
 </body>
 </html>
-
