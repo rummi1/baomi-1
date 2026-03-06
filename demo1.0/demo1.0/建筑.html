@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Open Three</title>
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://threejs.org/build/three.module.min.js",
+        "three/examples/jsm/": "https://threejs.org/examples/jsm/",
+        "tween.js": "https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.esm.js"
+    }
+}
+</script>
+<style>
+    /* 原有样式保留 */
+    body { margin: 0; padding: 1px; box-sizing: border-box; background-color: #1f1f1f; display: flex; flex-direction: column; width: 100vw; height: 100vh; overflow: hidden; }
+    #box { width: 100%; height: 100%; }
+    #info-panel { position: absolute; top: 20px; left: 20px; background-color: rgba(255, 255, 255, 0.8); padding: 15px; border-radius: 5px; max-width: 300px; display: none; font-family: Arial, sans-serif; }
+    #reset-view { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 15px; cursor: pointer; transition: background-color 0.3s; z-index: 10; }
+    #reset-view:hover { background-color: #2980b9; }
+    .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; color: white; z-index: 10; }
+
+    /* 新增：右上角Tips容器样式 */
+    #tips-panel {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.75);
+        color: #fff;
+        padding: 12px 15px;
+        border-radius: 8px;
+        max-width: 280px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        z-index: 10;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    #tips-panel h3 {
+        margin: 0 0 8px 0;
+        font-size: 16px;
+        color: #fcde8c;
+    }
+    #tips-panel ul {
+        margin: 0;
+        padding-left: 20px;
+        line-height: 1.6;
+    }
+    #tips-panel li {
+        margin: 4px 0;
+    }
+</style>
+</head>
+<body>
+<div id="box"></div>
+<div id="info-panel">
+    <h2 id="building-name">建筑名称</h2>
+    <p id="building-description">点击建筑查看详情</p>
+</div>
+
+<!-- 新增：右上角Tips容器 -->
+<div id="tips-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <h3 style="margin: 0;">地图页面使用说明</h3>
+        <button id="close-tips" style="background: none; border: none; color: #fff; cursor: pointer; font-size: 18px;">×</button>
+    </div>
+    <ul>
+        <li> 当前页面在打开后仍然需要重新刷新一下才能加载出画面内容（不同电脑配置可能会造成加载速度的差异）</li>
+        <li> 点击建筑可聚焦查看详情</li>
+        <li> 当前还未对地图上的建筑物标上具体的名称，标上的版本会在正传上线！</li>
+        <li> 滚轮缩放可调整视角远近</li>
+        <li> 点击「重置视角」恢复初始视图</li>
+        <li> 点击空白处/重复点击建筑重置视角</li>
+    </ul>
+    <button id="show-tips" style="display: none; margin-top: 8px; background: #3498db; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">显示使用说明</button>
+</div>
+
+<button id="reset-view">重置视角</button>
+<div class="loading">加载中...</div>
+
+<script type="module">
+import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2.js';
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
+import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js';
+import * as TWEEN from 'tween.js';
+
+const box = document.getElementById('box')
+
+// ========== 原有场景初始化代码保留 ==========
+const scene = new THREE.Scene()
+const camera = new THREE.PerspectiveCamera(60, box.clientWidth / box.clientHeight, 1, 10000)
+camera.position.set(70, 80, 20)
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+renderer.setPixelRatio(window.devicePixelRatio * 1.3)
+renderer.setSize(box.clientWidth, box.clientHeight)
+box.appendChild(renderer.domElement)
+
+const controls = new OrbitControls(camera, renderer.domElement)
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.screenSpacePanning = false;
+controls.minDistance = 10;
+controls.maxDistance = 100;
+controls.target.set(0, 0, 0);
+
+scene.add(new THREE.AxesHelper(100))
+
+// ========== 原有交互核心变量保留 ==========
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let clickableBuildings = [];
+let selectedBuilding = null;
+const initialCameraPos = camera.position.clone();
+const initialControlsTarget = controls.target.clone();
+
+// ========== 原有天空盒/模型加载代码保留 ==========
+const urls = [0, 1, 2, 3, 4, 5].map(k => (`https://file.threehub.cn/` + 'files/sky/skyBox0/' + (k + 1) + '.png'));
+const textureCube = new THREE.CubeTextureLoader().load(urls);
+
+new GLTFLoader().load('city_model_full (1).glb', (gltf) => {
+    const model = gltf.scene
+    model.traverse((child) => {
+        if (child.isMesh) {
+            child.material.envMap = textureCube
+            const { geometry } = child
+            const edges = new THREE.EdgesGeometry(geometry)
+            let lineGeometry = new LineSegmentsGeometry().fromEdgesGeometry(edges)
+            const material = new LineMaterial({
+                color: 0xfcde8c,
+                linewidth: 2.5,
+                envMap: textureCube,
+                resolution: new THREE.Vector2(box.clientWidth, box.clientHeight)
+            })
+            const lines = new LineSegments2(lineGeometry, material)
+            lines.computeLineDistances()
+            lines.applyMatrix4(child.matrixWorld)
+            scene.add(lines)
+
+            child.userData = {
+                name: child.name || `建筑${clickableBuildings.length + 1}`,
+                description: `这是【${child.name || '未命名'}】建筑，点击可聚焦视角，再次点击或点击空白处重置`
+            };
+            child.castShadow = true;
+            child.receiveShadow = true;
+            clickableBuildings.push(child);
+        }
+    })
+    scene.add(model)
+    document.querySelector('.loading').style.display = 'none';
+})
+
+// ========== 原有鼠标点击/重置视角函数保留 ==========
+function onMouseClick(event) {
+    mouse.x = (event.clientX / box.clientWidth) * 2 - 1;
+    mouse.y = -(event.clientY / box.clientHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(clickableBuildings);
+
+    if (intersects.length > 0) {
+        const clickedBuilding = intersects[0].object;
+        if (selectedBuilding === clickedBuilding) {
+            resetView();
+            return;
+        }
+        selectedBuilding = clickedBuilding;
+        document.getElementById('building-name').textContent = clickedBuilding.userData.name;
+        document.getElementById('building-description').textContent = clickedBuilding.userData.description;
+        document.getElementById('info-panel').style.display = 'block';
+
+        const boundingBox = new THREE.Box3().setFromObject(clickedBuilding);
+        const buildingCenter = new THREE.Vector3();
+        boundingBox.getCenter(buildingCenter);
+        const boxSize = new THREE.Vector3();
+        boundingBox.getSize(boxSize);
+        const maxDim = Math.max(boxSize.x, boxSize.y, boxSize.z);
+
+        const targetCameraPos = buildingCenter.clone();
+        targetCameraPos.y += maxDim * 1.5;
+        targetCameraPos.z += maxDim * 2;
+
+        new TWEEN.Tween(camera.position)
+            .to({ x: targetCameraPos.x, y: targetCameraPos.y, z: targetCameraPos.z }, 1500)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .start();
+
+        new TWEEN.Tween(controls.target)
+            .to({ x: buildingCenter.x, y: buildingCenter.y, z: buildingCenter.z }, 1500)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .onUpdate(() => controls.update())
+            .start();
+    } else {
+        resetView();
+    }
+}
+
+function resetView() {
+    new TWEEN.Tween(camera.position)
+        .to({ x: initialCameraPos.x, y: initialCameraPos.y, z: initialCameraPos.z }, 1500)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .start();
+
+    new TWEEN.Tween(controls.target)
+        .to({ x: initialControlsTarget.x, y: initialControlsTarget.y, z: initialControlsTarget.z }, 1500)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate(() => controls.update())
+        .start();
+
+    document.getElementById('info-panel').style.display = 'none';
+    selectedBuilding = null;
+}
+
+// ========== 新增：Tips面板交互逻辑 ==========
+const tipsPanel = document.getElementById('tips-panel');
+const closeTipsBtn = document.getElementById('close-tips');
+const showTipsBtn = document.getElementById('show-tips');
+
+closeTipsBtn.addEventListener('click', () => {
+    tipsPanel.querySelector('ul').style.display = 'none';
+    closeTipsBtn.style.display = 'none';
+    showTipsBtn.style.display = 'block';
+});
+
+showTipsBtn.addEventListener('click', () => {
+    tipsPanel.querySelector('ul').style.display = 'block';
+    closeTipsBtn.style.display = 'block';
+    showTipsBtn.style.display = 'none';
+});
+
+// ========== 原有事件绑定/动画循环保留 ==========
+renderer.domElement.addEventListener('click', onMouseClick);
+document.getElementById('reset-view').addEventListener('click', resetView);
+
+function animate() {
+    requestAnimationFrame(animate)
+    TWEEN.update();
+    controls.update();
+    renderer.render(scene, camera)
+}
+animate()
+
+window.onresize = () => {
+    renderer.setSize(box.clientWidth, box.clientHeight)
+    camera.aspect = box.clientWidth / box.clientHeight
+    camera.updateProjectionMatrix()
+    scene.traverse((child) => {
+        if (child.isLineSegments2) {
+            child.material.resolution.set(box.clientWidth, box.clientHeight);
+        }
+    });
+}
+</script>
+</body>
+</html>
