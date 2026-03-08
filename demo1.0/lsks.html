@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>随心南山论坛</title>
+    <!-- 保留所有原始CSS链接 -->
+    <link rel="stylesheet" href="//tb1.bdstatic.com/??/tb/static-common/lib/tbui/style/all_710c86c.css" />
+    <link rel="stylesheet" href="//tb1.bdstatic.com/??/tb/_/index_02a41e4.css,/tb/_/frs-footer/content_footer_e1ac3c2.css,/tb/_/rich_poster_90227c7.css" />
+    <link rel="stylesheet" href="//tb1.bdstatic.com/??/tb/_/rich_poster_3f6ece2.css,/tb/_/ueditor_base_05cf71f.css" />
+    <link rel="stylesheet" href="//tb1.bdstatic.com/??/tb/_/search_13e87c6.css,/tb/_/head_main_6892579.css,/tb/_/forum_card_366ea98.css" />
+    <link rel="stylesheet" href="//tb1.bdstatic.com/??/tb/_/thread_list_99d5bb2.css,/tb/_/aside_region_6df4cfc.css,/tb/_/tbnav_bright_482502e.css" />
+
+    <!-- 保留帖子浮层样式 -->
+    <style>
+      /* 帖子浮层样式 */
+      .post-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 10000;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      /* 帖子内容弹窗 - 最高层级 */
+      #postModal {
+        z-index: 30000;
+      }
+      
+      .post-modal.show {
+        display: flex;
+      }
+      
+      .post-modal-content {
+        background-color: white;
+        width: 80%;
+        max-width: 800px;
+        max-height: 80vh;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        animation: modalFadeIn 0.3s ease;
+      }
+      
+      @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .post-modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e5e5e5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f8f8f8;
+        border-radius: 8px 8px 0 0;
+      }
+      
+      .post-modal-header h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #333;
+        flex: 1;
+        padding-right: 20px;
+      }
+      
+      .post-modal-close {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #e5e5e5;
+        color: #666;
+        font-size: 20px;
+        line-height: 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .post-modal-close:hover {
+        background-color: #d5d5d5;
+        color: #333;
+        transform: scale(1.1);
+      }
+      
+      .post-modal-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+        line-height: 1.6;
+        font-size: 15px;
+      }
+      
+      .post-meta {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px dashed #e5e5e5;
+        color: #666;
+        font-size: 14px;
+      }
+      
+      .post-meta span {
+        margin-right: 20px;
+      }
+      
+      .post-content {
+        white-space: pre-line;
+        word-wrap: break-word;
+      }
+      
+      .post-replies {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #e5e5e5;
+      }
+      
+      .post-reply-item {
+        padding: 12px;
+        background-color: #f9f9f9;
+        border-radius: 6px;
+        margin-bottom: 10px;
+      }
+      
+      .post-reply-author {
+        font-weight: bold;
+        color: #0078d4;
+        margin-bottom: 5px;
+      }
+      
+      .post-reply-content {
+        color: #333;
+        font-size: 14px;
+        white-space: pre-line;
+        word-wrap: break-word;
+      }
+      
+      .post-reply-time {
+        color: #999;
+        font-size: 12px;
+        margin-top: 5px;
+        text-align: right;
+      }
+      
+      .j_th_tit {
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      
+      .j_th_tit:hover {
+        color: #0078d4 !important;
+        text-decoration: underline !important;
+      }
+      
+      /* 回复预览内容样式 */
+      .reply-content-preview {
+        white-space: pre-line;
+        word-wrap: break-word;
+      }
+      
+      /* 帖子摘要样式 */
+      .threadlist_abs {
+        white-space: pre-line;
+        word-wrap: break-word;
+      }
+    </style>
+    
+    <!-- 新的JavaScript：从JSON文件加载帖子数据 -->
+    <script>
+      // 帖子数据 - 从JSON文件加载
+      let postData = { threads: [] };
+      let postMap = {};
+      
+      // 当前选中的tab
+      let currentTab = 'main';
+      
+      // 从JSON文件加载帖子数据
+      function loadPostData() {
+        return fetch('tieba-data.json')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to load JSON: ' + response.status);
+            }
+            return response.json();
+          })
+          .then(data => {
+            postData = data;
+            postMap = {};
+            // 合并所有类型的帖子到postMap
+            if (postData.threads) {
+              postData.threads.forEach(thread => {
+                postMap[thread.id] = thread;
+              });
+            }
+            if (postData.image_threads) {
+              postData.image_threads.forEach(thread => {
+                postMap[thread.id] = thread;
+              });
+            }
+            if (postData.admin_threads) {
+              postData.admin_threads.forEach(thread => {
+                postMap[thread.id] = thread;
+              });
+            }
+            if (postData.video_threads) {
+              postData.video_threads.forEach(thread => {
+                postMap[thread.id] = thread;
+              });
+            }
+            return data;
+          })
+          .catch(error => {
+            console.error('Error loading JSON with fetch:', error);
+            return loadPostDataXHR();
+          });
+      }
+      
+      // 使用XMLHttpRequest加载（备用方案，支持本地文件）
+      function loadPostDataXHR() {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', 'tieba-data.json', true);
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200 || xhr.status === 0) {
+                try {
+                  const data = JSON.parse(xhr.responseText);
+                  postData = data;
+                  postMap = {};
+                  // 合并所有类型的帖子到postMap
+                  if (postData.threads) {
+                    postData.threads.forEach(thread => {
+                      postMap[thread.id] = thread;
+                    });
+                  }
+                  if (postData.image_threads) {
+                    postData.image_threads.forEach(thread => {
+                      postMap[thread.id] = thread;
+                    });
+                  }
+                  if (postData.admin_threads) {
+                    postData.admin_threads.forEach(thread => {
+                      postMap[thread.id] = thread;
+                    });
+                  }
+                  if (postData.video_threads) {
+                    postData.video_threads.forEach(thread => {
+                      postMap[thread.id] = thread;
+                    });
+                  }
+                  resolve(data);
+                } catch (e) {
+                  reject(new Error('JSON parse error: ' + e.message));
+                }
+              } else {
+                reject(new Error('XHR failed with status: ' + xhr.status));
+              }
+            }
+          };
+          xhr.onerror = () => reject(new Error('XHR network error'));
+          xhr.send(null);
+        });
+      }
+      
+      // 切换Tab
+      function switchTab(tabName) {
+        currentTab = tabName;
+        
+        // 更新导航栏样式
+        document.querySelectorAll('.j_tbnav_tab').forEach(tab => {
+          tab.classList.remove('focus');
+        });
+        
+        if (tabName === 'main') {
+          document.querySelector('[data-tab-main]')?.classList.add('focus');
+          generateThreadList();
+        } else if (tabName === 'album') {
+          document.querySelector('[data-tab-album]')?.classList.add('focus');
+          generateImageList();
+        } else if (tabName === 'good') {
+          document.querySelector('[data-tab-good]')?.classList.add('focus');
+          generateAdminList();
+        } else if (tabName === 'video') {
+          document.querySelector('[data-tab-video]')?.classList.add('focus');
+          generateVideoList();
+        }
+      }
+      
+      // 生成图片帖子列表
+      function generateImageList() {
+        const threadList = document.getElementById('thread_list');
+        if (!threadList || !postData.image_threads) return;
+        
+        const threads = postData.image_threads;
+        let html = '';
+        
+        threads.forEach((thread, index) => {
+          if (index > 0 && index % 5 === 0) {
+            html += '<div class="history-ad-wrap"></div>';
+          }
+          html += generateNormalThreadHTML(thread, index + 1);
+        });
+        
+        threadList.innerHTML = html || '<li style="padding:40px 20px;text-align:center;color:#999;"><p>暂无图片内容</p></li>';
+      }
+      
+      // 生成管理员推荐帖子列表
+      function generateAdminList() {
+        const threadList = document.getElementById('thread_list');
+        if (!threadList || !postData.admin_threads) return;
+        
+        const threads = postData.admin_threads;
+        let html = '';
+        
+        // 分离置顶帖和普通帖
+        const topThreads = threads.filter(t => t.is_top);
+        const normalThreads = threads.filter(t => !t.is_top);
+        
+        // 生成置顶帖
+        if (topThreads.length > 0) {
+          html += '<li class="thread_top_list_folder">';
+          html += '<ul id="thread_top_list" class="thread_top_list">';
+          topThreads.forEach(thread => {
+            html += generateTopThreadHTML(thread);
+          });
+          html += '</ul>';
+          html += '<a rel="noopener" id="thread_top_folder" class="icon_top_folder" href="javascript:;"></a>';
+          html += '</li>';
+        }
+        
+        // 生成普通帖
+        normalThreads.forEach((thread, index) => {
+          if (index > 0 && index % 5 === 0) {
+            html += '<div class="history-ad-wrap"></div>';
+          }
+          html += generateNormalThreadHTML(thread, index + 1);
+        });
+        
+        threadList.innerHTML = html || '<li style="padding:40px 20px;text-align:center;color:#999;"><p>暂无管理员推荐内容</p></li>';
+      }
+      
+      // 生成视频帖子列表
+      function generateVideoList() {
+        const threadList = document.getElementById('thread_list');
+        if (!threadList || !postData.video_threads) return;
+        
+        const threads = postData.video_threads;
+        let html = '';
+        
+        threads.forEach((thread, index) => {
+          if (index > 0 && index % 5 === 0) {
+            html += '<div class="history-ad-wrap"></div>';
+          }
+          html += generateVideoThreadHTML(thread, index + 1);
+        });
+        
+        threadList.innerHTML = html || '<li style="padding:40px 20px;text-align:center;color:#999;"><p>暂无视频内容</p></li>';
+      }
+      
+      // 生成视频帖子HTML（带视频标识）
+      function generateVideoThreadHTML(thread, floor) {
+        const authorShort = thread.author ? thread.author.substring(0, 5) + '...' : '';
+        const lastReplyAuthor = thread.last_reply && thread.last_reply.author ? thread.last_reply.author.substring(0, 5) + '...' : '';
+        const timeDisplay = thread.create_time_display || thread.create_time || '';
+        const lastReplyTime = thread.last_reply && thread.last_reply.time ? thread.last_reply.time : '';
+        const summary = thread.summary || (thread.content ? thread.content.substring(0, 100) + '...' : '');
+        
+        return `
+          <li class="j_thread_list clearfix thread_item_box" data-tid="${thread.id}" data-thread-type="0" data-floor="${floor}">
+            <div class="t_con cleafix">
+              <div class="col2_left j_threadlist_li_left">
+                <span class="threadlist_rep_num center_text" title="回复">${thread.reply_count || 0}</span>
+              </div>
+              <div class="col2_right j_threadlist_li_right">
+                <div class="threadlist_lz clearfix">
+                  <div class="threadlist_title pull_left j_th_tit">
+                    <i class="icon-video" style="color:#ff6b6b;margin-right:5px;" title="视频">▶</i>
+                    <a rel="noopener" href="javascript:void(0);" onclick="showPostModal(${thread.id})" title="${escapeHtml(thread.title)}" class="j_th_tit">${escapeHtml(thread.title)}</a>
+                  </div>
+                  <div class="threadlist_author pull_right">
+                    <span class="tb_icon_author" title="主题作者: ${escapeHtml(thread.author)}">
+                      <i class="icon_author"></i>
+                      <span class="frs-author-name-wrap">
+                        <span class="frs-author-name" style="color:#333;cursor:default;">${escapeHtml(authorShort)}</span>
+                      </span>
+                      <span class="icon_wrap icon_wrap_theme1 frs_bright_icons"></span>
+                    </span>
+                    <span class="pull-right is_show_create_time" title="创建时间">${escapeHtml(timeDisplay)}</span>
+                  </div>
+                </div>
+                <div class="threadlist_detail clearfix">
+                  <div class="threadlist_text pull_left">
+                    <div class="threadlist_abs threadlist_abs_onlyline">${escapeHtml(summary)}</div>
+                  </div>
+                  <div class="threadlist_author pull_right">
+                    <span class="tb_icon_author_rely j_replyer" title="最后回复人: ${escapeHtml(thread.last_reply && thread.last_reply.author || '')}">
+                      <i class="icon_replyer"></i>
+                      <span class="frs-author-name" style="color:#333;cursor:default;">${escapeHtml(lastReplyAuthor)}</span>
+                    </span>
+                    <span class="threadlist_reply_date pull_right j_reply_data" title="最后回复时间">${escapeHtml(lastReplyTime)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        `;
+      }
+      
+      // 生成帖子列表HTML
+      function generateThreadList() {
+        const threadList = document.getElementById('thread_list');
+        if (!threadList || !postData.threads) return;
+        
+        // 分离置顶帖和普通帖
+        const topThreads = postData.threads.filter(t => t.is_top);
+        const normalThreads = postData.threads.filter(t => !t.is_top);
+        
+        let html = '';
+        
+        // 生成置顶帖部分
+        if (topThreads.length > 0) {
+          html += '<li class="thread_top_list_folder">';
+          html += '<ul id="thread_top_list" class="thread_top_list">';
+          
+          topThreads.forEach(thread => {
+            html += generateTopThreadHTML(thread);
+          });
+          
+          html += '</ul>';
+          html += '<a rel="noopener" id="thread_top_folder" class="icon_top_folder" href="javascript:;"></a>';
+          html += '</li>';
+        }
+        
+        // 生成普通帖
+        normalThreads.forEach((thread, index) => {
+          // 每5个帖子插入一个广告位（保持原结构）
+          if (index > 0 && index % 5 === 0) {
+            html += '<div class="history-ad-wrap"></div>';
+          }
+          html += generateNormalThreadHTML(thread, index + 1);
+        });
+        
+        threadList.innerHTML = html;
+      }
+      
+      // 生成置顶帖HTML
+      function generateTopThreadHTML(thread) {
+        const authorShort = thread.author ? thread.author.substring(0, 5) + '...' : '';
+        const timeDisplay = thread.create_time_display || thread.create_time || '';
+        
+        return `
+          <li class="j_thread_list thread_top j_thread_list clearfix thread_item_box" data-tid="${thread.id}" data-thread-type="0" data-floor="0">
+            <div class="t_con cleafix">
+              <a rel="noopener" href="javascript:;" title="点击隐藏本贴" class="j_thread_hidden icon_thread_hidden"></a>
+              <div class="col2_left j_threadlist_li_left">
+                <span class="threadlist_rep_num center_text" title="回复">${thread.reply_count || 0}</span>
+              </div>
+              <div class="col2_right j_threadlist_li_right">
+                <div class="threadlist_lz clearfix">
+                  <div class="threadlist_title pull_left j_th_tit member_thread_title_frs">
+                    <i class="icon-top" alt="置顶" title="置顶"></i>
+                    <a rel="noopener" href="javascript:void(0);" onclick="showPostModal(${thread.id})" title="${escapeHtml(thread.title)}" class="j_th_tit">${escapeHtml(thread.title)}</a>
+                  </div>
+                  <div class="threadlist_author pull_right">
+                    <span class="tb_icon_author no_icon_author" title="主题作者: ${escapeHtml(thread.author)}">
+                      <i class="icon_author"></i>
+                      <span class="pre_icon_wrap pre_icon_wrap_theme1 frs_bright_preicon">
+                        <a class="icon_tbworld icon-crown-super-v4" href="/tbmall/tshow" target="_blank" title="贴吧超级会员"></a>
+                      </span>
+                      <span class="frs-author-name-wrap">
+                        <span class="frs-author-name vip_red" style="color:#333;cursor:default;">${escapeHtml(authorShort)}</span>
+                      </span>
+                      <span class="icon_wrap icon_wrap_theme1 frs_bright_icons"></span>
+                    </span>
+                    <span class="pull-right is_show_create_time" title="创建时间">${escapeHtml(timeDisplay)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        `;
+      }
+      
+      // 生成普通帖HTML
+      function generateNormalThreadHTML(thread, floor) {
+        const authorShort = thread.author ? thread.author.substring(0, 5) + '...' : '';
+        const lastReplyAuthor = thread.last_reply && thread.last_reply.author ? thread.last_reply.author.substring(0, 5) + '...' : '';
+        const timeDisplay = thread.create_time_display || thread.create_time || '';
+        const lastReplyTime = thread.last_reply && thread.last_reply.time ? thread.last_reply.time : '';
+        const summary = thread.summary || (thread.content ? thread.content.substring(0, 100) + '...' : '');
+        
+        // 检查是否有图片（根据JSON数据结构）
+        let imagesHtml = '';
+        if (thread.images && thread.images.length > 0) {
+          imagesHtml = '<div class="small_wrap j_small_wrap">';
+          imagesHtml += '<a rel="noopener" href="#" onclick="return false;" class="small_btn_pre j_small_pic_pre" style="display:none"></a>';
+          imagesHtml += '<a rel="noopener" href="#" onclick="return false;" class="small_btn_next j_small_pic_next" style="display:none"></a>';
+          imagesHtml += '<div class="small_list j_small_list cleafix">';
+          imagesHtml += '<div class="small_list_gallery">';
+          imagesHtml += `<ul class="threadlist_media j_threadlist_media clearfix" id="fm${thread.id}">`;
+          
+          thread.images.slice(0, 3).forEach(img => {
+            const thumbUrl = img.thumb || img.url || '';
+            const fullUrl = img.full || img.url || '';
+            imagesHtml += `
+              <li>
+                <a rel="noopener" class="thumbnail vpic_wrap">
+                  <img src="https://tb3.bdstatic.com/public/img/icon_pc_picheader_n.432946a7.png" data-original="${thumbUrl}" bpic="${fullUrl}" class="threadlist_pic j_m_pic" />
+                </a>
+                <div class="threadlist_pic_highlight j_m_pic_light"></div>
+              </li>
+            `;
+          });
+          
+          imagesHtml += '</ul></div></div></div>';
+        }
+        
+        return `
+          <li class="j_thread_list clearfix thread_item_box" data-tid="${thread.id}" data-thread-type="0" data-floor="${floor}">
+            <div class="t_con cleafix">
+              <div class="col2_left j_threadlist_li_left">
+                <span class="threadlist_rep_num center_text" title="回复">${thread.reply_count || 0}</span>
+              </div>
+              <div class="col2_right j_threadlist_li_right">
+                <div class="threadlist_lz clearfix">
+                  <div class="threadlist_title pull_left j_th_tit">
+                    <a rel="noopener" href="javascript:void(0);" onclick="showPostModal(${thread.id})" title="${escapeHtml(thread.title)}" class="j_th_tit">${escapeHtml(thread.title)}</a>
+                  </div>
+                  <div class="threadlist_author pull_right">
+                    <span class="tb_icon_author" title="主题作者: ${escapeHtml(thread.author)}">
+                      <i class="icon_author"></i>
+                      <span class="frs-author-name-wrap">
+                        <span class="frs-author-name" style="color:#333;cursor:default;">${escapeHtml(authorShort)}</span>
+                      </span>
+                      <span class="icon_wrap icon_wrap_theme1 frs_bright_icons"></span>
+                    </span>
+                    <span class="pull-right is_show_create_time" title="创建时间">${escapeHtml(timeDisplay)}</span>
+                  </div>
+                </div>
+                <div class="threadlist_detail clearfix">
+                  <div class="threadlist_text pull_left">
+                    <div class="threadlist_abs threadlist_abs_onlyline">${escapeHtml(summary)}</div>
+                    ${imagesHtml}
+                  </div>
+                  <div class="threadlist_author pull_right">
+                    <span class="tb_icon_author_rely j_replyer" title="最后回复人: ${escapeHtml(thread.last_reply && thread.last_reply.author || '')}">
+                      <i class="icon_replyer"></i>
+                      <span class="frs-author-name" style="color:#333;cursor:default;">${escapeHtml(lastReplyAuthor)}</span>
+                    </span>
+                    <span class="threadlist_reply_date pull_right j_reply_data" title="最后回复时间">${escapeHtml(lastReplyTime)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        `;
+      }
+      
+      // HTML转义函数
+      function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+      
+      // 页面加载完成后初始化
+      document.addEventListener('DOMContentLoaded', function() {
+        loadPostData().then(() => {
+          generateThreadList();
+        }).catch(err => {
+          console.error('Failed to load posts:', err);
+          const threadList = document.getElementById('thread_list');
+          if (threadList) {
+            threadList.innerHTML = '<li style="padding:40px 20px;text-align:center;color:#999;"><p>加载帖子数据失败</p><p style="font-size:12px;margin-top:10px;">请确保tieba-data.json文件与HTML文件在同一目录</p></li>';
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <!-- 帖子浮层 -->
+    <div class="post-modal" id="postModal">
+      <div class="post-modal-content">
+        <div class="post-modal-header">
+          <h3 id="modalPostTitle"></h3>
+          <button class="post-modal-close" id="closeModalBtn" title="关闭">×</button>
+        </div>
+        <div class="post-modal-body" id="modalPostBody">
+          <div class="post-meta" id="modalPostMeta"></div>
+          <div class="post-content" id="modalPostContent"></div>
+          <div class="post-replies" id="modalPostReplies"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 昨日在线用户列表弹窗 -->
+    <div class="post-modal" id="yesterdayUsersModal">
+      <div class="post-modal-content" style="max-width: 600px;">
+        <div class="post-modal-header">
+          <h3>昨日在线用户列表（访客视图）</h3>
+          <button class="post-modal-close" onclick="closeYesterdayUsersModal()" title="关闭">×</button>
+        </div>
+        <div class="post-modal-body" id="yesterdayUsersBody">
+          <p style="color:#666;text-align:center;padding:40px;">加载用户数据中...</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 用户帖子列表弹窗 -->
+    <div class="post-modal" id="userPostsModal">
+      <div class="post-modal-content" style="max-width: 700px;">
+        <div class="post-modal-header">
+          <h3 id="userPostsTitle">用户回复帖子</h3>
+          <button class="post-modal-close" onclick="closeUserPostsModal()" title="关闭">×</button>
+        </div>
+        <div class="post-modal-body" id="userPostsBody">
+          <p style="color:#666;text-align:center;padding:40px;">加载帖子数据中...</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 线索提醒弹窗 -->
+    <div class="post-modal" id="reminderModal">
+      <div class="post-modal-content" style="max-width: 400px;">
+        <div class="post-modal-header">
+          <h3>🔍 线索提醒</h3>
+          <button class="post-modal-close" onclick="closeReminderModal()" title="关闭">×</button>
+        </div>
+        <div class="post-modal-body" style="padding:20px;text-align:center;">
+          <div style="margin-bottom:15px;">
+            <p style="color:#333;font-size:14px;line-height:1.5;">
+              你已经在“查看详情”中发现了重要线索！<br>
+              请将发现的线索填入之前未能登录的网站中。
+            </p>
+            <p style="color:#666;font-size:12px;margin-top:10px;">
+              提示1：线索可能隐藏在帖子、用户的回复内容或收起的内容中<br>
+              提示2：请与之前图片中出现的所有名字联系在一起。
+            </p>
+          </div>
+          <button onclick="closeReminderModal()" 
+                  style="background:#0078d4;color:white;border:none;padding:8px 20px;border-radius:4px;cursor:pointer;font-size:13px;">
+            我知道了
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="wrap1">
+      <div class="wrap2">
+        <div>
+          <div>
+            <div>
+              <!-- 头部区域保持不变 -->
+              <div class="header">
+                <div class="general-frs-base-test">
+                </div>
+                <div class="common-pagelet-userbar">
+                  <div id="local_flash_cnt">
+                  </div>
+                </div>
+                <style>
+                  #head {
+    background: #ffffff;
+    height: 135px;
+}
+                </style>
+                <style>
+                  .search_nav b {
+    color: #666;
+}
+                </style>
+                <style>
+                  .search_nav a:link, .search_nav a:hover, .search_nav a:visited {
+    font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+    color: #333;
+    text-decoration: underline;
+}
+                </style>
+                <style>
+                  .search_bright .search_inp_border {
+    border: 1px solid #b8b8b8;
+    border-bottom-color: #ccc;
+}
+                </style>
+                <style>
+                  .search_top {
+    margin-bottom: 32px;
+    border-bottom: 1px solid #ebebeb;
+    height: 32px;
+    overflow: hidden;
+}
+                </style>
+                <div id="head" class="search_bright clearfix">
+                    <div class="search_main_wrap">
+                      <div class="search_main clearfix">
+                        <div class="search_form">
+                          <p style="display:none;" class="switch_radios">
+                            <input type="radio" class="nowtb" name="tb" id="nowtb" />
+                            <label for="nowtb">
+                              论坛内搜索
+                            </label>
+                            <input type="radio" class="searchtb" name="tb" id="searchtb" />
+                            <label for="searchtb">
+                              搜贴
+                            </label>
+                            <input type="radio" class="authortb" name="tb" id="authortb" />
+                            <label for="authortb">
+                              搜人
+                            </label>
+                            <input type="radio" class="jointb" checked="checked" name="tb" id="jointb" />
+                            <label for="jointb">
+                              进吧
+                            </label>
+                            <input type="radio" class="searchtag" name="tb" id="searchtag" style="display:none;" />
+                            <label for="searchtag" style="display:none;">
+                              搜标签
+                            </label>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="head_main">
+                <div class="head_top">
+                  <div class="top_iframe" style="position:relative;z-index:9999;">
+                  </div>
+                </div>
+                <div class="head_middle">
+                </div>
+                <div class="head_content">
+                  <div class="card_banner card_banner_link">
+                    <img src="ltbg.png" id="forum-card-banner" />
+                  </div>
+                  <div class="card_top_wrap clearfix card_top_theme ">
+                    <div class="card_top_right">
+                      <div class="sign_mod_bright" id="sign_mod">
+                        <div class="sign_tip_container">
+                          <div class="j_succ_info sign_succ1" style="display:none">
+                            <div class="sign_tip_bdwrap clearfix">
+                              <div class="sign_tip_bd_arr">
+                              </div>
+                              <div class="sign_tip_main">
+                                <div class="sign_succ_calendar">
+                                  <div class="sign_succ_calendar_title">
+                                    <div class="calendar_title_month clearfix">
+                                      <div class="calendar_month_next j_calendar_month_next">
+                                      </div>
+                                      <div class="calendar_month_prev j_calendar_month_prev">
+                                      </div>
+                                      <div class="calendar_month_span j_calendar_month">
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card_top clearfix">
+                      <div class="card_head">
+                            <img class="card_head_img" id="forum-card-head" src="南山论坛那.png" />
+</a>
+                      </div>
+                      <div class="card_title">
+                        <a rel="noreferrer" class=" card_title_fname" title="" href="">                        随心南山论坛
+</a>
+                        <div class="focus_btn_wrap">
+                          <a rel="noopener" href="#" onclick="return false" class="focus_btn islike_focus" id="j_head_focus_btn" style="margin-top:2px;"></a>
+                        </div>
+                        <div class="card_num">
+                          <span class="">                          <span class="card_numLabel">                          关注：
+</span>
+                          <span class="card_menNum">                          831,680
+</span>
+                          <span class="card_numLabel">                          贴子：
+</span>
+                          <span class="card_infoNum">                          3,789,815
+</span>
+</span>
+                        </div>
+                      </div>
+                      <p class="card_slogan">
+                        程旅的步一尺一，史历的滴一点一
+                      </p>
+                      <div class="card_info">
+                        <ul class="forum_dir_info bottom_list clearfix">
+                          <li>
+                          </li>
+                          <li>
+                            <span class="dir_text">                            目录：
+</span>
+                          </li>
+                          <li>
+                            <span>                            历史综合
+</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="nav_wrap " id="tb_nav">
+                    <ul class="nav_list j_nav_list">
+                      <li class=" focus j_tbnav_tab " data-tab-main="">
+                        <a href="javascript:void(0);" onclick="switchTab('main')" class="j_nav_local_tab_link j_tbnav_tab_a" id="tab_forumname">                        看贴
+</a>
+                      </li>
+                      <li class=" j_tbnav_tab " data-tab-album="">
+                        <a href="javascript:void(0);" onclick="switchTab('album')" class="j_nav_local_tab_link j_tbnav_tab_a" id="tab_picture">                        图片
+</a>
+                      </li>
+                      <li class=" j_tbnav_tab " data-tab-good="">
+                        <a href="javascript:void(0);" onclick="switchTab('good')" class="j_nav_local_tab_link j_tbnav_tab_a">                        管理员推荐
+</a>
+                      </li>
+                      <li class=" j_tbnav_tab " data-tab-video="">
+                        <a href="javascript:void(0);" onclick="switchTab('video')" class="j_nav_local_tab_link j_tbnav_tab_a">                        视频
+</a>
+                      </li>
+                    </ul>
+                    <form class="search_internal_wrap pull_right j_search_internal_forum">
+                      <input class="search_internal_input j_search_internal_input" value="" placeholder="论坛内搜索" type="text" />
+                      <button class="search_internal_btn" type="submit">
+                        <i></i>
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 内容区域 -->
+            <div class="content" id="content">
+              <div class="forum_content clearfix">
+                <div class="main" id="content_wrap">
+                  <div id="content_leftList" class="content_leftList j-content-leftList clearfix">
+                    <div class="general-frs-list-test"></div>
+                    
+                    <!-- 修改后的帖子列表容器 - 内容由JavaScript动态生成 -->
+                    <ul id="thread_list" class="threadlist_bright j_threadlist_bright">
+                      <!-- 帖子列表将由JavaScript动态生成 -->
+                    </ul>
+                    
+                    <!-- 分页和页脚信息保持不变 -->
+                    <div class="thread_list_bottom clearfix">
+                      <div id="frs_list_pager" class="pagination-default clearfix">
+                        <span class="pagination-current pagination-item ">                        1
+</span>
+                        <a href="" class=" pagination-item ">                        2
+</a>
+                        <a href="" class=" pagination-item ">                        3
+</a>
+                        <a href="" class=" pagination-item ">                        4
+</a>
+                        <a href="" class=" pagination-item ">                        5
+</a>
+                        <a href="" class=" pagination-item ">                        6
+</a>
+                        <a href="" class=" pagination-item ">                        7
+</a>
+                        <a href="" class=" pagination-item ">                        8
+</a>
+                        <a href="" class=" pagination-item ">                        9
+</a>
+                        <a href="" class=" pagination-item ">                        10
+</a>
+                        <a href="" class="next pagination-item ">                        下一页&gt;
+</a>
+                        <a href="" class="last pagination-item ">                        尾页
+</a>
+                      </div>
+                      <div class="th_footer_bright">
+                        <div class="th_footer_l">
+                          共有主题数
+                          <span class="red_text">                          70898
+</span>
+                          个，贴子数
+                          <span class="red_text">                          3789815
+</span>
+                          篇
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 侧边栏保持不变 -->
+                <div class="aside" id="aside">
+                  <div class="aside_region forum_info j_forum_info" id="">
+                    <h4 class="region_header clearfix">
+                      论坛相关信息
+                      <span class="pull_right j_op">                      <a rel="noopener" href="javascript:void(0);" onclick="showYesterdayUsersModal()" class="j_view_details">                      查看详情&gt;&gt;
+</a>
+</span>
+                    </h4>
+                    <div class="region_cnt clearfix">
+                      <ul class="manager_groups aside_media_horizontal clearfix">
+                        <li class="media_vertical ">
+                          <a rel="noopener" class="media_top manager_media">                          <img src="YOGA.png"/>
+                          <span class="media_caption" title="管理员">                          管理
+</span>
+</a>
+                          <div class="text_overflow media_bottom">
+                            <a rel="noopener" href="javascript:void(0);" onclick="showAccessDeniedAlert()" title="凌烟阁大将军">                            凌烟阁大将军
+</a>
+                          </div>
+                        </li>
+                      </ul>
+                      <div id="tbManagerCandidatesNum" style="display:none">
+                      </div>
+                      <p class="forum_info_desc">
+                        <span>                        昨日在线人数：
+</span>
+                        共
+                        <em>                        15
+</em>
+                        人
+                      </p>
+                      
+                      <div class="apply_groups">
+                        <span id="tbManagerApply"></span>
+                      </div>
+                    </div>
+                    <div class="region_footer">
+                    </div>
+                  </div>
+                  <div class="aside_region zyq_mod_link j_zyq_mod_link" id="">
+                    <h4 class="region_header clearfix">
+                      诸君请看
+                      <span class="pull_right j_op"></span>
+                    </h4>
+                    <div class="region_cnt clearfix">
+                      <ul class="unordered_list_dot">
+                        <li>删贴原因咨询</li>
+                        <li>发贴须知</li>
+                        <li>国学网</li>
+                        <li>汉典网</li>
+                        <li>违规发言投诉</li>
+                      </ul>
+                    </div>
+                    <div class="region_footer">
+                    </div>
+                  </div>
+                  <div id="branding_ads">
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 底部发帖框保持不变 -->
+            <div class="foot">
+              <div class="frs_content_footer_pagelet">
+                <div class="editor_wrap_bright ">
+                  <a name="sub"></a>
+                  <div id="tb_rich_poster_container" class="tb_rich_poster_container">
+                    <div id="rich_ueditor_tpl">
+                      <div id="tb_rich_poster" class="tb_rich_poster">
+                        <div class="j_bubble_container">
+                        </div>
+                        <div class="poster_head clearfix">
+                          <div class="poster_head_text">
+                            <a class="add_thread_btn post_head_btn cur" title="发表新贴" href="javascript:;">                            <span class="post_head_btn_icon post_head_btn_icon_post"></span>
+                            发表新贴
+</a>
+                          </div>
+                          <div class="poster_head_surveillance j_surveillance">
+                            发贴请遵守
+                            <a target="_blank" >     社会主义核心价值观</a>
+                            <button type="button" class="poster_disable_float j_disable_float" title="停止浮动">
+                              停止浮动
+                            </button>
+                          </div>
+                        </div>
+                        <div class="poster_body editor_wrapper">
+                          <div class="poster_component title_container">
+                            <div class="poster_title">
+                              标  题:
+                            </div>
+                            <div class="j_title_wrap">
+                              <input type="text" class="editor_textfield editor_title ui_textfield j_title j_topic_sug_input" name="title" autocomplete="off" />
+                              <span class="topic_add_btn j_topic_add_btn"></span>
+                              <p class="fullscreen-word-limit">
+                                <span class="fullscreen-limit j-fullscreen-wl">                                0
+</span>
+                                /30
+                              </p>
+                            </div>
+                            <div class="poster_error j_error">
+                            </div>
+                          </div>
+                          <div class="poster_component editor_content_wrapper ueditor_container">
+                            <div class="poster_reply">
+                              内  容:
+                            </div>
+                            <div class="old_style_wrapper">
+                              <div id="ueditor_replace" style="width: 700px; height: 220px;">
+                              </div>
+                            </div>
+                            <div class="poster_error j_error">
+                            </div>
+                          </div>
+                          <div class="j_poster_share poster_share">
+                            <label>
+                              <input type="checkbox" class="j_use_share" />
+                              <span style="vertical-align:middle;">                              发表后自动分享本贴
+</span>
+                            </label>
+                          </div>
+                          <div class="j_poster_signature poster_signature">
+                            <label>
+                              <input type="checkbox" class="j_use_signature" />
+                              <span style="vertical-align:middle;">                              使用签名档
+</span>
+                            </label>
+                            <span class="j_signature_wrapper signature_wrapper">                            <select name="sign_id" class="j_sign_id">
+                            </select>
+                            <a style="color:#0449BE" target="_blank" href="/i/sys/jump?type=signsetting">                            查看全部
+</a>
+</span>
+                          </div>
+                          <span class="ai-entrance">                          <span class="ai-entrance-text">                          内容声明
+</span>
+                          <img src="https://tb3.bdstatic.com/public/img/ai-entrance-icon.png" class="ai-entrance-icon" />
+                          <div class="select-box" id="ai-entrance-select-box">
+                            <div class="select-box-item" data-original-type="1">
+                              贴子含AI内容
+                            </div>
+                            <div class="select-box-item" data-original-type="2">
+                              贴子原创声明
+                            </div>
+                          </div>
+</span>
+                          <div class="poster_component editor_bottom_panel clearfix">
+                            <div class="j_floating">
+                              <button class="btn_default btn_middle j_submit poster_submit" title="Ctrl+Enter快捷发表">
+                                发 表
+                              </button>
+                              <span class="poster_posting_status j_posting_status"></span>
+                              <div class="poster_draft_status j_draft" style="display: none;">
+                                <span class="j_content"></span>
+                                <span title="清空草稿" class="poster_draft_delete j_clear"></span>
+                              </div>
+                              <button class="btn_sub btn_middle j_clear_fullscreen poster_clear_fullscreen" title="">
+                                退 出
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 帖子浮层控制脚本 -->
+    <script>
+      // 显示帖子浮层
+      function showPostModal(postId) {
+        const post = postMap[postId];
+        if (!post) {
+          console.error('Post not found:', postId);
+          alert('帖子数据加载中，请稍后再试');
+          return;
+        }
+        
+        // 设置标题
+        document.getElementById('modalPostTitle').textContent = post.title;
+        
+        // 设置元信息
+        document.getElementById('modalPostMeta').innerHTML = `
+          <span>作者：${escapeHtml(post.author)}</span>
+          <span>发布时间：${escapeHtml(post.create_time)}</span>
+          <span>回复数：${post.reply_count || 0}</span>
+        `;
+        
+        // 设置内容
+        document.getElementById('modalPostContent').textContent = post.content || '';
+        
+        // 设置回复
+        const repliesHtml = post.replies && post.replies.length > 0 
+          ? post.replies.map(reply => `
+              <div class="post-reply-item">
+                <div class="post-reply-author">${escapeHtml(reply.author)}</div>
+                <div class="post-reply-content">${escapeHtml(reply.content)}</div>
+                <div class="post-reply-time">${escapeHtml(reply.time)}</div>
+              </div>
+            `).join('')
+          : '<p style="color:#999;text-align:center;">暂无回复</p>';
+        
+        document.getElementById('modalPostReplies').innerHTML = `
+          <h4 style="margin-bottom:15px;color:#333;">全部回复</h4>
+          ${repliesHtml}
+        `;
+        
+        // 显示浮层
+        document.getElementById('postModal').classList.add('show');
+      }
+
+      // 关闭浮层
+      document.getElementById('closeModalBtn').addEventListener('click', function() {
+        document.getElementById('postModal').classList.remove('show');
+      });
+
+      // 点击浮层背景关闭
+      document.getElementById('postModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('show');
+        }
+      });
+
+      // ESC键关闭
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          document.getElementById('postModal').classList.remove('show');
+          document.getElementById('yesterdayUsersModal').classList.remove('show');
+          document.getElementById('userPostsModal').classList.remove('show');
+          document.getElementById('reminderModal').classList.remove('show');
+        }
+      });
+      
+      // 显示昨日在线用户列表弹窗
+      function showYesterdayUsersModal() {
+        // 记录用户点击过昨日在线用户列表
+        sessionStorage.setItem('hasClickedYesterdayUsers', 'true');
+        
+        const modal = document.getElementById('yesterdayUsersModal');
+        const body = document.getElementById('yesterdayUsersBody');
+        
+        if (!postData.yesterday_online_users || postData.yesterday_online_users.length === 0) {
+          body.innerHTML = '<p style="color:#666;text-align:center;padding:40px;">暂无用户数据</p>';
+          modal.classList.add('show');
+          return;
+        }
+        
+        // 只显示前5个用户（管理员视图）
+        const users = postData.yesterday_online_users.slice(0, 5);
+        
+        let html = '<div class="user-list-container" style="padding:10px;">';
+        html += '<p style="color:#666;font-size:12px;margin-bottom:15px;">显示昨日在线时间最晚的5位用户（访客可见）</p>';
+        
+        users.forEach(user => {
+          html += `
+            <div class="user-item" style="display:flex;align-items:center;padding:12px;border-bottom:1px solid #eee;cursor:pointer;transition:background 0.2s;" 
+                 onmouseover="this.style.background='#f5f5f5'" 
+                 onmouseout="this.style.background='transparent'"
+                 onclick="showUserPostsModal('${user.id}')">
+              <div class="user-avatar" style="width:40px;height:40px;border-radius:50%;background:#0078d4;color:white;display:flex;align-items:center;justify-content:center;margin-right:12px;font-weight:bold;">
+                ${user.name.charAt(0)}
+              </div>
+              <div class="user-info" style="flex:1;">
+                <div class="user-name" style="font-weight:bold;color:#333;font-size:14px;">${escapeHtml(user.name)}</div>
+              </div>
+              <div class="user-action" style="color:#0078d4;font-size:12px;">
+                查看回复 &gt;
+              </div>
+            </div>
+          `;
+        });
+        
+        html += '</div>';
+        body.innerHTML = html;
+        modal.classList.add('show');
+        
+        // 设置5秒后显示提醒框
+        setTimeout(showReminderModal, 5000);
+      }
+      
+      // 关闭昨日在线用户列表弹窗
+      function closeYesterdayUsersModal() {
+        document.getElementById('yesterdayUsersModal').classList.remove('show');
+      }
+      
+      // 显示用户帖子列表弹窗
+      function showUserPostsModal(userId) {
+        const user = postData.yesterday_online_users.find(u => u.id === userId);
+        if (!user) return;
+        
+        currentViewingUser = userId; // 记录当前查看的用户
+        
+        const modal = document.getElementById('userPostsModal');
+        const title = document.getElementById('userPostsTitle');
+        const body = document.getElementById('userPostsBody');
+        
+        title.textContent = `${user.name} - 回复的帖子列表`;
+        
+        if (!user.replies || user.replies.length === 0) {
+          body.innerHTML = '<p style="color:#666;text-align:center;padding:40px;">该用户暂无回复记录</p>';
+          modal.classList.add('show');
+          return;
+        }
+        
+        let html = '<div class="user-posts-container" style="padding:10px;">';
+        html += `<p style="color:#666;font-size:12px;margin-bottom:15px;">共 ${user.replies.length} 条回复记录</p>`;
+        
+        user.replies.forEach((reply, index) => {
+          const note = reply.note || '暂无备注';
+          const replyId = `reply-${userId}-${reply.thread_id}`;
+          html += `
+            <div class="reply-item" style="padding:15px;border-bottom:1px solid #eee;background:#fafafa;margin-bottom:10px;border-radius:6px;">
+              <div class="reply-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span class="reply-time" style="color:#999;font-size:12px;">${escapeHtml(reply.reply_time)}</span>
+                <span class="reply-badge clickable-badge" style="background:#0078d4;color:white;padding:2px 8px;border-radius:10px;font-size:11px;cursor:pointer;transition:background 0.2s;" 
+                      onclick="toggleNote('${replyId}')" 
+                      onmouseover="this.style.background='#005a9e'"
+                      onmouseout="this.style.background='#0078d4'">回复 #${index + 1} ▼</span>
+              </div>
+              <div class="thread-title-link" style="margin-bottom:8px;">
+                <a href="javascript:void(0);" onclick="showPostModal(${reply.thread_id}); return false;" 
+                   style="color:#0078d4;font-weight:bold;font-size:14px;text-decoration:none;"
+                   onmouseover="this.style.textDecoration='underline'"
+                   onmouseout="this.style.textDecoration='none'">
+                  ${escapeHtml(reply.thread_title)}
+                </a>
+              </div>
+              <div class="reply-content-preview" style="color:#666;font-size:13px;margin-bottom:10px;padding:8px;background:white;border-radius:4px;border-left:3px solid #0078d4;">
+                "${escapeHtml(reply.reply_content)}"
+              </div>
+              <div class="note-section" id="${replyId}" style="margin-top:10px;display:none;">
+                <div style="display:flex;align-items:center;margin-bottom:5px;">
+                  <span style="color:#333;font-size:12px;font-weight:bold;">特殊专题备注：</span>
+                  <span style="color:#999;font-size:11px;margin-left:5px;">（点击序号展开）</span>
+                </div>
+                <div style="padding:8px;background:#f0f8ff;border:1px solid #d0e8ff;border-radius:4px;font-size:12px;color:#333;min-height:50px;box-sizing:border-box;white-space:pre-line;word-wrap:break-word;">
+                  ${escapeHtml(note).replace(/^\n+/, '')}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        
+        html += '</div>';
+        body.innerHTML = html;
+        modal.classList.add('show');
+      }
+      
+      // 关闭用户帖子列表弹窗
+      function closeUserPostsModal() {
+        document.getElementById('userPostsModal').classList.remove('show');
+      }
+      
+      // 当前查看的用户ID（用于备注功能）
+      let currentViewingUser = null;
+      
+      // HTML转义函数（如果前面未定义）
+      if (typeof escapeHtml === 'undefined') {
+        function escapeHtml(text) {
+          if (!text) return '';
+          const div = document.createElement('div');
+          div.textContent = text;
+          return div.innerHTML;
+        }
+      }
+      
+      // 切换备注显示/隐藏
+      function toggleNote(replyId) {
+        const noteSection = document.getElementById(replyId);
+        if (!noteSection) return;
+        
+        if (noteSection.style.display === 'none') {
+          noteSection.style.display = 'block';
+          // 更新对应的badge箭头
+          const badge = document.querySelector(`[onclick="toggleNote('${replyId}')"]`);
+          if (badge) {
+            badge.innerHTML = badge.innerHTML.replace('▼', '▲');
+          }
+        } else {
+          noteSection.style.display = 'none';
+          // 更新对应的badge箭头
+          const badge = document.querySelector(`[onclick="toggleNote('${replyId}')"]`);
+          if (badge) {
+            badge.innerHTML = badge.innerHTML.replace('▲', '▼');
+          }
+        }
+      }
+      
+      // 显示线索提醒弹窗
+      function showReminderModal() {
+        const modal = document.getElementById('reminderModal');
+        modal.classList.add('show');
+      }
+      
+      // 关闭线索提醒弹窗
+      function closeReminderModal() {
+        document.getElementById('reminderModal').classList.remove('show');
+      }
+    </script>
+  </body>
+</html>
