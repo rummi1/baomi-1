@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>新闻详情 - 澳港省日报</title>
+    <link rel="stylesheet" href="./fcyym.css" />
+    <style>
+        /* 全局背景改为白色 - 与search2一致 */
+        body {
+            background-color: #ffffff !important;
+            margin: 0;
+            padding: 0;
+            font-family: 'SimSun', '宋体', 'Microsoft YaHei', sans-serif;
+        }
+
+        /* 大幅加宽整体容器宽度 - 与search2一致 */
+        .w1000 {
+            width: 1400px !important;
+            margin: 0 auto;
+            display: flex;
+        }
+
+        /* 恢复左右并排布局 - 与search2完全一致 */
+        .main {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px !important;
+            padding: 0 20px;
+        }
+
+        /* 左侧内容区 - 宽度和样式与search2左侧栏完全一致 */
+        .paper-box {
+            width: 20% !important; /* 与search2左侧宽度一致 */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background: #fff;
+            border: 1px solid #e4e4e4;
+            padding: 20px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 右侧内容区 - 宽度和样式与search2右侧思维导图容器完全一致 */
+        .right-main {
+            width: 75% !important; /* 与search2右侧宽度一致 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #fff;
+            border: 1px solid #e4e4e4;
+            padding: 28px 32px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        /* 调整报纸图片大小 */
+        .paper img {
+            width: 100% !important;
+            max-width: 700px;
+            height: auto !important;
+        }
+
+        /* 相关新闻列表样式 - 与search2搜索结果样式一致 */
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .news-list li {
+            width: 100%;
+            text-align: left;
+        }
+
+        /* 新闻列表项样式 - 采用search2的result-item样式 */
+        .news-list .result-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #f5f5f5;
+            border-left: 3px solid #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .news-list .result-item:hover {
+            border-left-color: #d7000f;
+            background-color: #fff3f3;
+        }
+
+        .news-list .result-item.new {
+            border-left-color: #d7000f;
+            animation: pulse 2s infinite;
+        }
+
+        .news-list .result-item.locked {
+            cursor: not-allowed;
+            opacity: 0.6;
+            border-left-color: #999;
+        }
+
+        .news-list .result-item.locked:hover {
+            border-left-color: #999;
+            background-color: #f5f5f5;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(215, 0, 15, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(215, 0, 15, 0.6); }
+        }
+
+        .news-list .result-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .news-list .result-meta {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* 板块按钮网格 - 3行4列 */
+        .swiper-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 2px;
+            padding: 0;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        /* 板块按钮样式 - 使用search2的红色 */
+        .swiper-slide {
+            background-color: #d7000f;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            padding: 12px 0;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .swiper-slide:hover {
+            background-color: #b0000c;
+        }
+
+        .swiper-slide a {
+            color: white;
+            text-decoration: none;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 文章区域 - 调整上下比例，整体上移 */
+        .article-box {
+            width: 100%;
+            max-width: none !important;
+            display: flex;
+            flex-direction: column;
+            margin-top: -10px; /* 整体上移 */
+        }
+
+        /* 操作按钮区域 - 从search2的导航风格演化而来 */
+        .art-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            background-color: #f5f5f5;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 5px;
+            margin-top: 0;
+            border-radius: 4px 4px 0 0;
+            border: 1px solid #e4e4e4;
+        }
+
+        .art-btn span a, .art-btn a, .art-btn strong a {
+            margin: 0 12px;
+            text-decoration: none;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .art-btn a:hover {
+            color: #d7000f;
+        }
+
+        /* 文章内容容器 - 设置默认最小高度，内容超出时自动延伸 */
+        .article {
+            width: 100%;
+            text-align: center;
+            background-color: #ffffff;
+            border-top: 1px solid #eee;
+            min-height: 600px; /* 设置默认最小高度 */
+            height: auto; /* 高度自动，由内容撑开 */
+        }
+
+        #ozoom {
+            text-align: left;
+            line-height: 1.8;
+            font-size: 18px;
+            padding: 0 15px 20px 15px;
+        }
+
+        /* 隐藏线索高亮样式 */
+        .hidden-clue {
+            background-color: #fff3cd;
+            border-bottom: 2px dashed #ffc107;
+            cursor: help;
+            position: relative;
+        }
+
+        .hidden-clue:hover::after {
+            content: attr(data-clue);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+
+        /* 关联文章提示 - 左侧列表样式 */
+        .related-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #d7000f;
+            text-align: left;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .related-box h4 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #d7000f;
+            font-size: 16px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .related-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .related-list li {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+
+        .related-list a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .related-list a:hover {
+            color: #d7000f;
+            text-decoration: underline;
+        }
+
+        /* 隐藏页脚版权信息 */
+        .copyright {
+            display: none !important;
+        }
+
+        /* 顶部导航 - 与search2完全一致 */
+        .top {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .top .w1000 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+        }
+
+        /* 行楷文字logo - 颜色改为search2的ff0040 */
+        .logo {
+            font-family: "STXingkai", "Microsoft YaHei", sans-serif;
+            font-size: 28px;
+            color: #ff0040;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav {
+            display: flex;
+            gap: 35px;
+            font-size: 17px;
+            position: relative;
+        }
+        
+        /* 下拉菜单样式 */
+        .nav li {
+            list-style: none;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .nav ul {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 8px 0;
+            min-width: 120px;
+            z-index: 1000;
+        }
+        
+        .nav li:hover ul {
+            display: block;
+        }
+        
+        .nav ul li {
+            padding: 5px 15px;
+            white-space: nowrap;
+        }
+        
+        .nav ul li:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .nav ul li a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .news-list li {
+            width: 100%;
+            text-align: left;
+        }
+
+        /* 加载状态 */
+        .loading {
+            padding: 50px;
+            text-align: center;
+            font-size: 18px;
+            color: #666;
+        }
+
+        /* 错误状态 */
+        .error {
+            padding: 50px;
+            text-align: center;
+            font-size: 18px;
+            color: #d7000f;
+        }
+
+        /* 搜索框提示（游戏内使用） */
+        .search-hint {
+            background-color: #e9ecef;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            text-align: left;
+            font-size: 14px;
+            color: #666;
+            margin-top: -5px; /* 稍微上移，配合整体上移 */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .search-hint strong {
+            color: #d7000f;
+        }
+
+        /* 左侧标题样式 */
+        .paper-box h3 {
+            font-size: 16px;
+            color: #d7000f;
+            margin: 15px 0 10px 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            width: 100%;
+        }
+
+        /* 左侧新闻列表容器 */
+        .paper-box .news {
+            width: 100%;
+        }
+
+        /* 移除日期容器 - 完全隐藏 */
+        .date-box {
+            display: none !important;
+        }
+
+        /* 板块网格上移，填补日期移除后的空间 */
+        .swiper-box {
+            margin-top: -20px;
+            width: 100%;
+        }
+
+        /* 底部样式 - 与search2一致 */
+        .bottom {
+            background: #fff;
+            border-top: 1px solid #e0e0e0;
+            padding: 26px 0 40px;
+        }
+
+        /* 返回顶部 - 与search2一致 */
+        .go-top {
+            position: fixed;
+            right: 32px;
+            bottom: 48px;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .go-top:hover {
+            transform: translateY(-6px);
+        }
+
+        .go-top img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 引入在线行楷字体 */
+        @font-face {
+            font-family: 'STXingkai';
+            src: url('https://fonts.gstatic.com/s/notosanssc/v24/k3k68XPNpWRmgQ73v60CSLpGF90me5j.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+    </style>
+</head>
+<body>
+    <div class="top">
+        <div class="w1000">
+            <!-- logo颜色改为ff0040，与search2一致 -->
+            <a class="logo" href="71a623.html" rel="noreferrer">澳港省日报</a>
+            <ul class="nav">
+                <li id="ribao">
+                    日报
+                    <ul class="ribao">
+                        <li>人民日报</li>
+                        <li>人民日报海外版</li>
+                        <li><a href="graph.html" target="_blank" rel="noreferrer">环球时报</a></li>
+                        <li>证券时报</li>
+                    </ul>
+                </li>
+                <li id="zhoubao">
+                    周报
+                    <ul class="zhoubao">
+                        <li>国际金融报</li>
+                        <li>中国能源报</li>
+                        <li>健康时报</li>
+                        <li>讽刺与幽默</li>
+                        <li>中国城市报</li>
+                    </ul>
+                </li>
+                <li id="zazhi">
+                    杂志
+                    <ul class="zazhi">
+                        <li>新闻战线</li>
+                        <li>人民论坛</li>
+                        <li>人民周刊</li>
+                        <li>中国经济周刊</li>
+                        <li>民生周刊</li>
+                        <li>国家人文历史</li>
+                        <li>中国报业</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main w1000">
+        <!-- 左侧：报纸图片 + 相关新闻 - 宽度20%，与search2左侧栏完全一致 -->
+        <div class="paper-box">
+            <div class="paper">
+                <img id="paper-image" src="" alt="" width="400" height="575" />
+            </div>
+            <div class="paper-bot">
+                <p class="ban" id="paper-section">加载中...</p>
+            </div>
+            <!-- 新闻区域：显示“相关新闻” -->
+            <div class="news">
+                <h3>📎 相关新闻</h3>
+                <ul class="news-list" id="sidebar-related">
+                    <!-- 动态生成相关新闻列表 -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- 右侧：内容区域 - 宽度75%，与search2右侧思维导图容器完全一致 -->
+        <div class="right-main">
+            <!-- 日期容器已被完全隐藏，不再显示 -->
+
+            <!-- 游戏内搜索提示 - 上移 -->
+            <div class="search-hint" id="search-hint" style="display: none;">
+                <strong>调查线索：</strong>本文可能包含几处隐藏线索，可用于新的搜索，但可能存在误导项。（0处隐藏线索的新闻不存在误导项）
+            </div>
+
+            <div class="swiper-box">
+                <div class="swiper-container" id="section-grid">
+                    <!-- 动态生成板块按钮 -->
+                </div>
+            </div>
+
+            <!-- 文章区域 - 整体上移，按钮样式与search2导航协调 -->
+            <div class="article-box">
+                <!-- 操作按钮区域 - 采用与search2导航协调的样式 -->
+                <div class="art-btn">
+                    <span><a href="71a623.html">返回搜索</a></span>
+                    <a class="big" href="#" data-action="zoom-in">放大</a>
+                    <a class="small" href="#" data-action="zoom-out">缩小</a>
+                    <a class="copy" href="#" data-action="copy">全文复制</a>
+                    <strong>
+                        <a href="#" id="prev-article">上一篇</a>
+                        <a href="#" id="next-article">下一篇</a>
+                    </strong>
+                </div>
+                
+                <!-- 文章内容容器 - 设置默认最小高度，内容超出时自动延伸 -->
+                <div class="article" id="article-content">
+                    <div class="loading">正在加载新闻内容...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom">
+        <div class="w1000">
+            <div class="copyright"></div>
+        </div>
+    </div>
+
+    <div class="go-top" id="go-top" aria-label="返回顶部">
+        <img src="https://paper.people.com.cn/testx/template/amucsite/projectPaper/rmPaper/files/go_top.png" alt="返回顶部" />
+    </div>
+
+    <script>
+        // 游戏状态管理（使用 localStorage 持久化）
+        const GameState = {
+            STORAGE_KEY: 'news_game_state',
+            
+            getState() {
+                try {
+                    const saved = localStorage.getItem(this.STORAGE_KEY);
+                    if (saved) {
+                        return JSON.parse(saved);
+                    }
+                } catch (e) {
+                    console.error('读取存档失败:', e);
+                }
+                return {
+                    unlockedArticles: ['article_001'], // 默认解锁第一篇
+                    discoveredClues: [],
+                    searchHistory: []
+                };
+            },
+            
+            saveState(state) {
+                try {
+                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
+                } catch (e) {
+                    console.error('保存存档失败:', e);
+                }
+            },
+            
+            unlockArticle(articleId) {
+                const state = this.getState();
+                if (!state.unlockedArticles.includes(articleId)) {
+                    state.unlockedArticles.push(articleId);
+                    this.saveState(state);
+                    return true; // 新解锁
+                }
+                return false; // 已解锁
+            },
+            
+            isUnlocked(articleId) {
+                return this.getState().unlockedArticles.includes(articleId);
+            },
+            
+            addDiscoveredClue(clue) {
+                const state = this.getState();
+                if (!state.discoveredClues.includes(clue)) {
+                    state.discoveredClues.push(clue);
+                    this.saveState(state);
+                }
+            }
+        };
+
+        // 从URL获取文章ID
+        function getArticleIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id') || 'article_001';
+        }
+
+        // 全局数据存储
+        let newsDatabase = null;
+
+        // 安全获取DOM元素
+        function getElement(id) {
+            const el = document.getElementById(id);
+            if (!el) {
+                console.warn(`元素未找到: #${id}`);
+            }
+            return el;
+        }
+
+        // 从JSON文件加载数据
+        async function loadNewsData() {
+            try {
+                console.log('正在加载新闻数据...');
+                const response = await fetch('./news_database.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP错误: ${response.status}`);
+                }
+                newsDatabase = await response.json();
+                console.log('数据加载成功:', newsDatabase);
+                return true;
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                const contentEl = getElement('article-content');
+                if (contentEl) {
+                    contentEl.innerHTML = 
+                        `<div class="error">
+                            <h3>加载失败</h3>
+                            <p>${error.message}</p>
+                            <p>请确保 news_database.json 文件存在且可访问。</p>
+                            <br>
+                            <button onclick="location.reload()">重试</button>
+                        </div>`;
+                }
+                return false;
+            }
+        }
+
+        // 渲染文章内容
+        function renderArticle(articleId) {
+            console.log('渲染文章:', articleId);
+            
+            if (!newsDatabase) {
+                console.error('数据未加载');
+                const contentEl = getElement('article-content');
+                if (contentEl) {
+                    contentEl.innerHTML = '<div class="error">数据未加载</div>';
+                }
+                return;
+            }
+
+            const article = newsDatabase.articles[articleId];
+            if (!article) {
+                console.error('文章未找到:', articleId);
+                const contentEl = getElement('article-content');
+                if (contentEl) {
+                    contentEl.innerHTML = 
+                        `<div class="error">
+                            <h3>文章未找到</h3>
+                            <p>ID: ${articleId}</p>
+                        </div>`;
+                }
+                return;
+            }
+
+            // 检查解锁状态
+            if (!GameState.isUnlocked(articleId)) {
+                console.log('文章未解锁:', articleId);
+                const contentEl = getElement('article-content');
+                if (contentEl) {
+                    contentEl.innerHTML = 
+                        `<div class="error">
+                            <h3>🔒 内容未解锁</h3>
+                            <p>该新闻需要通过搜索相关关键词解锁。</p>
+                            <br>
+                            <a href="71a623.html" style="color: #d7000f;">返回搜索页面</a>
+                        </div>`;
+                }
+                
+                // 隐藏其他元素
+                const searchHint = getElement('search-hint');
+                if (searchHint) searchHint.style.display = 'none';
+                
+                // 左侧相关新闻清空
+                const sidebarRelated = getElement('sidebar-related');
+                if (sidebarRelated) sidebarRelated.innerHTML = '<li style="color: #999;">解锁后可查看相关新闻</li>';
+                
+                return;
+            }
+
+            // 解锁关联文章（在显示关联新闻之前先解锁，以便下方能显示新解锁的文章）
+            if (article.related_articles) {
+                article.related_articles.forEach(relatedId => {
+                    GameState.unlockArticle(relatedId);
+                });
+            }
+
+            // 更新页面标题
+            document.title = `${article.title} - 澳港省日报`;
+
+            // 安全更新DOM元素
+            const paperImage = getElement('paper-image');
+            const paperSection = getElement('paper-section');
+            
+            if (paperImage) {
+                paperImage.src = article.image || 'https://paper.people.com.cn/fcyym/pic/202601/30/06869d17-30e9-48f4-911a-beb0bc460ff4.jpg.2';
+                paperImage.alt = article.section || '';
+            }
+            
+            if (paperSection) {
+                paperSection.textContent = article.section || '';
+            }
+
+            // 生成文章内容（带隐藏线索高亮）
+            const contentEl = getElement('article-content');
+            if (!contentEl) {
+                console.error('文章容器未找到');
+                return;
+            }
+
+            let contentHtml = `
+                <h3>${article.subtitle || ''}</h3>
+                <h1>${article.title || ''}</h1>
+                <h2></h2>
+                <p class="sec">
+                    文 | ${article.author || '未知'}
+                    <span class="date">《${article.source || '澳港省日报'}》（<span class="newstime">${article.date || ''}</span>&nbsp;${article.section || ''}）</span>
+                </p>
+                <div class="attachment"></div>
+                <div id="ozoom" style="font-size: 18px;">
+            `;
+
+            // 处理段落，高亮隐藏线索
+            if (article.content && Array.isArray(article.content)) {
+                article.content.forEach((paragraph) => {
+                    let processedParagraph = paragraph;
+                    
+                    // 检查是否包含隐藏线索关键词
+                    if (article.hidden_clues && Array.isArray(article.hidden_clues)) {
+                        article.hidden_clues.forEach((clue) => {
+                            const clueParts = clue.split(' → ');
+                            const clueText = clueParts[0];
+                            const clueHint = clueParts[1] || '';
+                            
+                            if (paragraph.includes(clueText)) {
+                                processedParagraph = processedParagraph.replace(
+                                    clueText, 
+                                    `<span class="hidden-clue" data-clue="${clueHint}">${clueText}</span>`
+                                );
+                                GameState.addDiscoveredClue(clue);
+                            }
+                        });
+                    }
+
+                    contentHtml += `<p>${processedParagraph}</p>`;
+                });
+            }
+
+            contentHtml += '</div>';
+            contentEl.innerHTML = contentHtml;
+
+            // 显示线索提示
+            const searchHint = getElement('search-hint');
+            const clueCount = getElement('clue-count');
+            if (searchHint && article.hidden_clues && article.hidden_clues.length > 0) {
+                searchHint.style.display = 'block';
+                if (clueCount) {
+                    clueCount.textContent = article.hidden_clues.length;
+                }
+            } else if (searchHint) {
+                searchHint.style.display = 'none';
+            }
+
+            // 生成左侧相关新闻列表
+            renderSidebarRelated(article);
+
+            // 生成板块导航网格
+            renderSectionGrid();
+
+            // 设置上一篇/下一篇链接
+            renderNavigation(articleId);
+        }
+
+        // 渲染左侧相关新闻
+        function renderSidebarRelated(currentArticle) {
+            const sidebarRelated = getElement('sidebar-related');
+            if (!sidebarRelated) {
+                console.warn('左侧相关新闻容器未找到');
+                return;
+            }
+
+            sidebarRelated.innerHTML = '';
+
+            if (!currentArticle.related_articles || currentArticle.related_articles.length === 0) {
+                sidebarRelated.innerHTML = '<div class="result-item"><div class="result-title">暂无相关新闻</div></div>';
+                return;
+            }
+
+            currentArticle.related_articles.forEach(relatedId => {
+                const related = newsDatabase.articles[relatedId];
+                if (related) {
+                    const div = document.createElement('div');
+                    // 检查是否已解锁
+                    const isUnlocked = GameState.isUnlocked(relatedId);
+                    const isNewlyUnlocked = false; // 可以根据需要添加新解锁检测逻辑
+                    
+                    // 设置样式类
+                    div.className = `result-item ${isNewlyUnlocked ? 'new' : ''} ${!isUnlocked ? 'locked' : ''}`;
+                    
+                    if (isUnlocked) {
+                        div.innerHTML = `
+                            <div class="result-title">${related.title}</div>
+                            <div class="result-meta">${related.date} | ${related.section}</div>
+                        `;
+                        div.onclick = () => {
+                            window.location.href = `?id=${relatedId}`;
+                        };
+                    } else {
+                        div.innerHTML = `
+                            <div class="result-title">🔒 ${related.title}</div>
+                            <div class="result-meta">${related.date} | ${related.section}</div>
+                        `;
+                        div.style.cursor = 'not-allowed';
+                        div.style.opacity = '0.6';
+                    }
+                    
+                    sidebarRelated.appendChild(div);
+                }
+            });
+
+            // 如果没有添加任何项，显示占位
+            if (sidebarRelated.children.length === 0) {
+                sidebarRelated.innerHTML = '<div class="result-item"><div class="result-title">暂无相关新闻</div></div>';
+            }
+        }
+
+        // 渲染板块导航
+        function renderSectionGrid() {
+            const sectionGrid = getElement('section-grid');
+            if (!sectionGrid) {
+                console.warn('板块导航未找到');
+                return;
+            }
+
+            sectionGrid.innerHTML = '';
+            
+            const sections = [
+                {name: '01版：要闻', id: '01'}, {name: '02版：社会走笔', id: '02'},
+                {name: '03版：众生相', id: '03'}, {name: '04版：漫画生活', id: '04'},
+                {name: '05版：外国幽默', id: '05'}, {name: '06版：开心驿站', id: '06'},
+                {name: '07版：科技前沿', id: '07'}, {name: '08版：漫画观察', id: '08'},
+                {name: '09版：新生代', id: '09'}, {name: '10版：解忧馆', id: '10'},
+                {name: '11版：社会趣画', id: '11'}, {name: '12版：动漫', id: '12'}
+            ];
+
+            sections.forEach(sec => {
+                const div = document.createElement('div');
+                div.className = 'swiper-slide';
+                div.innerHTML = `<a href="#">${sec.name}</a>`;
+                sectionGrid.appendChild(div);
+            });
+        }
+
+        // 渲染上一篇/下一篇导航
+        function renderNavigation(currentId) {
+            if (!newsDatabase || !newsDatabase.articles) {
+                console.warn('数据未加载，无法渲染导航');
+                return;
+            }
+
+            const articleIds = Object.keys(newsDatabase.articles);
+            const currentIndex = articleIds.indexOf(currentId);
+            
+            const prevLink = getElement('prev-article');
+            const nextLink = getElement('next-article');
+            
+            // 上一篇
+            if (prevLink) {
+                if (currentIndex > 0) {
+                    const prevId = articleIds[currentIndex - 1];
+                    prevLink.href = `?id=${prevId}`;
+                    prevLink.style.visibility = 'visible';
+                    if (!GameState.isUnlocked(prevId)) {
+                        prevLink.style.color = '#999';
+                        prevLink.title = '未解锁';
+                    } else {
+                        prevLink.style.color = '';
+                        prevLink.title = '';
+                    }
+                } else {
+                    prevLink.style.visibility = 'hidden';
+                }
+            }
+            
+            // 下一篇
+            if (nextLink) {
+                if (currentIndex < articleIds.length - 1) {
+                    const nextId = articleIds[currentIndex + 1];
+                    nextLink.href = `?id=${nextId}`;
+                    nextLink.style.visibility = 'visible';
+                    if (!GameState.isUnlocked(nextId)) {
+                        nextLink.style.color = '#999';
+                        nextLink.title = '未解锁';
+                    } else {
+                        nextLink.style.color = '';
+                        nextLink.title = '';
+                    }
+                } else {
+                    nextLink.style.visibility = 'hidden';
+                }
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('页面加载完成，开始初始化...');
+            
+            // 加载数据
+            const loaded = await loadNewsData();
+            if (!loaded) {
+                console.error('数据加载失败，停止初始化');
+                return;
+            }
+
+            // 获取文章ID并渲染
+            const articleId = getArticleIdFromUrl();
+            console.log('当前文章ID:', articleId);
+            renderArticle(articleId);
+
+            // 字体缩放功能
+            let baseFontSize = 18;
+            
+            document.querySelectorAll('[data-action]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const action = btn.dataset.action;
+                    const zoomTarget = getElement('ozoom');
+                    
+                    if (action === 'zoom-in') {
+                        baseFontSize = Math.min(baseFontSize + 1, 24);
+                        if (zoomTarget) zoomTarget.style.fontSize = baseFontSize + 'px';
+                    } else if (action === 'zoom-out') {
+                        baseFontSize = Math.max(baseFontSize - 1, 14);
+                        if (zoomTarget) zoomTarget.style.fontSize = baseFontSize + 'px';
+                    } else if (action === 'copy') {
+                        if (!zoomTarget) return;
+                        
+                        const text = Array.from(zoomTarget.querySelectorAll('p'))
+                            .map(p => p.innerText).join('\n');
+                            
+                        if (navigator.clipboard) {
+                            navigator.clipboard.writeText(text).then(() => alert('复制成功'));
+                        } else {
+                            const temp = document.createElement('textarea');
+                            temp.value = text;
+                            document.body.appendChild(temp);
+                            temp.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(temp);
+                            alert('复制成功');
+                        }
+                    }
+                });
+            });
+
+            // 返回顶部
+            const goTop = getElement('go-top');
+            if (goTop) {
+                goTop.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 400) {
+                        goTop.style.opacity = 1;
+                        goTop.style.pointerEvents = 'auto';
+                    } else {
+                        goTop.style.opacity = 0;
+                        goTop.style.pointerEvents = 'none';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

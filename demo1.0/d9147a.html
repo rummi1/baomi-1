@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>警务综合信息系统 | POLICE INTEGRATED SYSTEM</title>
+
+<style>
+/* ========== 变量 ========== */
+:root {
+  --bg: #f5f5f0;
+  --black: #1a1a1a;
+  --gray: #666;
+  --accent: #c41e3a;
+  --accent-dark: #8b0000;
+  --accent-light: #e74c3c;
+  --white: #fff;
+  --grid-color: rgba(0, 0, 0, 0.06);
+  --warning: #d4af37;
+  --paper: #fafaf8;
+  --suspended-bg: #fce4e4;
+  --suspended-border: #c41e3a;
+}
+
+/* ========== 基础 ========== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  font-family: "SF Pro Text", "Noto Sans SC", "Source Han Sans CN",
+               system-ui, -apple-system, sans-serif;
+  color: var(--black);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ========== 背景装饰 ========== */
+.bg-decorations {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image: 
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.decor-line {
+  position: absolute;
+  background: var(--accent);
+  opacity: 0.1;
+}
+
+.decor-line.horizontal {
+  width: 100%;
+  height: 2px;
+}
+
+.decor-line.vertical {
+  height: 100%;
+  width: 2px;
+}
+
+.warning-tape {
+  position: absolute;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--warning),
+    var(--warning) 10px,
+    #000 10px,
+    #000 20px
+  );
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+/* ========== 页面框架 ========== */
+.page {
+  width: 100vw;
+  height: 100vh;
+  padding: 28px 36px;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: auto auto auto 1fr auto;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ========== 标题区 ========== */
+header {
+  grid-column: 1 / 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  border-bottom: 2px solid var(--black);
+  padding-bottom: 16px;
+}
+
+.logo {
+  font-size: 20px;
+  letter-spacing: 0.15em;
+  position: relative;
+  padding-left: 20px;
+  font-weight: 600;
+}
+
+.logo::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 8px;
+  height: 100%;
+  background: var(--accent);
+}
+
+.logo span {
+  display: block;
+  font-size: 11px;
+  color: var(--gray);
+  margin-top: 6px;
+  letter-spacing: 0.2em;
+  font-weight: 400;
+}
+
+.badge {
+  background: var(--accent);
+  color: var(--white);
+  padding: 6px 16px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.badge::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
+}
+
+/* ========== 账号状态提示（新增）========== */
+.account-status {
+  grid-column: 1 / 3;
+  background: var(--suspended-bg);
+  border: 2px solid var(--suspended-border);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--accent-dark);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(196, 30, 58, 0.15);
+  border-radius: 4px;
+}
+
+.account-status::before {
+  content: "⛔";
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.status-warning {
+  flex: 1;
+}
+
+.status-warning span {
+  background: var(--accent-dark);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 3px;
+  margin-right: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ========== 搜索区 ========== */
+.search-area {
+  grid-column: 1 / 3;
+  background: var(--white);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-left: 4px solid var(--accent);
+  position: relative;
+}
+
+.search-label {
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  color: var(--gray);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  min-width: 80px;
+}
+
+.search-label::before {
+  content: "◼";
+  color: var(--accent);
+  font-size: 10px;
+}
+
+.search-input-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.search-input {
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-left: 3px solid var(--accent);
+  padding: 10px 14px;
+  font-size: 16px;
+  font-family: "SF Mono", "Consolas", monospace;
+  letter-spacing: 0.15em;
+  outline: none;
+  flex: 1;
+  transition: all 0.2s;
+  color: var(--black);
+  text-transform: uppercase;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+}
+
+.search-hint {
+  font-size: 11px;
+  color: var(--gray);
+  letter-spacing: 0.05em;
+  background: #f0f0f0;
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-family: monospace;
+}
+
+.search-status {
+  position: absolute;
+  right: 140px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-family: monospace;
+}
+
+.search-status.active {
+  opacity: 1;
+}
+
+.input-hint {
+  position: absolute;
+  bottom: -24px;
+  left: 100px;
+  font-size: 10px;
+  color: var(--gray);
+  letter-spacing: 0.05em;
+}
+
+/* ========== 文档列表 + 清空按钮容器 ========== */
+aside {
+  border-right: 1px solid #ddd;
+  padding-right: 20px;
+  position: relative;
+  background: rgba(255,255,255,0.5);
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-right: none;
+}
+
+.aside-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 12px;
+}
+
+.aside-header h3 {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gray);
+  font-weight: 600;
+}
+
+.aside-header h3::before {
+  content: "●";
+  color: var(--accent);
+  font-size: 8px;
+}
+
+.clear-btn {
+  background: transparent;
+  border: 1px solid var(--gray);
+  color: var(--gray);
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+
+.clear-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.doc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: calc(100vh - 430px);
+  overflow-y: auto;
+}
+
+.doc-item {
+  background: var(--white);
+  color: var(--black);
+  padding: 14px 16px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.05em;
+  border-left: 3px solid transparent;
+}
+
+.doc-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.doc-item:hover {
+  border-left-color: var(--accent);
+  transform: translateX(4px);
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.08);
+}
+
+.doc-item:hover::before {
+  opacity: 0.03;
+}
+
+.doc-item.active {
+  background: var(--accent);
+  color: var(--white);
+  border-color: var(--accent);
+  border-left-color: var(--accent-dark);
+  font-weight: 500;
+}
+
+.doc-item.active .doc-meta {
+  color: rgba(255,255,255,0.8);
+}
+
+.doc-item .doc-type {
+  font-size: 10px;
+  color: var(--accent);
+  margin-bottom: 4px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  position: relative;
+  z-index: 1;
+}
+
+.doc-item.active .doc-type {
+  color: rgba(255,255,255,0.9);
+}
+
+.doc-item .doc-title {
+  position: relative;
+  z-index: 1;
+  font-weight: 500;
+}
+
+.doc-item .doc-meta {
+  font-size: 10px;
+  color: var(--gray);
+  margin-top: 6px;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 1;
+  font-family: monospace;
+}
+
+.doc-item.public {
+  border-left-color: var(--warning);
+}
+
+.doc-item.public::after {
+  content: "公开";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  background: var(--warning);
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.doc-item.active.public::after {
+  background: rgba(255,255,255,0.9);
+  color: var(--accent);
+}
+
+/* ========== 内容区 - 文档样式 ========== */
+main {
+  position: relative;
+  padding: 40px 48px;
+  background: var(--paper);
+  border: 1px solid #ddd;
+  overflow-y: auto;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  font-family: "Noto Serif SC", "Source Han Serif CN", "SimSun", serif;
+  line-height: 1.8;
+  color: #222;
+}
+
+/* 文档头部 */
+.doc-header {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--black);
+}
+
+.doc-header-title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  margin-bottom: 12px;
+  font-family: "Noto Serif SC", serif;
+}
+
+.doc-header-meta {
+  font-size: 12px;
+  color: var(--gray);
+  font-family: monospace;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+}
+
+/* 文档正文 */
+.doc-body {
+  font-size: 14px;
+  text-align: justify;
+  max-width: 100%;
+}
+
+/* 章节标题 */
+.doc-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 28px;
+  margin-bottom: 16px;
+  letter-spacing: 0.1em;
+  text-align: center;
+  font-family: "Noto Serif SC", serif;
+}
+
+/* 子标题 */
+.doc-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+}
+
+/* 普通段落 */
+.doc-paragraph {
+  padding-left: 2em;
+  margin-bottom: 12px;
+  text-align: justify;
+  white-space: pre-line; 
+}
+
+.doc-paragraph.no-indent {
+  padding-left: 0;
+}
+
+/* 列表项 */
+.doc-list-item {
+  margin-bottom: 8px;
+  padding-left: 2em;
+  text-indent: -2em;
+  padding-left: 2em;
+}
+
+/* 表格 */
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 13px;
+  font-family: "Noto Sans SC", sans-serif;
+}
+
+.doc-table th,
+.doc-table td {
+  border: 1px solid #999;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.doc-table th {
+  background: #f0f0f0;
+  font-weight: 600;
+}
+
+.doc-table tr:nth-child(even) {
+  background: #f8f8f8;
+}
+
+/* 引用块（短信/对话） */
+.doc-quote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: #f5f5f5;
+  border-left: 3px solid #999;
+  font-family: "Noto Sans SC", sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.doc-quote-header {
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+/* 签名区域 */
+.doc-signature {
+  margin-top: 40px;
+  text-align: right;
+  font-size: 14px;
+}
+
+.doc-signature-line {
+  margin-bottom: 8px;
+}
+
+/* 页脚 */
+.doc-footer {
+  margin-top: 48px;
+  padding-top: 16px;
+  border-top: 1px solid #ccc;
+  font-size: 12px;
+  color: var(--gray);
+  text-align: center;
+  font-family: monospace;
+}
+
+/* 密级标记 */
+.classified-mark {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  font-size: 14px;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  padding: 4px 12px;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+  transform: rotate(-5deg);
+  opacity: 0.6;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--gray);
+  min-height: 400px;
+  font-family: "Noto Sans SC", sans-serif;
+}
+
+.empty-state .icon {
+  width: 80px;
+  height: 80px;
+  border: 3px solid #ddd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  position: relative;
+  background: #fafafa;
+}
+
+.empty-state .icon::before,
+.empty-state .icon::after {
+  content: "";
+  position: absolute;
+  background: #ccc;
+}
+
+.empty-state .icon::before {
+  width: 3px;
+  height: 36px;
+}
+
+.empty-state .icon::after {
+  width: 36px;
+  height: 3px;
+}
+
+.empty-state h2 {
+  font-size: 16px;
+  margin-bottom: 12px;
+  letter-spacing: 0.15em;
+  color: var(--black);
+  font-weight: 600;
+}
+
+.empty-state p {
+  font-size: 12px;
+  text-align: center;
+  max-width: 400px;
+  line-height: 1.8;
+  color: var(--gray);
+}
+
+.empty-state .hint-box {
+  margin-top: 24px;
+  padding: 16px 24px;
+  background: #f5f5f5;
+  border-left: 3px solid var(--accent);
+  font-size: 11px;
+  color: #666;
+  font-family: monospace;
+  text-align: left;
+  max-width: 520px;
+  line-height: 2;
+}
+
+.empty-state .hint-box strong {
+  color: var(--accent);
+  display: block;
+  margin-bottom: 8px;
+  font-family: sans-serif;
+}
+
+.doc-type-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 20px;
+  margin-top: 8px;
+}
+
+/* ========== 底部状态区 ========== */
+footer {
+  grid-column: 1 / 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2px solid var(--black);
+  padding-top: 16px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--gray);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.security-level {
+  background: var(--black);
+  color: var(--white);
+  padding: 4px 12px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 1200px) {
+  .page {
+    grid-template-columns: 240px 1fr;
+  }
+  main {
+    padding: 32px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- 背景装饰 -->
+<div class="bg-decorations">
+  <div class="decor-line horizontal" style="top: 25%;"></div>
+  <div class="decor-line horizontal" style="top: 75%;"></div>
+  <div class="decor-line vertical" style="left: 20%;"></div>
+  <div class="decor-line vertical" style="left: 80%;"></div>
+  <div class="warning-tape" style="top: 10%; left: 0; width: 100%; height: 20px; transform: rotate(-2deg);"></div>
+</div>
+
+<div class="page">
+
+  <header>
+    <div class="logo">
+      警务综合信息系统
+      <span>POLICE INTEGRATED INFORMATION SYSTEM · 内部资料 注意保密</span>
+    </div>
+    <div class="badge">内部系统</div>
+  </header>
+
+  <!-- 账号状态提示（新增） -->
+  <div class="account-status">
+    <div class="status-warning">
+      <span>停职状态</span> 当前该账号所属用户处于停职状态，页面仅支持浏览已上传内容，无法进行上传、编辑、删除等操作；并且，针对系统中文档字数大于1000字的上传内容（如笔录），仅可查看该内容的前20%。
+    </div>
+  </div>
+
+  <div class="search-area">
+    <div class="search-label">案件编码</div>
+    <div class="search-input-container">
+      <input 
+        id="searchInput" 
+        class="search-input" 
+        placeholder="请输入12位案件编码..." 
+        maxlength="12"
+        autocomplete="off"
+      />
+      <div class="search-status" id="searchStatus">查询中...</div>
+      <div class="search-hint">按 Enter 确认查询</div>
+    </div>
+    <div class="input-hint">格式：YYMMDD(6位) + 类型(2位) + 序号(3位) + 文档类型(1位字母)</div>
+  </div>
+
+  <aside>
+    <div class="aside-header">
+      <h3>已解锁档案</h3>
+      <button class="clear-btn" id="clearArchiveBtn">清空存档</button>
+    </div>
+    <div class="doc-list" id="docList">
+      <!-- 文档列表将通过JavaScript动态生成 -->
+    </div>
+  </aside>
+
+  <main id="mainContent">
+    <div class="empty-state" id="emptyState">
+      <div class="icon"></div>
+      <h2>未选择档案</h2>
+      <p>请在上方搜索栏输入12位案件编码以调取相关档案资料</p>
+      <div class="hint-box">
+        <strong>编码结构说明：YYMMDD + 类型(2位) + 序号(3位) + 文档类型(1位字母)</strong>
+        <div class="doc-type-legend">
+          <span>01 - 杀人案  02 - 抢劫案  03 - 盗窃案</span>
+          <span>04 - 诈骗案  05 - 伤害案  06 - 毒品案</span>
+        </div>
+        <div style="margin-top: 8px; border-top: 1px solid #ddd; padding-top: 8px;">
+          <strong>文档类型：</strong>
+          B=报案记录  K=现场勘查  S=尸检报告  W=物证报告  X=询问笔录  D=电子数据  L=系统手册  M=监控数据  E=员工名单
+        </div>
+        <div style="margin-top: 8px; color: var(--accent);">
+          重点案件：25111101001系列（林静怡被杀案）<br>监控数据编码：25111101001M (将跳转至监控页面)<br>员工名单编码：25111101001E (昨日提希丰高端养生会所员工名单)
+        </div>
+      </div>
+    </div>
+    <div id="docContent" style="display: none;">
+      <div class="classified-mark">内部资料</div>
+      <div class="doc-header">
+        <div class="doc-header-title" id="docTitle"></div>
+        <div class="doc-header-meta" id="docMeta"></div>
+      </div>
+      <div class="doc-body" id="docText"></div>
+      <div class="doc-footer" id="docFooter"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="status">系统运行正常 | 数据最后同步：2026-02-25 14:32:08</div>
+    <div class="security-level">保密级别：内部</div>
+  </footer>
+
+</div>
+
+<script>
+// ========== 文档类型映射 ==========
+const docTypeMap = {
+  'B': { name: '报案记录', fullName: '报案登记表' },
+  'K': { name: '现场勘查', fullName: '现场勘验检查笔录' },
+  'S': { name: '尸检报告', fullName: '法医学尸体检验鉴定书' },
+  'W': { name: '物证报告', fullName: '物证检验鉴定书' },
+  'X': { name: '询问笔录', fullName: '询问笔录' },
+  'D': { name: '电子数据', fullName: '电子数据取证报告' },
+  'L': { name: '系统手册', fullName: '系统使用手册' },
+  'M': { name: '监控数据', fullName: '监控视频与轨迹数据' },
+  'E': { name: '员工名单', fullName: '提希丰高端养生会所员工信息表' }
+};
+
+/* ========== 案件类型映射 ========== */
+const caseTypeMap = {
+  '01': '故意杀人案',
+  '02': '抢劫案',
+  '03': '盗窃案',
+  '04': '诈骗案（含电信诈骗）',
+  '05': '故意伤害案',
+  '06': '毒品犯罪案',
+  '07': '经济犯罪案（含涉众型）',
+  '08': '计算机网络犯罪案',
+  '09': '涉黑涉恶案',
+  '10': '其他刑事案件',
+  '11': '扰乱秩序案（原治安案细化）',
+  '12': '寻衅滋事案',
+  '13': '殴打他人案',
+  '14': '盗窃（治安）案',
+  '15': '毒品（行政）案',
+  '16': '其他治安案件',
+  '17': '交通事故案',
+  '18': '交通肇事案（刑事）',
+  '19': '火灾事故案',
+  '20': '消防行政处罚案'
+};
+
+/* ========== 案件25111101001完整档案数据库 ========== */
+/* 内容完全替换为南山市11·11刑事案件警方资料汇总-2.docx 的内容 */
+const documents = {
+  // ==================== 1. 报案记录（编号：25111101001B） ====================
+  "25111101001B": {
+    code: "25111101001B",
+    date: "2025-11-11",
+    caseType: "01",
+    caseTypeName: "故意杀人案",
+    seq: "001",
+    docType: "B",
+    docTypeName: "报案记录",
+    title: "报案登记表（编号：25111101001B）",
+    caseNo: "A440305202511110001",
+    location: "南山市南山区提希丰高端养生会所",
+    isKeyCase: true,
+    content: [
+      { type: "section", title: "一、报案记录（编号：25111101001B）" },
+      { type: "text", text: "案件编号：A440305202511110001，故意杀人案，报案日期2025年11月11日，案发于南山市南山区提希丰高端养生会所VIP理疗舱03号，系重点案件。报案人刘某某（会所VIP区域保洁），接警单位为南山分局XX派出所，接警民警张XX、李XX。" },
+      { type: "subtitle", title: "（一）报案基本信息" },
+      { type: "text", text: "2025年11月11日06时47分，刘某某拨打110报警，称其06时30分保洁巡检时，发现03号理疗舱内一女性无呼吸、颈部有血迹，已联系会所负责人封锁现场，等待警方处置。案发地点为南山区科技园南区XX路XX号会所2层东侧VIP区03号舱。" },
+      { type: "subtitle", title: "（二）案情摘要" },
+      { type: "text", text: "死者林静怡（40岁，千禧会计事务所高级会计师），于2025年11月10日23时通过SBTP智慧商旅通，从南山国际酒店转至该会所03号理疗舱入住。现场初步勘查显示，死者颈部有锐器创口，血迹分布异常，无打斗痕迹，疑似他杀。" },
+      { type: "subtitle", title: "（三）初步处置情况" },
+      { type: "list", items: [
+        "06时52分，民警抵达现场保护现场；",
+        "07时10分，刑侦技术人员到场开展前期工作；",
+        "07时35分启动初步勘验，发现他杀嫌疑；",
+        "08时法医到场，案件移交刑警支队；",
+        "08时30分全面封锁现场，开展勘验、物证提取及监控调取工作。"
+      ] },
+      { type: "subtitle", title: "（四）特殊说明及工作建议" },
+      { type: "text", text: "死者系千禧会计事务所审计项目复核人，负责翊尘投资审计，不排除案件与工作相关，其行程全程处于SBTP系统监控。建议：调取SBTP后台数据、核查死者社会及工作关系、全面提取现场物证并送检。" },
+      { type: "signature", text: "报案人、接警民警、记录人签字：__________ 日期：2025年11月11日" }
+    ]
+  },
+  // ==================== 2. 现场勘查（编号：25111101001K） ====================
+  "25111101001K": {
+    code: "25111101001K",
+    date: "2025-11-11",
+    caseType: "01",
+    caseTypeName: "故意杀人案",
+    seq: "001",
+    docType: "K",
+    docTypeName: "现场勘查",
+    title: "现场勘查记录（编号：25111101001K）",
+    caseNo: "A440305202511110001",
+    location: "南山市南山区提希丰高端养生会所VIP区03号理疗舱",
+    isKeyCase: true,
+    content: [
+      { type: "section", title: "二、现场勘查记录（编号：25111101001K）" },
+      { type: "text", text: "案件编号同前，故意杀人案，勘查日期2025年11月11日，地点为提希丰高端养生会所VIP区03号理疗舱。勘查单位为市公安局刑侦大队技术中队，主勘王XX、协勘赵XX，见证人王XX（会所负责人）、刘某某，记录人孙XX，天气晴，无勘查影响因素。" },
+      { type: "subtitle", title: "（一）基础信息" },
+      { type: "text", text: "推断案发时间为2025年11月10日23时45分左右（误差≤5分钟），勘查时间为11日09时15分至12时30分。03号理疗舱为密闭空间，恒温24℃，通风关闭，勘查期间保持现场原貌。" },
+      { type: "subtitle", title: "（二）案发现场周边情况" },
+      { type: "text", text: "提希丰高端养生会所为3层独立建筑，周边有大道、绿化区等，入口有安保及门禁，公共区域监控全覆盖。VIP区有6个独立密闭理疗舱，需刷卡进入，监控可开启隐私模式；夜间仅1名前台值班，保洁夜间不进入VIP区。" },
+      { type: "subtitle", title: "（三）现场方位及舱内环境情况" },
+      { type: "text", text: "03号舱位于VIP区最内侧，面积约15㎡，舱体、舱门均为医用级材质，无撬压痕迹；舱内有操作台、医用躺椅等设施，运行正常。死者入住后，VIP区监控于23时10分至23时55分开启隐私模式，系死者本人操作。" },
+      { type: "subtitle", title: "（四）尸体位置及状态" },
+      { type: "text", text: "死者仰卧于舱内躺椅，身着正装，衬衫领口有血迹，左手腕有软质束缚痕迹。颈部左侧有3处单刃锐器短刺创，现场血迹分布与失血量不匹配，有清理痕迹；死者指甲缝有微量金属碎屑，操作台收纳槽缺失1套探针组件。" },
+      { type: "subtitle", title: "（五）痕迹物证提取情况" },
+      { type: "list", items: [
+        "现场提取7类物证：3根毛发、死者指甲缝金属碎屑、舱内气溶胶样本、温控系统芯片、门锁刷卡记录、死者随身物品、探针收纳盒（缺失1套，序列号-023），均规范封装送检。"
+      ] },
+      { type: "subtitle", title: "（六）监控及电子设备异常情况" },
+      { type: "text", text: "1. 国际酒店监控：22时40分死者入住受阻，22时54分由志愿者陪同前往接驳点，乘坐钱某驾驶的电瓶车离开，无异常人员跟随；2. 会所监控：23时死者由身着深色西装、疑似技术部的女性接应进入，VIP走廊及舱内监控分别因隐私模式、远程关闭无画面，23时58分该女性驾驶无标识电瓶车离开。" },
+      { type: "subtitle", title: "（七）现场分析意见" },
+      { type: "text", text: "1. 作案手法：具备医疗背景，用单刃小型锐器（疑似缺失探针）精准刺击颈部，案发后清理现场，有反侦查意识；2. 预谋性：利用监控盲区，通过气溶胶导入隐蔽药物使死者失去反抗能力，系有预谋作案；3. 排查建议：重点排查具备医疗背景、熟悉会所系统，案发时段在周边出现的165cm左右偏瘦女性，追查缺失探针、药物渠道等。" },
+      { type: "text", text: "主勘人、协勘人、见证人、记录人签字：__________ 日期：2025年11月11日" }
+    ]
+  },
+  // ==================== 3. 尸检报告（编号：25111101001S） ====================
+  "25111101001S": {
+    code: "25111101001S",
+    date: "2025-11-12",
+    caseType: "01",
+    caseTypeName: "故意杀人案",
+    seq: "001",
+    docType: "S",
+    docTypeName: "尸检报告",
+    title: "法医学尸体检验鉴定书（编号：25111101001S）",
+    caseNo: "A440305202511110001",
+    location: "南山市公安局法医检验中心",
+    isKeyCase: true,
+    content: [
+      { type: "section", title: "三、尸检报告（编号：25111101001S）" },
+      { type: "text", text: "案件编号同前，故意杀人案，尸检日期2025年11月11日，地点为市公安局法医检验中心。主检法医陈志明，协检刘XX、张XX，送检单位为市公安局刑警支队，死者身份经DNA确认为林静怡。" },
+      { type: "subtitle", title: "（一）基础信息" },
+      { type: "text", text: "死者林静怡，女，40岁，千禧会计事务所高级会计师，2025年11月11日06时30分于03号舱被发现，11日10时30分至14时30分进行全面尸检。" },
+      { type: "subtitle", title: "（二）尸表检验" },
+      { type: "text", text: "尸长165cm，体重58kg，尸斑、尸僵符合死后6-8小时特征，角膜轻度混浊。衣着完整无拖拽痕迹，左前臂有卡介苗陈旧疤痕，左手腕有短时间软质束缚痕迹，眼结膜轻度充血。" },
+      { type: "subtitle", title: "（三）颈部创口检验" },
+      { type: "text", text: "颈部左侧有3处直线排列的单刃锐器刺创，创缘整齐、上锐下钝，刃宽≤3cm，与会所缺失的探针组件材质吻合，推测致伤工具为该探针（序列号-023）。" },
+      { type: "subtitle", title: "（四）内部检验与死因认定" },
+      { type: "text", text: "解剖显示，死者左侧颈总动脉断裂，其他脏器无异常，死因系急性失血性休克。总失血量超1000ml，缺失约600ml，疑似被采集；左肘有规范穿刺点，死前1小时内被采血200-400ml。" },
+      { type: "subtitle", title: "（五）特殊发现及实验室检测" },
+      { type: "text", text: "死者血型为AB型Rh阴性，指甲缝金属碎屑与探针材质一致，死亡时间推断为10日23时45分左右。常规毒物检测无异常，结合现场气溶胶检测，确认作案人员使用常规检测无法检出的隐蔽性药物辅助作案。" },
+      { type: "subtitle", title: "（六）鉴定意见" },
+      { type: "text", text: "死者系被单刃锐器刺击颈部致失血性休克死亡，死亡时间10日23时45分左右，死前曾被采血，缺失血液疑似被带走；作案人员具备医疗背景及隐蔽药物使用经验，系他杀。" },
+      { type: "text", text: "主检法医、协检法医签字：__________ 鉴定单位盖章：南山市公安局法医检验中心 日期：2025年11月12日" }
+    ]
+  },
+  // ==================== 4. 物证报告（编号：25111101001W） ====================
+  "25111101001W": {
+    code: "25111101001W",
+    date: "2025-11-13",
+    caseType: "01",
+    caseTypeName: "故意杀人案",
+    seq: "001",
+    docType: "W",
+    docTypeName: "物证报告",
+    title: "物证检验鉴定书（编号：25111101001W）",
+    caseNo: "A440305202511110001",
+    location: "南山市公安局刑事科学技术研究所",
+    isKeyCase: true,
+    content: [
+      { type: "section", title: "四、物证报告（编号：25111101001W）" },
+      { type: "text", text: "案件编号同前，故意杀人案，检验日期2025年11月12-13日，地点为市公安局刑事科学技术研究所，检验人员李XX、王XX，送检单位为市公安局刑警支队。" },
+      { type: "subtitle", title: "（一）送检材料" },
+      { type: "text", text: "送检材料共9类，包括死者指甲缝提取物、现场毛发、温控芯片、纤维样本、探针收纳盒、气溶胶样本，及会所员工、接驳车司机等相关人员的比对样本。" },
+      { type: "subtitle", title: "（二）检验方法" },
+      { type: "text", text: "按照规范采用DNA检验、微量物证分析、气溶胶专项检测、电子证据检验、指纹检验等方法开展检测。" },
+      { type: "subtitle", title: "（三）检验结果" },
+      { type: "list", items: [
+        "1. DNA：1根现场毛发检出不明女性DNA，其余与死者一致，比对样本均无匹配；",
+        "2. 微量物证：金属碎屑与探针材质一致，纤维为聚酯纤维（非会所制服），探针缺失序列号-023；",
+        "3. 气溶胶：检出隐蔽性镇静药物，可使人体短暂失能；",
+        "4. 电子证据：理疗舱曾被未知账号登录、远程注入药物、关闭监控。"
+      ] },
+      { type: "subtitle", title: "（四）鉴定意见" },
+      { type: "text", text: "不明女性DNA及纤维指向同一重点嫌疑人；作案工具为缺失的探针-023；作案人员用隐蔽药物辅助作案，通过未授权账号操控设备；会所员工等相关人员排除嫌疑。" },
+      { type: "subtitle", title: "（五）工作建议" },
+      { type: "text", text: "扩大DNA比对范围，追查缺失探针、药物渠道、无标识电瓶车及未知账号来源，排查系统安全漏洞。" },
+      { type: "text", text: "检验人员、审核人签字：__________ 鉴定单位盖章：南山市公安局刑事科学技术研究所 日期：2025年11月13日" }
+    ]
+  },
+  // ==================== 5. 询问笔录（编号：25111101001X） ====================
+  "25111101001X": {
+    code: "25111101001X",
+    date: "2025-11-12",
+    caseType: "01",
+    caseTypeName: "故意杀人案",
+    seq: "001",
+    docType: "X",
+    docTypeName: "询问笔录",
+    title: "询问笔录（合集，编号：25111101001X）",
+    caseNo: "A440305202511110001",
+    location: "南山市公安局刑警大队询问室",
+    isKeyCase: true,
+    content: [
+      { type: "section", title: "五、询问笔录（编号：25111101001X）" },
+      { type: "text", text: "案件编号：A440305202511110001，案件性质为故意杀人案，询问日期为2025年11月11日至11月12日，询问地点为南山市公安局刑警大队询问室，询问人员为张XX、李XX（均为刑警大队民警），记录人为王XX（刑警大队文员）。本次共询问相关证人10名，经核实，所有被询问证人均有明确不在场证明，暂无作案嫌疑；另有部分与死者相关的人员（含死者同事、亲属等）暂未取得联系，后续将持续跟进询问。所有询问过程均严格遵循法定程序，告知证人权利义务，证人自愿陈述，陈述内容真实有效，无刑讯逼供、诱供等违规情形。" },
+{
+        type: "section",
+        title: "证人一：酒店前台王某某（女，26岁）"
+      },
+      {
+        type: "text",
+        text: "询问时间：2025年11月11日13时至14时。"
+      },
+      {
+        type: "quote",
+        header: "问：请描述接待林静怡的过程。",
+        content: "答：她大约在2025年11月10日22时40分抵达我们酒店大堂前台，当时拖着一个黑色行李箱，神色略显疲惫，身上穿着深蓝色西装外套。我通过酒店预订系统查询，发现她预订了我们酒店的商务房，但当时系统显示商务房已无空余，我便第一时间将该情况如实告知了她。"
+      },
+      {
+        type: "quote",
+        header: "问：然后你和她交流了什么？",
+        content: "答：我共向她提供了三个备选方案，均如实告知其具体细节：A选项为等待空房释放，预计需等待2-3小时，空房释放后将第一时间通知她；B选项为升级至套房，需现场补差价480元，可通过手机支付、现金支付两种方式结算；C选项为免费转至我们酒店的合作单位——提希丰高端养生会所VIP理疗舱入住，该方案包含基础过夜服务，需签署电子授权书确认。当时系统弹出“合作方案已确认”提示，我便将这三个选项详细告知了她。"
+      },
+      {
+        type: "quote",
+        header: "问：她怎么选择的？",
+        content: "答：她起初明确表示想要选择B选项，即升级至套房，随后便操作手机尝试支付差价，但多次支付均提示失败。我告知其可重启手机支付界面或更换微信、支付宝等其他支付方式，她尝试后仍未成功，神色略显无奈，随后向我询问“电子授权书是否可在手机端签署”，我给予肯定答复并告知其操作流程后，她查看了片刻手机，最终选择了C选项，并在手机端完成了电子授权书的签署。"
+      },
+      {
+        type: "quote",
+        header: "问：后续是否发现异常情况？",
+        content: "答：次日（11月11日）我核对酒店房态时发现，商务房实际并未住满，凌晨2时左右有2间客人取消预订，该情况与当晚系统显示的“无空余商务房”存在矛盾；此外，当时林静怡女士支付差价时出现的支付失败提示，我重启前台系统后便恢复正常，无其他异常，该支付异常情况较为可疑，但我不清楚具体原因。"
+      },
+      {
+        type: "quote",
+        header: "问：你当晚的工作轨迹是什么？",
+        content: "答：我当晚19时上班，一直在前台值班，未离开过前台区域；23时30分交接班后下班。......."
+      },
+      {
+        type: "section",
+        title: "证人二：志愿者李某（男，19岁，深南大学学生）"
+      },
+      {
+        type: "text",
+        text: "询问时间：2025年11月11日12时30分至13时15分。"
+      },
+      {
+        type: "quote",
+        header: "问：请描述你陪同林静怡前往接驳点的相关情况。",
+        content: "答：当时酒店前台的工作人员通知我，有一位SBTP商旅贵宾需前往提希丰高端养生会所，我便按照酒店志愿者工作要求，协助其拎取行李箱，陪同她从酒店大堂前往酒店西侧门接驳点，全程约5分钟，未停留"
+      },
+      {
+        type: "quote",
+        header: "问：途中是否与她有过交谈？",
+        content: "答：并未进行过多交谈，她当时看起来比较疲惫，一直低头走路，偶尔看一眼手机。"
+      },
+      {
+        type: "section",
+        title: "证人三：接驳司机钱某（男，52岁）"
+      },
+      {
+        type: "text",
+        text: "询问时间：2025年11月11日11时30分至12时30分。"
+      },
+      {
+        type: "quote",
+        header: "问：请详细描述你当晚的工作情况。",
+        content: "答：我当晚驾驶车牌为A-07的专用接驳车执行国际酒店至其合作单位的接驳任务，工作时间为18时00分至23时30分。22时58分，我接到酒店调度通知，前往酒店西侧门接驳点接送一位前往提希丰高端养生会所的贵宾，于23时00分抵达。"
+      },
+      {
+        type: "quote",
+        header: "问：送达后有发生什么情况吗？",
+        content: "答：车辆停靠VIP入口后，一名身着深色西装、佩戴口罩的女性人员已在门口等候。该女性人员主动上前接过林静怡女士的行李箱，林静怡女士看了她一眼后，便跟随其进入会所。我确认客人安全送达后，便驾驶接驳车返回酒店，23时15分抵达酒店接驳点，之后未再外出，23时30分下班回家。"
+      },
+      {
+        type: "quote",
+        header: "问：你是否看清该女性人员的样貌、身形特征？",
+        content: "答：当时现场光线较暗，该女性人员全程佩戴口罩，未能看清其具体样貌。其佩戴的工牌在灯光下晃动了一下。"
+      },
+      { type: "text", text: "证人、询问人员、记录人签字：__________ 日期：2025年11月12日" }
+    ]
+  },
+  // ==================== 6. 电子数据取证报告（编号：25111101001D） ====================
+  "25111101001D": {
+    code: "25111101001D",
+    date: "2025-11-12",
+    caseType: "01",
+    caseTypeName: "故意杀人案",
+    seq: "001",
+    docType: "D",
+    docTypeName: "电子数据",
+    title: "电子数据取证报告（编号：25111101001D）",
+    caseNo: "A440305202511110001",
+    location: "南山市公安局网安支队",
+    isKeyCase: true,
+    content: [
+      { type: "section", title: "六、电子数据取证报告（编号：25111101001D）" },
+      { type: "text", text: "案件编号同前，故意杀人案，取证日期2025年11月12日，地点为市公安局网安支队电子数据取证实验室，取证人员赵XX、孙XX，送检单位为市公安局刑警支队。" },
+      { type: "subtitle", title: "（一）取证对象" },
+      { type: "text", text: "死者iPhone 16 Pro手机、提希丰高端养生会所服务器记录、国际酒店预订系统数据。" },
+      { type: "subtitle", title: "（二）取证方法" },
+      { type: "text", text: "采用专业设备提取手机数据并备份，依法调取系统日志、服务器数据，制作镜像备份，排查异常痕迹。" },
+      { type: "subtitle", title: "（三）短信记录提取结果" },
+      { type: "text", text: "死者11月10日改签列车至21:15发车，同事周变告知其11日抵达南山，死者告知对方已预订酒店。" },
+      { type: "subtitle", title: "（四）其他电子数据提取说明" },
+      { type: "text", text: "死者两次支付酒店套房差价失败，提示系统异常；SBTP系统显示其正常签署授权书；酒店预订系统当晚异常显示商务房无空余，疑似被篡改。" },
+      { type: "text", text: "取证人员、审核人签字：__________ 取证单位盖章：南山市公安局网络安全保卫支队 日期：2025年11月12日" }
+    ]
+  },
+  // ==================== 7. 系统手册（公开） ====================
+  "00000000000L": {
+    code: "00000000000L",
+    date: "2025-01-01",
+    caseType: "00",
+    caseTypeName: "系统",
+    seq: "000",
+    docType: "L",
+    docTypeName: "系统手册",
+    title: "系统使用手册",
+    caseNo: "SYS-2025-001",
+    location: "系统默认",
+    isPublic: true,
+    content: [
+      { type: "section", title: "系统使用手册" },
+      { type: "text", text: "警务综合信息系统（PIIS）是面向公安机关内部使用的案件信息管理平台。本系统采用12位案件编码体系，实现案件资料的数字化管理与快速检索。系统严格遵循《公安机关办理刑事案件程序规定》及信息安全等级保护要求。" },
+      { type: "section", title: "编码规则" },
+      { type: "text", text: "案件编码共12位：日期(6位) + 案件类型(2位) + 序号(3位) + 文档类型(1位字母)。日期格式：YYMMDD，如251111表示2025年11月11日。\n案件类型（共3类20种）：01故意杀人案、02抢劫案、03盗窃案、04诈骗案（含电信诈骗）、05故意伤害案、06毒品犯罪案、07经济犯罪案（含涉众型）、08计算机网络犯罪案、09涉黑涉恶案、10其他刑事案件；11扰乱秩序案（原治安案细化）、12寻衅滋事案、13殴打他人案、14盗窃（治安）案、15毒品（行政）案、16其他治安案件；17交通事故案、18交通肇事案（刑事）、19火灾事故案、20消防行政处罚案。\n序号：001-999，表示当日该类型案件顺序号。\n文档类型：B报案记录、K现场勘查、S尸检报告、W物证报告、X询问笔录、D电子数据、L系统手册、M监控数据、E员工名单等。" },
+      { type: "section", title: "案件提示" },
+      { type: "text", text: "今日已上传：25111101001案件的相关内容。本案当前系统上已上传报案记录、现场勘查和尸检报告、物证报告、员工名单、笔录和电子数据取证的相关内容。监控数据当前未上传，但目前已可通过编码直接跳转查看。" },
+      { type: "section", title: "安全提示" },
+      { type: "text", text: "系统内容涉及警务工作秘密，严禁截屏、拍照或对外泄露。重点案件数据访问需经授权，操作日志全程记录。技术支持：科信处 内线XXXX。" }
+    ]
+  },
+  // ==================== 8. 员工名单（编号：25111101001E） ====================
+  "25111101001E": {
+    code: "25111101001E",
+    date: "2025-11-11",
+    caseType: "01",
+    caseTypeName: "故意杀人案",
+    seq: "001",
+    docType: "E",
+    docTypeName: "员工名单",
+    title: "提希丰高端养生会所员工名单（2025年11月10日当值）",
+    caseNo: "HR-20251110-TXF",
+    location: "提希丰高端养生会所人力资源部",
+    isKeyCase: true,
+    content: [
+      { type: "section", title: "说明" },
+      { type: "text", text: "本名单为提希丰高端养生会所2025年11月10日至11月11日的部分在岗员工信息，含姓名及10位工号ID。此名单已由会所人力资源部于11月11日10时提供，用于排查与林静怡案相关的人员。" },
+      { type: "section", title: "员工名单" },
+      { type: "table", headers: ["姓名", "工号ID (10位)", "部门", "当值时段"], rows: [
+          ["王莉", "TXF0452091", "前台接待", "20:00 - 08:00（夜班）"],
+          ["孙启明", "TXF0321765", "礼宾部", "18:00 - 02:00（夜班）"],
+          ["李瑞", "TXF0983210", "志愿者（深南大学）", "19:00 - 23:30"],
+          ["钱德平", "TXF0543321", "接驳车司机", "22:00 - 02:00（夜班）"],
+          ["陈明", "TXF0112987", "礼宾部", "22:00 - 06:00（夜班）"],
+          ["刘东伟", "TXF0678432", "安保部", "20:00 - 08:00（夜班）"],
+          ["张雅楠", "TXF0765123", "客服部", "18:00 - 02:00（夜班）"],
+          ["赵明", "TXF0432659", "技术部", "09:00 - 18:00"],
+          ["宋绪静", "TXF0231087", "技术部（系统维护）", "02:00 - 14:00"],
+          ["周明远", "TXF0896543", "后勤保障", "22:00 - 06:00（夜班）"],
+          ["林小华", "TXF0123987", "保洁部", "22:00 - 06:00（夜班）"],
+          ["吴茜", "TXF0554876", "前台接待", "14:00 - 22:00"]
+      ] },
+      { type: "section", title: "备注" },
+      { type: "text", text: "1. 工号全部为10位，以'TXF'开头为提希丰正式员工编码；志愿者编码临时录入，仍为10位格式。" }
+    ]
+  }
+};
+
+// ========== 全局变量与函数 ==========
+let unlocked = {};               // 当前会话解锁的文档
+const STORAGE_KEY = 'police_unlocked_archive';   // 文档解锁存储key
+const MONITOR_VISITED_KEY = 'police_monitor_visited';  // 监控访问标记key
+const docList = document.getElementById("docList");
+const emptyState = document.getElementById("emptyState");
+const docContent = document.getElementById("docContent");
+const docTitle = document.getElementById("docTitle");
+const docMeta = document.getElementById("docMeta");
+const docText = document.getElementById("docText");
+const docFooter = document.getElementById("docFooter");
+const searchInput = document.getElementById("searchInput");
+const searchStatus = document.getElementById("searchStatus");
+const clearBtn = document.getElementById("clearArchiveBtn");
+
+// 获取监控访问状态
+function getMonitorVisited() {
+  return localStorage.getItem(MONITOR_VISITED_KEY) === 'true';
+}
+
+// 设置监控访问状态
+function setMonitorVisited(visited) {
+  localStorage.setItem(MONITOR_VISITED_KEY, visited);
+}
+
+// 本地存储：加载已解锁档案
+function loadUnlocked() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try {
+      const keys = JSON.parse(stored);  // 存储的是编码数组
+      unlocked = {};
+      // 只恢复存在于documents中的档案（防止脏数据）
+      keys.forEach(key => {
+        if (documents[key]) unlocked[key] = documents[key];
+      });
+    } catch (e) {
+      console.warn("解析存储失败", e);
+      unlocked = {};
+    }
+  }
+  // 无论如何确保系统手册始终存在（如果尚未解锁则添加）
+  if (!unlocked["00000000000L"]) {
+    unlocked["00000000000L"] = documents["00000000000L"];
+  }
+  saveUnlocked(); // 同步存储（确保存储中也有系统手册）
+}
+
+// 保存解锁状态到本地存储
+function saveUnlocked() {
+  const keys = Object.keys(unlocked);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(keys));
+}
+
+// 清空存档（保留系统手册，但清空监控访问标记）
+function clearUnlocked() {
+  // 清空已解锁文档，只保留系统手册
+  unlocked = {
+    "00000000000L": documents["00000000000L"]
+  };
+  saveUnlocked();
+  
+  // 同时清空监控访问标记
+  setMonitorVisited(false);
+  
+  renderList();
+  
+  // 如果当前打开的是被清除的文档，则跳转到系统手册
+  const activeItem = document.querySelector(".doc-item.active");
+  if (activeItem && activeItem.dataset.key) {
+    const currentKey = activeItem.dataset.key;
+    if (!unlocked[currentKey]) {
+      openDoc("00000000000L");
+    }
+  } else {
+    // 如果没有激活的文档，也显示系统手册
+    openDoc("00000000000L");
+  }
+  
+  // 显示提示信息（可选）
+  console.log("存档已清空，监控访问记录已清除");
+  
+  // 可以在页面上显示一个短暂的提示
+  const statusMsg = document.createElement("div");
+  statusMsg.textContent = "✓ 存档已清空，监控记录已清除";
+  statusMsg.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--accent-dark);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    z-index: 9999;
+    animation: fadeOut 2s forwards;
+  `;
+  document.body.appendChild(statusMsg);
+  setTimeout(() => {
+    statusMsg.remove();
+  }, 2000);
+}
+
+// 辅助：获取当前打开的文档key
+function getCurrentOpenKey() {
+  const activeItem = document.querySelector(".doc-item.active");
+  if (activeItem && activeItem.dataset.key) return activeItem.dataset.key;
+  return null;
+}
+
+// 渲染列表
+function renderList() {
+  docList.innerHTML = "";
+  const keys = Object.keys(unlocked).sort();
+  keys.forEach(key => {
+    const doc = unlocked[key];
+    const div = document.createElement("div");
+    div.className = "doc-item" + (doc.isPublic ? " public" : "");
+    div.dataset.key = key;   // 保存key
+    div.innerHTML = `
+      <div class="doc-type">${doc.docTypeName}</div>
+      <div class="doc-title">${doc.isKeyCase ? '<span style="color: var(--accent); font-weight: bold;">[重点] </span>' : ''}${doc.title}</div>
+      <div class="doc-meta">${doc.code} | ${doc.date} | ${doc.caseTypeName}</div>
+    `;
+    div.onclick = () => openDoc(key);
+    docList.appendChild(div);
+  });
+}
+
+// 检查是否所有文档都已解锁
+function checkAllUnlocked() {
+  // 需要的案件档案编码（排除系统手册000...和监控M）
+  const required = [
+    "25111101001B",
+    "25111101001K",
+    "25111101001S",
+    "25111101001W",
+    "25111101001X",
+    "25111101001D",
+    "25111101001E"
+  ];
+  
+  const unlockedKeys = Object.keys(unlocked);
+  const allDocsUnlocked = required.every(code => unlockedKeys.includes(code));
+  
+  // 从localStorage读取监控访问状态
+  const monitorVisited = getMonitorVisited();
+  
+  console.log("检查完成状态:", { allDocsUnlocked, monitorVisited, unlockedKeys });
+  
+  if (allDocsUnlocked && monitorVisited) {
+    // 使用setTimeout确保alert不会阻塞渲染
+    setTimeout(() => {
+      alert("✓ 所有档案已解锁\n✓ 监控页面已访问\n\n根据监控的编码，是时候去找找所有异常情况的具体操作手段了。");
+    }, 100);
+  }
+}
+
+function openDoc(key) {
+  const doc = unlocked[key];
+  if (!doc) return;
+  // 更新active样式
+  document.querySelectorAll(".doc-item").forEach(item => item.classList.remove("active"));
+  const activeItem = Array.from(document.querySelectorAll(".doc-item")).find(
+    item => item.dataset.key === key
+  );
+  if (activeItem) activeItem.classList.add("active");
+  
+  emptyState.style.display = "none";
+  docContent.style.display = "block";
+  docTitle.textContent = doc.title;
+  let metaHtml = `案件编码：${doc.code} | 案发日期：${doc.date}<br>`;
+  metaHtml += `案件类型：${doc.caseTypeName}(${doc.caseType}) | 文档类型：${doc.docTypeName}<br>`;
+  if (doc.caseNo) metaHtml += `档案编号：${doc.caseNo} | `;
+  if (doc.location) metaHtml += `地点：${doc.location}`;
+  docMeta.innerHTML = metaHtml;
+  docText.innerHTML = "";
+  doc.content.forEach(block => {
+    if (block.type === "section") {
+      const h2 = document.createElement("div"); h2.className = "doc-section-title"; h2.textContent = block.title; docText.appendChild(h2);
+    } else if (block.type === "subtitle") {
+      const h3 = document.createElement("div"); h3.className = "doc-subtitle"; h3.textContent = block.title; docText.appendChild(h3);
+    } else if (block.type === "text") {
+      const p = document.createElement("div"); p.className = "doc-paragraph"; p.innerHTML = block.text; docText.appendChild(p);
+    } else if (block.type === "list") {
+      block.items.forEach(item => { const p = document.createElement("div"); p.className = "doc-list-item"; p.textContent = item; docText.appendChild(p); });
+    } else if (block.type === "table") {
+      const table = document.createElement("table"); table.className = "doc-table";
+      const thead = document.createElement("thead"); const tr = document.createElement("tr");
+      block.headers.forEach(h => { const th = document.createElement("th"); th.textContent = h; tr.appendChild(th); });
+      thead.appendChild(tr); table.appendChild(thead);
+      const tbody = document.createElement("tbody");
+      block.rows.forEach(row => { const tr = document.createElement("tr"); row.forEach(cell => { const td = document.createElement("td"); td.textContent = cell; tr.appendChild(td); }); tbody.appendChild(tr); });
+      table.appendChild(tbody); docText.appendChild(table);
+    } else if (block.type === "quote") {
+      const quote = document.createElement("div"); quote.className = "doc-quote";
+      quote.innerHTML = `<div class="doc-quote-header">${block.header}</div><div>${block.content}</div>`;
+      docText.appendChild(quote);
+    } else if (block.type === "signature") {
+      const p = document.createElement("div"); p.className = "doc-paragraph"; p.textContent = block.text; docText.appendChild(p);
+    }
+  });
+  docFooter.innerHTML = `本文件由警务综合信息系统生成 | 生成时间：${new Date().toLocaleString('zh-CN')}<br>未经授权不得复制、传播 | 操作员编号：${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+  document.getElementById("mainContent").scrollTop = 0;
+}
+
+function validateCode(code) {
+  if (code.length !== 12) return false;
+  const frontPart = code.substring(0, 11);
+  if (!/^\d{11}$/.test(frontPart)) return false;
+  const lastChar = code.substring(11, 12);
+  if (!/^[A-Z]$/.test(lastChar)) return false;
+  return true;
+}
+
+// 搜索事件
+searchInput.addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  const key = e.target.value.trim().toUpperCase();
+  
+  if (!validateCode(key)) {
+    e.target.style.borderColor = "#e74c3c";
+    setTimeout(() => { e.target.style.borderColor = ""; }, 500);
+    e.target.placeholder = "格式错误：前11位数字，最后1位字母";
+    e.target.value = "";
+    return;
+  }
+  
+  if (key === "25111101001M") {
+    // 设置监控访问标记到localStorage
+    setMonitorVisited(true);
+    
+    // 保存当前解锁的文档状态（确保在跳转前保存）
+    saveUnlocked();
+    
+    // 检查是否满足条件
+    checkAllUnlocked();
+    
+    // 显示提示并跳转
+    alert("正在跳转至监控页面...\n\n提示：返回本系统后，系统将记住您已访问过监控。");
+    
+    window.location.href = "jiankong.html";
+    
+    // 演示模式：不跳转，只是模拟
+    console.log("监控页面访问已记录");
+    e.target.value = "";
+    return;
+  }
+  
+  searchStatus.classList.add("active");
+  setTimeout(() => {
+    searchStatus.classList.remove("active");
+    if (documents[key] && !unlocked[key]) {
+      unlocked[key] = documents[key];
+      saveUnlocked();               // 每次解锁新文档就保存
+      renderList();
+      openDoc(key);
+      e.target.value = "";
+      checkAllUnlocked();           // 添加后检查
+    } else if (unlocked[key]) {
+      openDoc(key);
+      e.target.value = "";
+    } else {
+      e.target.style.borderColor = "#e74c3c";
+      setTimeout(() => { e.target.style.borderColor = ""; }, 500);
+      e.target.placeholder = "该编码档案不存在";
+      e.target.value = "";
+    }
+  }, 600);
+});
+
+searchInput.addEventListener("input", e => {
+  let value = e.target.value.toUpperCase();
+  if (value.length <= 11) value = value.replace(/[^0-9]/g, '');
+  else { const front = value.substring(0,11).replace(/[^0-9]/g,''); const end = value.substring(11,12).replace(/[^A-Z]/g,'').toUpperCase(); value = front + end; }
+  e.target.value = value;
+  if (value.length === 12) e.target.style.borderColor = "var(--accent-light)"; else e.target.style.borderColor = "";
+});
+
+// 清空按钮事件
+clearBtn.addEventListener("click", () => {
+  if (confirm("确定清空所有已解锁档案？\n\n系统手册将保留，但监控访问记录将被清除。\n\n需要重新搜索监控编码才能触发完成提示。")) {
+    clearUnlocked();
+  }
+});
+
+// 初始化
+function init() {
+  loadUnlocked();          // 从localStorage加载
+  renderList();
+  openDoc("00000000000L"); // 默认显示系统手册
+  
+  // 每次初始化时都检查是否满足条件
+  setTimeout(() => {
+    checkAllUnlocked();
+  }, 500);
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+
+</body>
+</html>
