@@ -1,0 +1,2625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>新闻检索系统 - 澳港省日报</title>
+    <link rel="stylesheet" href="./fcyym.css" />
+    <style>
+        /* 全局背景改为白色 - 与news_detail一致 */
+        body {
+            background-color: #ffffff !important;
+            margin: 0;
+            padding: 0;
+            font-family: 'SimSun', '宋体', 'Microsoft YaHei', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 大幅加宽整体容器宽度 - 与news_detail一致 */
+        .w1000 {
+            width: 1400px !important;
+            margin: 0 auto;
+            display: flex;
+        }
+
+        /* 恢复左右并排布局 */
+        .main {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px !important;
+            padding: 0 20px;
+            min-height: 800px;
+        }
+
+        /* 左侧内容区 - 搜索栏 */
+        .paper-box {
+            width: 20% !important;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background: #fff;
+            border: 1px solid #e4e4e4;
+            padding: 20px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 右侧内容区 - 思维导图 */
+        .right-main {
+            width: 75% !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #fff;
+            border: 1px solid #e4e4e4;
+            padding: 28px 32px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 报纸图片样式 */
+        .paper img {
+            width: 100% !important;
+            max-width: 700px;
+            height: auto !important;
+        }
+
+        /* 搜索区域样式 */
+        .search-area {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .search-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d7000f;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #d7000f;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+        }
+
+        .search-btn {
+            padding: 10px 20px;
+            background-color: #d7000f;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .search-btn:hover {
+            background-color: #b0000c;
+        }
+
+        /* 搜索提示 */
+        .search-hints {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #666;
+            border-left: 3px solid #d7000f;
+        }
+
+        .search-hints h4 {
+            margin-top: 0;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .search-hints ul {
+            margin: 8px 0;
+            padding-left: 18px;
+        }
+
+        .search-hints li {
+            margin: 4px 0;
+        }
+
+        /* 搜索结果列表 */
+        .results-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        .result-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #f5f5f5;
+            border-left: 3px solid #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .result-item:hover {
+            border-left-color: #d7000f;
+            background-color: #fff3f3;
+        }
+
+        .result-item.new {
+            border-left-color: #d7000f;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(215, 0, 15, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(215, 0, 15, 0.6); }
+        }
+
+        .result-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .result-meta {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* 历史记录 */
+        .history-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed #ccc;
+        }
+
+        .history-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .history-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .history-tag {
+            padding: 5px 12px;
+            background-color: #e9ecef;
+            color: #555;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .history-tag:hover {
+            background-color: #d7000f;
+            color: white;
+        }
+
+        /* ========== 思维导图容器 - 整合mind2样式 ========== */
+        .mind-map-container {
+            width: 100%;
+            height: 700px;
+            position: relative;
+            background: #f0f0f0;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            touch-action: none;
+        }
+
+        /* 复古网格背景 */
+        #grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-image: 
+              linear-gradient(#d0d0d0 1px, transparent 1px),
+              linear-gradient(90deg, #d0d0d0 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-repeat: repeat;
+        }
+
+        /* 扫描线效果 */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+              to bottom,
+              rgba(255,255,255,0),
+              rgba(255,255,255,0) 50%,
+              rgba(0,0,0,0.03) 50%,
+              rgba(0,0,0,0.03) 100%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.4;
+        }
+
+        /* 画布容器 */
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        #connection-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #node-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            cursor: grab;
+        }
+
+        #node-layer:active { cursor: grabbing; }
+        #node-layer.dragging-node { cursor: default; }
+
+        /* ========== 节点样式 ========== */
+        .node {
+            position: absolute;
+            background: #f0f0f0;
+            border: 2px solid #2a2a2a;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: grab;
+            user-select: none;
+            z-index: 10;
+            min-width: 80px;
+            max-width: 300px;
+            text-align: center;
+            border-radius: 0;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+            word-wrap: break-word;
+            line-height: 1.3;
+            font-family: 'Courier Prime', 'Courier New', monospace;
+        }
+
+        .node:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.3);
+            z-index: 20;
+        }
+
+        .node:active { cursor: grabbing; }
+
+        /* 选中节点的高亮样式 */
+        .node.selected {
+            border-color: #ff0040 !important;
+            background: #ff0040 !important;
+            color: white !important;
+            box-shadow: 0 0 15px #ff0040, 4px 4px 0 rgba(0,0,0,0.3) !important;
+            transform: translate(-2px, -2px);
+            z-index: 100;
+        }
+
+        .node.dragging {
+            z-index: 1000;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.3);
+            opacity: 0.9;
+            transform: translate(-2px, -2px);
+        }
+
+        .node.merging {
+            animation: mergePulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes mergePulse {
+            0%, 100% { 
+              box-shadow: 0 0 0 2px #8b0000, 0 0 20px #ff0040, 4px 4px 0 rgba(0,0,0,0.2);
+              transform: translate(-50%, -50%) scale(1);
+            }
+            50% { 
+              box-shadow: 0 0 0 4px #8b0000, 0 0 30px #ff0040, 6px 6px 0 rgba(0,0,0,0.3);
+              transform: translate(-50%, -50%) scale(1.02);
+            }
+        }
+
+        .node.clue-node {
+            background: #fffacd;
+            border-color: #d69e2e;
+            border-width: 3px;
+            color: #8b4513;
+        }
+
+        .node.clue-node::before {
+            content: "💡";
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+        }
+
+        .node.bookmarked {
+            border-left: 4px solid #dc143c;
+        }
+
+        .node.bookmarked::after {
+            content: "🔖";
+            position: absolute;
+            left: -20px;
+            top: -10px;
+            font-size: 16px;
+        }
+
+        /* 未知节点样式 - 用于未解锁的新闻节点 */
+        .node.unknown-node {
+            background: #f5f5f5;
+            border-color: #999;
+            color: #777;
+            font-style: italic;
+            border-style: dashed;
+        }
+
+        .node.unknown-node::after {
+            content: "?";
+            position: absolute;
+            right: -10px;
+            top: -10px;
+            background: #8b0000;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid #2a2a2a;
+        }
+
+        /* 新闻节点可点击样式 - 解锁后显示为编号格式 */
+        .node.news-node {
+            cursor: pointer;
+            border-color: #0066cc;
+            background: #f0f8ff;
+        }
+
+        .node.news-node.unlocked {
+            background: #f0fff0;
+            border-color: #28a745;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .node.news-node:hover {
+            background: #0066cc;
+            color: white;
+            border-color: #004499;
+        }
+
+        .node input {
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            text-align: center;
+            width: 100%;
+            outline: none;
+        }
+
+        .node.level-0 { background: #d0d0d0; font-size: 18px; border-width: 3px; }
+        .node.level-1 { background: #e0e0e0; font-size: 16px; }
+        .node.level-2 { background: #f0f0f0; }
+        .node.level-3 { background: #f5f5f5; }
+        .node.level-4 { background: #fafafa; }
+        .node.level-5 { background: #fdfdfd; }
+        .node.level-6 { background: #fefefe; }
+
+
+        /* 合并提示 */
+        #merge-hint {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #d69e2e;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: bold;
+            display: none;
+            z-index: 1001;
+            border: 2px solid #2a2a2a;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+        }
+
+        #merge-hint.active { display: block; }
+
+        /* 模式指示器 */
+        .mode-indicator {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: #8b0000;
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 12px;
+            display: none;
+            z-index: 1001;
+            border: 2px solid #2a2a2a;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+        }
+
+        .mode-indicator.active { display: block; }
+
+        /* 右键菜单 */
+        .context-menu {
+            position: absolute;
+            background: #f0f0f0;
+            border: 2px solid #2a2a2a;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            min-width: 180px;
+        }
+
+        .context-menu-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            border-bottom: 1px solid #ccc;
+            transition: background 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .context-menu-item:hover { background: #e0e0e0; }
+        .context-menu-item:last-child { border-bottom: none; }
+        .context-menu-item.merge-option { background: #fffacd; color: #8b4513; font-weight: bold; }
+        .context-menu-item.merge-option:hover { background: #ffe5a3; }
+        .context-menu-item.merge-option.disabled { opacity: 0.5; cursor: not-allowed; background: #f0f0f0; }
+
+        /* 缩放控制 */
+        .zoom-controls {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 800;
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #2a2a2a;
+            background: #f0f0f0;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+
+        .zoom-btn:hover {
+            background: #e0e0e0;
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.3);
+        }
+
+        /* 工具栏区域样式 - 红色风格贴近原板块按钮 */
+        .toolbar-section {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2px;
+            margin: 20px 0;
+            width: 100%;
+        }
+
+        .toolbar-btn {
+            background-color: #d7000f;
+            color: white;
+            font-size: 14px;
+            text-align: center;
+            padding: 12px 0;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: none;
+            font-family: 'Courier Prime', 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        .toolbar-btn:hover {
+            background-color: #b0000c;
+        }
+
+        .toolbar-btn.active {
+            background-color: #8b0000;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        /* 左侧固定面板 (整合数据库标题和工具栏) */
+        .left-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 250px;
+            background: rgba(240, 240, 240, 0.98);
+            border: 3px solid #2a2a2a;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
+            z-index: 1000;
+            font-family: 'Courier Prime', 'Courier New', monospace;
+            padding: 15px 12px;
+            max-height: 500px;
+            overflow-y: auto;
+            backdrop-filter: blur(2px);
+            pointer-events: auto;
+        }
+
+        .panel-header {
+            border-bottom: 2px solid #2a2a2a;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+
+        .panel-header h1 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #3e3a3a;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .stats-box {
+            background: rgba(0,0,0,0.05);
+            border: 2px solid #2a2a2a;
+            padding: 8px;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            box-shadow: inset 2px 2px 0 rgba(0,0,0,0.1);
+        }
+
+        .legend-compact {
+            margin-top: 12px;
+            border-top: 2px solid #2a2a2a;
+            padding-top: 12px;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+        }
+
+        .legend-symbol {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #2a2a2a;
+            background: #f0f0f0;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            flex-shrink: 0;
+        }
+
+        .legend-symbol.clue { background: #fffacd; border-color: #d69e2e; }
+        .legend-symbol.bookmark { border-left: 4px solid #dc143c; background: #f0f0f0; }
+        .legend-symbol.root { background: #d0d0d0; font-weight: bold; }
+
+        /* 线索面板 */
+        #clue-panel {
+            position: absolute;
+            top: 10px;
+            left: 300px;
+            background: #fffacd;
+            border: 3px solid #d69e2e;
+            padding: 15px;
+            font-size: 12px;
+            z-index: 900;
+            width: 280px;
+            max-height: 350px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
+        }
+
+        #clue-panel.active { display: block; }
+
+        #clue-panel h3 {
+            margin-bottom: 12px;
+            color: #8b4513;
+            border-bottom: 2px solid #d69e2e;
+            padding-bottom: 6px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .clue-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #fff;
+            border: 1px solid #d69e2e;
+            border-left: 4px solid #d69e2e;
+            font-size: 11px;
+        }
+
+        /* 最终线索面板 */
+        #final-clue-panel {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: #ffffff;
+            border: 3px solid #ff0040;
+            padding: 15px;
+            font-size: 12px;
+            z-index: 1002;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 0 20px #ff0040, 6px 6px 0 rgba(0,0,0,0.3);
+        }
+
+        #final-clue-panel.active {
+            display: block;
+            animation: finalCluePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes finalCluePulse {
+            0%, 100% { box-shadow: 0 0 20px #ff0040, 6px 6px 0 rgba(0,0,0,0.3); }
+            50% { box-shadow: 0 0 40px #ff0040, 8px 8px 0 rgba(0,0,0,0.3); }
+        }
+
+        #final-clue-panel h3 {
+            margin-bottom: 12px;
+            color: #ff0040;
+            border-bottom: 2px solid #ff0040;
+            padding-bottom: 6px;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .final-clue-item {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #fffefe;
+            border: 2px solid #444;
+            border-left: 4px solid #ff0040;
+            color: #000000;
+        }
+
+        .final-clue-item h4 {
+            color: #daa520;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
+
+        .final-clue-item .password-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .password-tag {
+            background: #8b0000;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 0;
+            font-weight: bold;
+            border: 1px solid #ff0040;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+            font-size: 11px;
+        }
+
+        /* 状态栏 */
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 22px;
+            background: #2a2a2a;
+            color: #f0f0f0;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 1000;
+            border-top: 1px solid #000;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* 顶部导航 - 与news_detail一致 */
+        .top {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .top .w1000 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+        }
+
+        /* 行楷文字logo */
+        .logo {
+            font-family: "STXingkai", "Microsoft YaHei", sans-serif;
+            font-size: 28px;
+            color: #ff0040;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav {
+            display: flex;
+            gap: 35px;
+            font-size: 17px;
+            position: relative;
+        }
+        
+        /* 下拉菜单样式 - 保持原样 */
+        .nav li {
+            list-style: none;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .nav ul {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 8px 0;
+            min-width: 120px;
+            z-index: 1000;
+        }
+        
+        .nav li:hover ul {
+            display: block;
+        }
+        
+        .nav ul li {
+            padding: 5px 15px;
+            white-space: nowrap;
+        }
+        
+        .nav ul li:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .nav ul li a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        /* 日期栏 - 与news_detail一致 */
+        .date-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            color: #444;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        /* 板块按钮网格 */
+        .swiper-box {
+            margin: 22px 0 26px;
+            width: 100%;
+        }
+
+        .swiper-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 2px;
+            padding: 0;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .swiper-slide {
+            background-color: #d7000f;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            padding: 12px 0;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .swiper-slide:hover {
+            background-color: #b0000c;
+        }
+
+        .swiper-slide a {
+            color: white;
+            text-decoration: none;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 隐藏页脚版权信息 */
+        .copyright {
+            display: none !important;
+        }
+
+        /* 底部 */
+        .bottom {
+            background: #fff;
+            border-top: 1px solid #e0e0e0;
+            padding: 26px 0 40px;
+        }
+
+        /* 返回顶部 */
+        .go-top {
+            position: fixed;
+            right: 32px;
+            bottom: 48px;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .go-top:hover {
+            transform: translateY(-6px);
+        }
+
+        .go-top img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 无结果提示 */
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 100px;
+            color: #666;
+        }
+
+        /* 引入在线行楷字体 */
+        @font-face {
+            font-family: 'STXingkai';
+            src: url('https://fonts.gstatic.com/s/notosanssc/v24/k3k68XPNpWRmgQ73v60CSLpGF90me5j.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* 存档按钮样式 - 左侧搜索栏底部只保留两个按钮 */
+        .archive-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .archive-btn {
+            flex: 1;
+            padding: 8px 0;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        /* 可折叠面板样式 */
+        .legend-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            margin-bottom: 8px;
+            cursor: pointer;
+            border-bottom: 1px solid #2a2a2a;
+            font-weight: bold;
+            font-size: 12px;
+            user-select: none;
+        }
+
+        .legend-header:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
+
+        .toggle-icon {
+            font-size: 14px;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .legend-content {
+            transition: max-height 0.3s ease, opacity 0.2s ease;
+            max-height: 300px;
+            opacity: 1;
+            overflow: hidden;
+        }
+
+        /* 修改这部分 - 让收起后更小 */
+        .legend-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+            border: none;
+            visibility: hidden;  /* 完全隐藏内容 */
+        }
+
+        /* 新增代码1 - 当内容收起时，header的下边距也消失 */
+        .legend-content.collapsed + * {
+            margin-top: 0;
+        }
+
+        /* 新增代码2 - 让整个legend-compact在收起时更紧凑 */
+        .legend-compact:has(.legend-content.collapsed) {
+            padding-bottom: 1px; /* 减少底部内边距 */
+        }
+
+        .archive-btn.reset { background-color: #7f8c8d; }
+        .archive-btn.import { background-color: #27ae60; }
+        .archive-btn:hover { opacity: 0.85; }
+    </style>
+    <base target="_blank">
+</head>
+<body>
+    <div class="top">
+        <div class="w1000">
+            <a class="logo" href="website1.html" rel="noreferrer">澳港省日报</a>
+            <ul class="nav">
+                <li id="ribao">
+                    日报
+                    <ul class="ribao">
+                        <li><a target="_blank" rel="noreferrer">人民日报</a></li>
+                        <li><a target="_blank" rel="noreferrer">人民日报海外版</a></li>
+                        <li><a href="graph.html" target="_blank" rel="noreferrer">环球时报</a></li>
+                        <li><a target="_blank" rel="noreferrer">证券时报</a></li>
+                    </ul>
+                </li>
+                <li id="zhoubao">
+                    周报
+                    <ul class="zhoubao">
+                        <li><a target="_blank" rel="noreferrer">国际金融报</a></li>
+                        <li><a target="_blank" rel="noreferrer">中国能源报</a></li>
+                        <li><a target="_blank" rel="noreferrer">健康时报</a></li>
+                        <li><a target="_blank" rel="noreferrer">讽刺与幽默</a></li>
+                        <li><a target="_blank" rel="noreferrer">中国城市报</a></li>
+                    </ul>
+                </li>
+                <li id="zazhi">
+                    杂志
+                    <ul class="zazhi">
+                        <li><a target="_blank" rel="noreferrer">新闻战线</a></li>
+                        <li><a target="_blank" rel="noreferrer">人民论坛</a></li>
+                        <li><a target="_blank" rel="noreferrer">人民周刊</a></li>
+                        <li><a target="_blank" rel="noreferrer">中国经济周刊</a></li>
+                        <li><a target="_blank" rel="noreferrer">民生周刊</a></li>
+                        <li><a target="_blank" rel="noreferrer">国家人文历史</a></li>
+                        <li><a target="_blank" rel="noreferrer">中国报业</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main w1000">
+        <!-- 左侧：搜索栏 -->
+        <div class="paper-box">
+            <div class="search-area">
+                <div class="search-title">📰 新闻检索系统</div>
+
+                <div class="search-input-group">
+                    <input type="text" id="searchInput" class="search-input" placeholder="输入关键词..." onkeypress="if(event.key==='Enter') performSearch()" />
+                    <button class="search-btn" onclick="performSearch()">搜索</button>
+                </div>
+
+                <div class="search-hints">
+                    <h4>💡 数据库使用说明</h4>
+                    <ul>
+                        <li>1.通过搜索词语可以解锁新闻内容，解锁的新闻将会在右侧的思维导图中有所显示</li>
+                        <li>2.可以搜索人名、地点、公司等内容，搜索的关键词只有一个，不会出现需要输入两个词以上进行查询的方式。</li>
+                        <li>3.右侧的思维导图上方存放的是对思维导图进行<strong>合并</strong>，获得新<strong>线索</strong>和通往下一关卡的剧情的按钮，请各位在搜索的过程/结束后一定要进行新闻的两两合并</li>
+			<li>4.如果误删了新闻节点，请直接刷新页面，不用担心进度消失</li>
+                    </ul>
+                </div>
+
+                <!-- 搜索结果 -->
+                <div id="searchResults">
+                    <div class="no-results" style="padding: 20px; color: #999;">
+                        输入关键词开始调查...
+                    </div>
+                </div>
+
+                <!-- 搜索历史 -->
+                <div class="history-section" id="historySection" style="display: none;">
+                    <div class="history-title">📋 搜索历史</div>
+                    <div class="history-tags" id="historyTags"></div>
+                </div>
+
+                <!-- 只保留清除和导入两个按钮，导出按钮在思维导图面板上 -->
+                <div class="archive-buttons">
+                    <button class="archive-btn reset" onclick="resetGameState()">🗑️ 清除存档</button>
+                    <button class="archive-btn import" onclick="document.getElementById('importFile').click()">📂 导入存档</button>
+                </div>
+                <input type="file" id="importFile" accept=".json,application/json" style="display:none;" onchange="handleFileImport(event)" />
+            </div>
+        </div>
+
+        <!-- 右侧：思维导图 -->
+        <div class="right-main">
+            <div class="date-box">
+                <p class="date" style="font-size: 18px; font-weight: bold;">
+                    调查线索功能按钮墙:
+                    <span class="newstime" style="font-weight: normal; color: #666;">CLUE DATABASE</span>
+                </p>
+                <p></p>
+            </div>
+            
+            
+            
+            <div class="toolbar-section">
+                <button class="toolbar-btn" onclick="toggleBookmark()">🔖 书签</button>
+                <button class="toolbar-btn" onclick="findLostNodes()">� 找回节点</button>
+                <button class="toolbar-btn" id="mergeBtn" onclick="toggleMergeMode()">🔀 合并模式</button>
+                <button class="toolbar-btn" onclick="toggleCluePanel()">💡 线索面板</button>
+                <button class="toolbar-btn" onclick="exportGameProgress()">💾 导出存档</button>
+                <button class="toolbar-btn" onclick="resetView()">⌂ 重置视图</button>
+            </div>
+
+            
+
+            <!-- 思维导图容器 - 整合mind2功能 -->
+            <div class="mind-map-container" id="mindMap">
+                <!-- 扫描线 -->
+                <div class="scanlines"></div>
+
+                <!-- 左侧固定面板 -->
+                <div class="left-panel" id="leftPanel">
+                    <div class="panel-header">
+                        <h1>📁 案件调查数据库<br>南山市11·11刑案</h1>
+                    </div>
+
+                        <div class="legend-header" onclick="toggleLegend()">
+                            <span class="toggle-icon" id="legendToggleIcon">▼</span>
+                            图例说明
+                        </div>
+                        <div id="legendContent" class="legend-content">
+                            <div class="legend-grid">
+                                <div class="legend-item"><div class="legend-symbol" style="background:#e0e0e0;">X</div> <span>地点/人物/开始调查</span></div>
+                                <div class="legend-item"><div class="legend-symbol">【】</div> <span>案件序号</span></div>
+                                <div class="legend-item"><div class="legend-symbol clue">💡</div> <span>合并线索</span></div>
+                                <div class="legend-item"><div class="legend-symbol bookmark">▌</div> <span>已书签</span></div>
+                                <div class="legend-item"><div class="legend-symbol" style="background:#fff;">?</div> <span>未知标记</span></div>
+                            </div>
+                            <div style="margin-top:10px; font-size:11px; color:#666; border-top:1px dashed #aaa; padding-top:6px;">
+                                <span>拖拽移动 | 双击编辑 | 右键菜单 | Shift多选 | Delete删除 | 滚轮缩放</span>
+                                <span><br>‼️整个导图的详细使用教程详见邮箱</span>
+                                <span><br>‼️01新闻初始设置为已知状态</span> 
+                                <span><br>‼️合并后得到线索仍然可以继续引申</span> 
+                            </div>
+                        </div>
+                </div>
+
+                <!-- 线索面板 -->
+                <div id="clue-panel">
+                    <h3>🕵️ 推理所得新线索</h3>
+                    <div id="clue-list"></div>
+                </div>
+
+                <!-- 最终线索面板 -->
+                <div id="final-clue-panel">
+                    <h3>🔐 新的线索已解锁</h3>
+                    <div id="final-clue-list"></div>
+                </div>
+
+                <!-- 画布容器 -->
+                <div id="canvas-container">
+                    <div id="grid"></div>
+                    <canvas id="connection-canvas"></canvas>
+                    <div id="node-layer"></div>
+                </div>
+
+                <!-- 缩放控制 -->
+                <div class="zoom-controls">
+                    <button class="zoom-btn" onclick="zoomIn()" title="放大">+</button>
+                    <button class="zoom-btn" onclick="resetView()" title="重置">⌂</button>
+                    <button class="zoom-btn" onclick="zoomOut()" title="缩小">-</button>
+                </div>
+
+                <!-- 状态栏 -->
+                <div class="status-bar">
+                    <span id="statusText">就绪 - 节点数: 0 | 连接数: 0 | 线索: 0 | 选中: 0 | 缩放: 100%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom">
+        <div class="w1000">
+            <div class="copyright"></div>
+        </div>
+    </div>
+
+    <div class="go-top" id="go-top" aria-label="返回顶部">
+        <img src="https://paper.people.com.cn/testx/template/amucsite/projectPaper/rmPaper/files/go_top.png" alt="返回顶部" />
+    </div>
+
+    <script>
+        // ==================== 配置 ====================
+        const CONFIG = {
+            gridSize: 40,
+            snapThreshold: 20,
+            scaleMin: 0.01,
+            scaleMax: 3,
+            zoomStep: 0.02,
+
+            colors: {
+                line: '#2a2a2a',
+                lineSelected: '#ff0040',
+                arrow: '#333333',
+                grid: '#d0d0d0'
+            }
+        };
+
+        // ==================== 线索合并规则 ====================
+        const MERGE_RULES = [
+            { sources: ['n16', 'n15'], result: '确认记者"苞米"即为毕敏。', id: 'clue_1' },
+            { sources: ['n3', 'n20'], result: '确认林静怡前往南山市的原因是为在间隙与翊尘投资开会。', id: 'clue_9' },
+            { sources: ['n11', 'n12'], result: '确认林静怡将参与翊尘投资审计项目的复核工作。', id: 'clue_10' },
+            { sources: ['n19', 'n3'], result: '林静怡的行动路线，其10日晚是从深南市前往南山市的。', id: 'clue_2a' },
+            { sources: ['clue_2a', 'n31'], result: '林静怡因车次取消，以及须前往南山市参加展会的原因，被迫改乘了其他车次。', id: 'clue_2' },
+            { sources: ['n12', 'n14'], result: '确认林静怡为稀有血型（熊猫血）。', id: 'clue_3' },
+            { sources: ['n24', 'n46'], result: '针对稀有血型的非法需求，可能构成杀人动机。', id: 'clue_4' },
+            { sources: ['n20', 'n32'], result: '林静怡选择或可能入住国际酒店的原因。', id: 'clue_5a' },
+            { sources: ['n32', 'n29'], result: '林静怡选择或可能前往“提希丰”高端养生会所的原因。', id: 'clue_5b' },
+            { sources: ['n47', 'n44'], result: '死者丈夫周变在案发时间（11月10日晚）的动向，可考虑作为排除其嫌疑时的依据。', id: 'clue_6' },
+            { sources: ['n9', 'n41'], result: '利用理疗舱和特定药物（环苯扎林）结合，可能构成一套作案手法。', id: 'clue_7' },
+            { sources: ['n21', 'n39'], result: '“谣言”或将反面映证了SBTP系统的测试账号回收率有可能不是100%，为作案或数据篡改提供可能。', id: 'clue_8' }
+        ];
+
+        // 总线索数量
+        const TOTAL_CLUES = 12;
+
+        // ==================== 状态管理 ====================
+        let nodes = [];
+        let connections = [];
+        let selectedNodes = [];
+        let connectMode = false;
+        let mergeMode = false;
+        let connectStart = null;
+        let mergeStart = null;
+        let nodeIdCounter = 0;
+        let clueCounter = 0;
+        let discoveredClues = [];
+        let finalCluesShown = false;
+        let scale = 1;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        let isDragging = false;
+        let dragNode = null;
+        let dragOffset = { x: 0, y: 0 };
+        let isPanning = false;
+        let panStart = { x: 0, y: 0 };
+        let panOffsetStart = { x: 0, y: 0 };
+
+        // 新闻数据库
+        let newsDatabase = null;
+
+        const container = document.getElementById('canvas-container');
+        const grid = document.getElementById('grid');
+        const nodeLayer = document.getElementById('node-layer');
+        const connCanvas = document.getElementById('connection-canvas');
+        const connCtx = connCanvas.getContext('2d');
+
+        // ==================== 初始化数据 (mind2完整树形布局) ====================
+        const initialData = {
+            nodes: [
+                { id: 'start', text: '开始调查', x: 0, y: -400, level: 0 },
+                { id: 'root1', text: '南山市', x: -2400, y: 0, level: 1 },
+                { id: 'root2', text: '深南市', x: -1200, y: 0, level: 1 },
+                { id: 'root3', text: '林静怡', x: 0, y: 0, level: 1 },
+                { id: 'root4', text: '千禧会计事务所', x: 1200, y: 0, level: 1 },
+                { id: 'root5', text: '天路分局', x: 2400, y: 0, level: 1 },
+                { id: 'root6', text: '金融城', x: 3600, y: 0, level: 1 },
+                { id: 'root7', text: '‘提希丰’高端养生会所', x: 4800, y: 0, level: 1 },
+                // 第二层节点
+                { id: 'n2', text: '【2】', x: -5400, y: 500, level: 2, parent: 'root1', newsId: 'article_002' },
+                { id: 'n3', text: '【3】', x: -2400, y: 500, level: 2, parent: 'root1', newsId: 'article_003' },
+                { id: 'n4', text: '【4】', x: -4200, y: 500, level: 2, parent: 'root1', newsId: 'article_004' },
+                { id: 'n6', text: '【6】', x: -1800, y: 500, level: 2, parent: 'root1', newsId: 'article_006' },
+                { id: 'n30', text: '【30】', x: -3000, y: 500, level: 2, parent: 'root1', newsId: 'article_030' },
+                { id: 'n27', text: '【27】', x: -3600, y: 500, level: 2, parent: 'root1', newsId: 'article_027' },
+                { id: 'n31', text: '【31】', x: -4800, y: 500, level: 2, parent: 'root1', newsId: 'article_031' },
+                { id: 'n50', text: '【50】', x: -6000, y: 500, level: 2, parent: 'root1', newsId: 'article_050' },
+                // 三层节点（n2下）
+                { id: 'n7', text: '【7】', x: -7800, y: 1000, level: 3, parent: 'n2', newsId: 'article_007' },
+                { id: 'n10', text: '【10】', x: -7200, y: 1000, level: 3, parent: 'n2', newsId: 'article_010' },
+                { id: 'n21', text: '【21】', x: -6600, y: 1000, level: 3, parent: 'n2', newsId: 'article_021' },
+                { id: 'n33', text: '【33】', x: -6000, y: 1000, level: 3, parent: 'n2', newsId: 'article_033' },
+                { id: 'n36', text: '【36】', x: -5400, y: 1000, level: 3, parent: 'n2', newsId: 'article_036' },
+                // 四层节点（n2下子节点）
+                { id: 'n43', text: '【43】', x: -8400, y: 1500, level: 4, parent: 'n7', newsId: 'article_043' },
+                { id: 'n20', text: '【20】', x: -7000, y: 1500, level: 4, parent: 'n10', newsId: 'article_020' },
+                { id: 'n28', text: '【28】', x: -7400, y: 1500, level: 4, parent: 'n10', newsId: 'article_028' },
+                { id: 'n32', text: '【32】', x: -7800, y: 1500, level: 4, parent: 'n10', newsId: 'article_032' },
+                { id: 'n19', text: '【19】', x: -4800, y: 1000, level: 3, parent: 'n31', newsId: 'article_019' },
+                // 三层节点（n3下）
+                { id: 'n25', text: '【25】', x: -2400, y: 1000, level: 3, parent: 'n3', newsId: 'article_025' },
+                // 四层节点（n3下）
+                { id: 'n5', text: '【5】', x: -3200, y: 1500, level: 4, parent: 'n25', newsId: 'article_005' },
+                { id: 'n13', text: '【13】', x: -2800, y: 1500, level: 4, parent: 'n25', newsId: 'article_013' },
+                { id: 'n44', text: '【44】', x: -2400, y: 1500, level: 4, parent: 'n25', newsId: 'article_044' },
+                // 五层节点（n3下）
+                { id: 'n42', text: '【42】', x: -3200, y: 2000, level: 5, parent: 'n5', newsId: 'article_042' },
+                // 三层节点（n4下）
+                { id: 'n26', text: '【26】', x: -4400, y: 1000, level: 3, parent: 'n4', newsId: 'article_026' },
+                { id: 'n38', text: '【38】', x: -4000, y: 1000, level: 3, parent: 'n4', newsId: 'article_038' },
+                // 四层节点（n4下）
+                { id: 'n47', text: '【47】', x: -4000, y: 1500, level: 4, parent: 'n26', newsId: 'article_047' },
+                // 三层节点（n27下）
+                { id: 'n39', text: '【39】', x: -3600, y: 1000, level: 3, parent: 'n27', newsId: 'article_039' },
+                // 第二层节点（root2下）
+                { id: 'n15', text: '【15】', x: -1200, y: 500, level: 2, parent: 'root2', newsId: 'article_015' },
+                { id: 'n16', text: '【16】', x: -600, y: 500, level: 2, parent: 'root2', newsId: 'article_016' },
+                // 三层节点（root2下）
+                { id: 'n35', text: '【35】', x: -1200, y: 1000, level: 3, parent: 'n15', newsId: 'article_035' },
+                // 四层节点（root2下）
+                { id: 'n34', text: '【34】', x: -1200, y: 1500, level: 4, parent: 'n35', newsId: 'article_034' },
+                // 第二层节点（root3下）
+                { id: 'n12', text: '【12】', x: 0, y: 500, level: 2, parent: 'root3', newsId: 'article_012' },
+                // 三层节点（root3下）
+                { id: 'n11', text: '【11】', x: -400, y: 1000, level: 3, parent: 'n12', newsId: 'article_011' },
+                { id: 'n37', text: '【37】', x: 400, y: 1000, level: 3, parent: 'n12', newsId: 'article_037' },
+                // 四层节点（root3下）
+                { id: 'n14', text: '【14】', x: 0, y: 1500, level: 4, parent: 'n37', newsId: 'article_014' },
+                { id: 'n24', text: '【24】', x: 400, y: 1500, level: 4, parent: 'n37', newsId: 'article_024' },
+                { id: 'n40', text: '【40】', x: 800, y: 1500, level: 4, parent: 'n37', newsId: 'article_040' },
+                // 五层节点（root3下）
+                { id: 'n46', text: '【46】', x: 400, y: 2000, level: 5, parent: 'n24', newsId: 'article_046' },
+                // 第二层节点（root4下）
+                { id: 'n18', text: '【18】', x: 1200, y: 500, level: 2, parent: 'root4', newsId: 'article_018' },
+                // 第二层节点（root5下）
+                { id: 'n22', text: '【22】', x: 2400, y: 500, level: 2, parent: 'root5', newsId: 'article_022' },
+                // 第二层节点（root6下）
+                { id: 'n1', text: '【1】', x: 3600, y: 500, level: 2, parent: 'root6', newsId: 'article_001' },
+                // 三层节点（root6下）
+                { id: 'n29', text: '【29】', x: 3200, y: 1000, level: 3, parent: 'n1', newsId: 'article_029' },
+                { id: 'n45', text: '【45】', x: 3800, y: 1000, level: 3, parent: 'n1', newsId: 'article_045' },
+                // 第二层节点（root7下）
+                { id: 'n8', text: '【8】', x: 4300, y: 500, level: 2, parent: 'root7', newsId: 'article_008' },
+                { id: 'n17', text: '【17】', x: 4800, y: 500, level: 2, parent: 'root7', newsId: 'article_017' },
+                { id: 'n23', text: '【23】', x: 5300, y: 500, level: 2, parent: 'root7', newsId: 'article_023' },
+                // 三层节点（root7下）
+                { id: 'n9', text: '【9】', x: 4300, y: 1000, level: 3, parent: 'n8', newsId: 'article_009' },
+                // 四层节点（root7下）
+                { id: 'n41', text: '【41】', x: 4300, y: 1500, level: 4, parent: 'n9', newsId: 'article_041' },
+                { id: 'n48', text: '【48】', x: 4800, y: 1500, level: 4, parent: 'n9', newsId: 'article_048' },
+                { id: 'n49', text: '【49】', x: 5200, y: 1500, level: 4, parent: 'n9', newsId: 'article_049' },
+            ],
+            connections: [
+                ['start', 'root1'], ['start', 'root2'], ['start', 'root3'], 
+                ['start', 'root4'], ['start', 'root5'], ['start', 'root6'], ['start', 'root7'],
+                ['root1', 'n2'], ['root1', 'n3'], ['root1', 'n4'], ['root1', 'n6'], 
+                ['root1', 'n30'], ['root1', 'n27'], ['root1', 'n31'],['root1', 'n50'],
+                ['n2', 'n7'], ['n2', 'n10'], ['n2', 'n19'], ['n2', 'n21'], ['n2', 'n33'], ['n2', 'n36'],
+                ['n7', 'n43'],
+                ['n10', 'n20'], ['n10', 'n28'], ['n10', 'n32'],
+                ['n31', 'n19'],
+                ['n3', 'n25'],
+                ['n25', 'n5'], ['n25', 'n13'], ['n25', 'n44'],
+                ['n5', 'n42'],
+                ['n4', 'n26'],
+                ['n4', 'n38'], ['n38', 'n47'],
+                ['n27', 'n39'],
+                ['root2', 'n15'], ['root2', 'n16'],
+                ['n15', 'n35'],
+                ['n35', 'n34'],
+                ['root3', 'n12'],
+                ['n12', 'n11'], ['n12', 'n37'],
+                ['n37', 'n14'], ['n37', 'n24'], ['n37', 'n40'],
+                ['n24', 'n46'],
+                ['root4', 'n18'],
+                ['n18', 'n6'],
+                ['root5', 'n22'],
+                ['root6', 'n1'],
+                ['n1', 'n29'], ['n1', 'n45'],
+                ['n29', 'n8'], ['n29', 'n17'], ['n29', 'n23'],
+                ['n8', 'n9'],
+                ['n9', 'n41'], ['n9', 'n48'], ['n9', 'n49'],
+                ['root7', 'n8'], ['root7', 'n17'], ['root7', 'n23']
+            ]
+        };
+
+        // ==================== 游戏状态管理 ====================
+        const GameState = {
+            STORAGE_KEY: 'news_game_state',
+
+            getState() {
+                try {
+                    const saved = localStorage.getItem(this.STORAGE_KEY);
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (!Array.isArray(parsed.mergedClues)) parsed.mergedClues = [];
+                        return parsed;
+                    }
+                } catch (e) {
+                    console.error('读取存档失败:', e);
+                }
+                return {
+                    unlockedArticles: ['article_001'],
+                    discoveredClues: [],
+                    searchHistory: [],
+                    mindMapScale: 1,
+                    mergedClues: []
+                };
+            },
+
+            saveState(state) {
+                try {
+                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
+                } catch (e) {
+                    console.error('保存存档失败:', e);
+                }
+            },
+
+            addMergedClue(clueId) {
+                const state = this.getState();
+                if (!state.mergedClues.includes(clueId)) {
+                    state.mergedClues.push(clueId);
+                    this.saveState(state);
+                }
+            },
+
+            getMergedClues() {
+                return this.getState().mergedClues || [];
+            },
+
+            unlockArticle(articleId) {
+                const state = this.getState();
+                if (!state.unlockedArticles.includes(articleId)) {
+                    state.unlockedArticles.push(articleId);
+                    this.saveState(state);
+                    return true;
+                }
+                return false;
+            },
+
+            isUnlocked(articleId) {
+                return this.getState().unlockedArticles.includes(articleId);
+            },
+
+            addSearchHistory(keyword) {
+                const state = this.getState();
+                if (!state.searchHistory.includes(keyword)) {
+                    state.searchHistory.push(keyword);
+                    this.saveState(state);
+                }
+            },
+
+            getSearchHistory() {
+                return this.getState().searchHistory;
+            },
+
+            // 新增：导出游戏进度
+            exportState() {
+                return JSON.stringify(this.getState(), null, 2);
+            },
+
+            // 重置存档
+            resetState() {
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
+                    unlockedArticles: ['article_001'],
+                    discoveredClues: [],
+                    searchHistory: [],
+                    mindMapScale: 1,
+                    mergedClues: []
+                }));
+            },
+
+            // 导入存档
+            importState(jsonStr) {
+                try {
+                    const parsed = JSON.parse(jsonStr);
+                    if (parsed && Array.isArray(parsed.unlockedArticles)) {
+                        if (!Array.isArray(parsed.mergedClues)) parsed.mergedClues = [];
+                        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(parsed));
+                        return true;
+                    }
+                } catch (e) {
+                    console.error('导入失败', e);
+                }
+                return false;
+            }
+        };
+
+        // ==================== 新增：导出游戏进度函数 ====================
+        function exportGameProgress() {
+            const stateStr = GameState.exportState();
+            const blob = new Blob([stateStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `news_game_save_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 可折叠图例功能
+        function toggleLegend() {
+            const content = document.getElementById('legendContent');
+            const icon = document.getElementById('legendToggleIcon');
+            
+            content.classList.toggle('collapsed');
+            icon.classList.toggle('collapsed');
+            
+            // 保存状态到localStorage
+            const isCollapsed = content.classList.contains('collapsed');
+            localStorage.setItem('legend_collapsed', isCollapsed);
+        }
+
+        // 恢复上次的折叠状态
+        function restoreLegendState() {
+            const content = document.getElementById('legendContent');
+            const icon = document.getElementById('legendToggleIcon');
+            const isCollapsed = localStorage.getItem('legend_collapsed') === 'true';
+            
+            if (isCollapsed) {
+                content.classList.add('collapsed');
+                icon.classList.add('collapsed');
+            } else {
+                content.classList.remove('collapsed');
+                icon.classList.remove('collapsed');
+            }
+        }
+
+
+        // ==================== 恢复合并的线索 ====================
+        function restoreMergedClues() {
+            const mergedClues = GameState.getMergedClues();
+            mergedClues.forEach(clueId => {
+                if (document.getElementById(clueId)) return;
+                const rule = MERGE_RULES.find(r => r.id === clueId);
+                if (!rule) return;
+
+                const sourceA = nodes.find(n => n.id === rule.sources[0]);
+                const sourceB = nodes.find(n => n.id === rule.sources[1]);
+                if (!sourceA || !sourceB) return;
+
+                const avgX = (parseFloat(sourceA.element.dataset.x) + parseFloat(sourceB.element.dataset.x)) / 2;
+                const avgY = (parseFloat(sourceA.element.dataset.y) + parseFloat(sourceB.element.dataset.y)) / 2;
+
+                createNodeElement({
+                    id: rule.id,
+                    text: '💡 ' + rule.result.substring(0, 20) + (rule.result.length > 20 ? '...' : ''),
+                    x: avgX,
+                    y: avgY - 100,
+                    level: 3
+                }, true);
+
+                rule.sources.forEach(sourceId => {
+                    createConnection(sourceId, rule.id);
+                });
+
+                addClueToPanel(rule.result, rule.id);
+                clueCounter++;
+            });
+
+            if (mergedClues.length > 0) {
+                drawConnections();
+                updateStats();
+                checkFinalClues();
+            }
+        }
+
+        // ==================== 核心功能 ====================
+        function init() {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // 加载新闻数据
+            loadNewsData().then(() => {
+                // 创建初始节点 - 根据解锁状态决定显示内容
+                initialData.nodes.forEach(nodeData => {
+                    // 如果是新闻节点且未解锁，显示为未知节点
+                    if (nodeData.newsId && !GameState.isUnlocked(nodeData.newsId)) {
+                        createNodeElement({
+                            ...nodeData,
+                            text: '未知线索',
+                            isUnknown: true
+                        });
+                    } else if (nodeData.newsId && GameState.isUnlocked(nodeData.newsId)) {
+                        // 已解锁的新闻节点，只显示编号，格式为【001】
+                        const number = nodeData.newsId.replace('article_0', '');
+                        createNodeElement({
+                            ...nodeData,
+                            text: '【' + number + '】',
+                            isUnlocked: true
+                        });
+                    } else {
+                        createNodeElement(nodeData);
+                    }
+                });
+
+                // 创建连接
+                initialData.connections.forEach(([from, to]) => {
+                    connections.push({ from, to });
+                });
+
+                restoreMergedClues();
+
+                centerView();
+                updateStats();
+                drawGrid();
+                drawConnections();
+            });
+
+            setupEventListeners();
+            updateHistoryDisplay();
+            restoreLegendState();
+        }
+
+        async function loadNewsData() {
+            try {
+                const response = await fetch('./news_database.json');
+                if (!response.ok) throw new Error('无法加载数据');
+                newsDatabase = await response.json();
+                console.log('新闻数据加载成功');
+                return true;
+            } catch (error) {
+                console.error('加载失败:', error);
+                return false;
+            }
+        }
+
+        function resizeCanvas() {
+            const rect = container.getBoundingClientRect();
+            connCanvas.width = rect.width;
+            connCanvas.height = rect.height;
+            drawConnections();
+        }
+
+        function createNodeElement(data, isClue = false) {
+            const node = document.createElement('div');
+            node.className = `node level-${data.level}`;
+            if (isClue) node.classList.add('clue-node');
+
+            // 如果是新闻节点，添加news-node类和点击事件
+            if (data.newsId) {
+                node.classList.add('news-node');
+                node.dataset.newsId = data.newsId;
+
+                // 如果未解锁，添加未知节点样式
+                if (data.isUnknown) {
+                    node.classList.add('unknown-node');
+                } else if (data.isUnlocked) {
+                    node.classList.add('unlocked');
+                }
+            }
+
+            node.id = data.id;
+            node.textContent = data.text;
+
+            node.dataset.x = data.x;
+            node.dataset.y = data.y;
+            node.dataset.isClue = isClue ? 'true' : 'false';
+
+            updateNodePosition(node, data.x, data.y);
+
+            node.addEventListener('mousedown', handleNodeDown);
+            node.addEventListener('click', handleNodeClick);
+            node.addEventListener('dblclick', handleNodeDblClick);
+            node.addEventListener('contextmenu', showContextMenu);
+
+            nodeLayer.appendChild(node);
+            nodes.push({ ...data, element: node, isClue: isClue });
+            return node;
+        }
+
+        function worldToScreen(x, y) {
+            return { 
+                x: (x - offsetX) * scale + container.clientWidth / 2, 
+                y: (y - offsetY) * scale + container.clientHeight / 2 
+            };
+        }
+
+        function screenToWorld(sx, sy) {
+            return { 
+                x: (sx - container.clientWidth / 2) / scale + offsetX, 
+                y: (sy - container.clientHeight / 2) / scale + offsetY 
+            };
+        }
+
+        function updateNodePosition(node, x, y) {
+            const pos = worldToScreen(x, y);
+            node.style.left = pos.x + 'px';
+            node.style.top = pos.y + 'px';
+            node.style.transform = `translate(-50%, -50%)`;
+        }
+
+        function createConnection(fromId, toId) {
+            connections.push({ from: fromId, to: toId });
+        }
+
+        function drawGrid() {
+            const offsetXScreen = (-offsetX * scale + container.clientWidth / 2) % (CONFIG.gridSize * scale);
+            const offsetYScreen = (-offsetY * scale + container.clientHeight / 2) % (CONFIG.gridSize * scale);
+            grid.style.backgroundPosition = `${offsetXScreen}px ${offsetYScreen}px`;
+        }
+
+        function drawConnections() {
+            const ctx = connCtx;
+            const w = connCanvas.width;
+            const h = connCanvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            connections.forEach(conn => {
+                const fromNode = nodes.find(n => n.id === conn.from);
+                const toNode = nodes.find(n => n.id === conn.to);
+                if (!fromNode || !toNode) return;
+
+                const fromX = parseFloat(fromNode.element.dataset.x);
+                const fromY = parseFloat(fromNode.element.dataset.y);
+                const toX = parseFloat(toNode.element.dataset.x);
+                const toY = parseFloat(toNode.element.dataset.y);
+
+                const fromPos = worldToScreen(fromX, fromY);
+                const toPos = worldToScreen(toX, toY);
+
+                const isSelected = selectedNodes.includes(conn.from) || selectedNodes.includes(conn.to);
+
+                ctx.beginPath();
+                ctx.moveTo(fromPos.x, fromPos.y);
+                ctx.lineTo(toPos.x, toPos.y);
+
+                ctx.strokeStyle = isSelected ? '#ff0040' : '#2a2a2a';
+                ctx.lineWidth = isSelected ? 3 : 2;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+            });
+        }
+
+        function getEdgePoint(cx, cy, tx, ty, hw, hh) {
+            const dx = tx - cx;
+            const dy = ty - cy;
+            if (Math.abs(dx) < 0.001 && Math.abs(dy) < 0.001) return { x: cx, y: cy };
+            const absTan = Math.abs(dy / dx);
+            const rectTan = hh / hw;
+            if (absTan < rectTan) {
+                return { x: cx + Math.sign(dx) * hw, y: cy + dy * hw / Math.abs(dx) };
+            } else {
+                return { x: cx + dx * hh / Math.abs(dy), y: cy + Math.sign(dy) * hh };
+            }
+        }
+
+        // ==================== 交互 ====================
+        function handleNodeDown(e) {
+            if (connectMode || mergeMode) {
+                e.stopPropagation();
+                e.preventDefault();
+                return;
+            }
+            e.stopPropagation();
+            e.preventDefault();
+            
+            const node = e.currentTarget;
+            
+            // 记录按下时的位置，用于检测是否为真实拖拽
+            const startX = e.clientX;
+            const startY = e.clientY;
+            
+            // 获取节点的当前世界坐标
+            const worldX = parseFloat(node.dataset.x);
+            const worldY = parseFloat(node.dataset.y);
+            
+            // 将世界坐标转换为屏幕坐标（节点中心位置）
+            const screenPos = worldToScreen(worldX, worldY);
+            
+            // 计算鼠标相对于节点中心的偏移（屏幕坐标）
+            dragOffset.x = screenPos.x - startX;
+            dragOffset.y = screenPos.y - startY;
+            
+            // 设置一个拖拽阈值，只有移动超过一定距离才认为是拖拽
+            const dragThreshold = 5;
+            let dragStarted = false;
+            
+            const onMouseMove = (moveEvent) => {
+                const dx = Math.abs(moveEvent.clientX - startX);
+                const dy = Math.abs(moveEvent.clientY - startY);
+                
+                if (dx > dragThreshold || dy > dragThreshold) {
+                    if (!dragStarted) {
+                        dragStarted = true;
+                        isDragging = true;
+                        dragNode = node;
+                        node.classList.add('dragging');
+                        nodeLayer.classList.add('dragging-node');
+                    }
+                    
+                    if (dragStarted) {
+                        // 计算节点应该出现的屏幕位置：鼠标位置 + 偏移量
+                        const targetScreenX = moveEvent.clientX + dragOffset.x;
+                        const targetScreenY = moveEvent.clientY + dragOffset.y;
+                        
+                        // 转换为世界坐标
+                        const worldPos = screenToWorld(targetScreenX, targetScreenY);
+                        
+                        // 更新节点的数据坐标
+                        node.dataset.x = worldPos.x;
+                        node.dataset.y = worldPos.y;
+                        
+                        // 直接设置CSS位置（避免再次通过worldToScreen计算，防止累积误差）
+                        node.style.left = targetScreenX + 'px';
+                        node.style.top = targetScreenY + 'px';
+                        
+                        // ===== 新增代码：自动移动视口跟随节点 =====
+                        // 检查节点是否靠近视口边缘（使用屏幕坐标）
+                        const margin = 100; // 边缘触发距离
+                        const containerRect = container.getBoundingClientRect();
+                        
+                        let needUpdate = false;
+                        
+                        // 如果节点靠近左边缘或右边缘，调整offsetX
+                        if (targetScreenX < margin) {
+                            // 节点靠近左边缘，向左移动视口
+                            offsetX -= (margin - targetScreenX) / scale * 0.5;
+                            needUpdate = true;
+                        } else if (targetScreenX > containerRect.width - margin) {
+                            // 节点靠近右边缘，向右移动视口
+                            offsetX += (targetScreenX - (containerRect.width - margin)) / scale * 0.5;
+                            needUpdate = true;
+                        }
+                        
+                        // 如果节点靠近上边缘或下边缘，调整offsetY
+                        if (targetScreenY < margin) {
+                            // 节点靠近上边缘，向上移动视口
+                            offsetY -= (margin - targetScreenY) / scale * 0.5;
+                            needUpdate = true;
+                        } else if (targetScreenY > containerRect.height - margin) {
+                            // 节点靠近下边缘，向下移动视口
+                            offsetY += (targetScreenY - (containerRect.height - margin)) / scale * 0.5;
+                            needUpdate = true;
+                        }
+                        
+                        // 更新所有节点的位置（因为offset改变了）
+                        if (needUpdate) {
+                            updateTransform();
+                        } else {
+                            drawConnections();
+                        }
+                    }
+                }
+            };
+            
+            const onMouseUp = () => {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                
+                if (dragStarted) {
+                    // 确保最终位置正确
+                    const finalScreenX = dragNode ? parseFloat(dragNode.style.left) : 0;
+                    const finalScreenY = dragNode ? parseFloat(dragNode.style.top) : 0;
+                    
+                    if (dragNode && finalScreenY > window.innerHeight - 100) {                       
+                    } else {
+                        // 将最终屏幕坐标转换回世界坐标并保存
+                        const finalWorldPos = screenToWorld(finalScreenX, finalScreenY);
+                        if (dragNode) {
+                            dragNode.dataset.x = finalWorldPos.x;
+                            dragNode.dataset.y = finalWorldPos.y;
+                            // 使用updateNodePosition确保位置正确（它会应用当前的scale和offset）
+                            updateNodePosition(dragNode, finalWorldPos.x, finalWorldPos.y);
+                        }
+                    }
+                    
+                    if (dragNode) {
+                        dragNode.classList.remove('dragging');
+                    }
+                    nodeLayer.classList.remove('dragging-node');
+                    isDragging = false;
+                    dragNode = null;
+                   
+                    drawConnections();
+                    updateStats();
+                    
+                } 
+                else {
+                    // 如果没有触发拖拽，执行点击逻辑
+                    handleNodeClick(e);
+                }
+            };
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+
+        function handleNodeClick(e) {
+            const node = e.currentTarget;
+            const nodeId = node.id;
+
+            // 合并模式
+            if (mergeMode) {
+                e.stopPropagation();
+                if (!mergeStart) {
+                    mergeStart = nodeId;
+                    node.classList.add('selected');
+                    updateStatus('合并模式：选择第二个节点');
+                } else if (mergeStart !== nodeId) {
+                    tryMerge(mergeStart, nodeId);
+                    document.querySelectorAll('.node.selected').forEach(n => n.classList.remove('selected'));
+                    mergeStart = null;
+                    updateStatus('');
+                }
+                return;
+            }
+
+            // 普通点击 - 检查是否是新闻节点
+            if (node.dataset.newsId) {
+                const newsId = node.dataset.newsId;
+                // 检查是否已解锁
+                if (GameState.isUnlocked(newsId)) {
+                    openNewsDetail(newsId);
+                } else {
+                    // 未解锁，提示用户
+                    alert('该新闻尚未解锁，请通过搜索相关关键词解锁。');
+                }
+                return;
+            }
+
+            // Shift多选
+            if (e.shiftKey) {
+                e.stopPropagation();
+                if (selectedNodes.includes(nodeId)) {
+                    selectedNodes = selectedNodes.filter(id => id !== nodeId);
+                    node.classList.remove('selected');
+                } else {
+                    selectedNodes.push(nodeId);
+                    node.classList.add('selected');
+                }
+                drawConnections();
+                updateStats();
+                return;
+            }
+
+            // 普通选择
+            if (!isDragging) {
+                document.querySelectorAll('.node.selected').forEach(n => n.classList.remove('selected'));
+                selectedNodes = [nodeId];
+                node.classList.add('selected');
+                drawConnections();
+                updateStats();
+            }
+        }
+
+        function handleNodeDblClick(e) {
+            const node = e.currentTarget;
+            const currentText = node.textContent;
+            const input = document.createElement('input');
+            input.value = currentText;
+            node.innerHTML = '';
+            node.appendChild(input);
+            input.focus();
+            input.select();
+
+            const saveEdit = () => {
+                const newText = input.value.trim() || currentText;
+                node.textContent = newText;
+                const nodeData = nodes.find(n => n.id === node.id);
+                if (nodeData) nodeData.text = newText;
+            };
+
+            input.addEventListener('blur', saveEdit);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    saveEdit();
+                }
+            });
+        }
+
+        function showContextMenu(e) {
+            e.preventDefault();
+            const menu = document.getElementById('contextMenu');
+            const node = e.currentTarget;
+
+            if (!selectedNodes.includes(node.id)) {
+                document.querySelectorAll('.node.selected').forEach(n => n.classList.remove('selected'));
+                selectedNodes = [node.id];
+                node.classList.add('selected');
+                drawConnections();
+                updateStats();
+            }
+
+            menu.style.display = 'block';
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+
+            // 更新"查看新闻"菜单项的显示状态
+            const viewNewsItem = menu.querySelector('[onclick="openNewsFromContext()"]');
+            if (viewNewsItem) {
+                if (node.dataset.newsId && GameState.isUnlocked(node.dataset.newsId)) {
+                    viewNewsItem.style.display = 'flex';
+                    viewNewsItem.classList.remove('disabled');
+                } else {
+                    viewNewsItem.style.display = 'none';
+                }
+            }
+
+            const mergeBtn = document.getElementById('contextMergeBtn');
+            if (selectedNodes.length === 2) {
+                mergeBtn.classList.remove('disabled');
+            } else {
+                mergeBtn.classList.add('disabled');
+            }
+        }
+
+        function hideContextMenu() {
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+
+        // ==================== 新闻相关功能 ====================
+        function openNewsDetail(newsId) {
+            window.open(`7e32b5.html?id=${newsId}`, '_blank');
+        }
+
+        function openNewsFromContext() {
+            const node = document.querySelector('.node.selected');
+            if (node && node.dataset.newsId && GameState.isUnlocked(node.dataset.newsId)) {
+                openNewsDetail(node.dataset.newsId);
+            }
+            hideContextMenu();
+        }
+
+        function performSearch() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (!keyword || !newsDatabase) return;
+
+            // 保存到历史
+            GameState.addSearchHistory(keyword);
+
+            // 查找结果
+            const results = newsDatabase.search_index[keyword] || [];
+            const uniqueResults = [...new Set(results)];
+
+            // 解锁文章
+            const newUnlocks = [];
+            uniqueResults.forEach(id => {
+                if (GameState.unlockArticle(id)) {
+                    newUnlocks.push(id);
+                }
+            });
+
+            // 显示结果
+            displayResults(keyword, uniqueResults, newUnlocks);
+
+            // 更新历史显示
+            updateHistoryDisplay();
+
+            // 更新思维导图中对应的节点：将新解锁的未知节点替换为编号节点
+            newUnlocks.forEach(id => {
+                const nodeElement = document.querySelector(`.node[data-news-id="${id}"]`);
+                if (nodeElement) {
+                    const number = id.replace('article_', '');
+                    nodeElement.textContent = '【' + number + '】';
+                    nodeElement.classList.remove('unknown-node');
+                    nodeElement.classList.add('unlocked');
+                }
+            });
+
+            // 高亮思维导图中对应的节点
+            highlightNewsNodes(uniqueResults);
+        }
+
+        function displayResults(keyword, results, newUnlocks) {
+            const container = document.getElementById('searchResults');
+
+            if (results.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <p>未找到与 "${keyword}" 相关的新闻</p>
+                        <p style="font-size: 12px; color: #999;">尝试其他关键词...</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `<div style="margin-bottom: 10px; color: #666; font-size: 13px;">"${keyword}" 找到 ${results.length} 条结果:</div>`;
+
+            results.forEach(id => {
+                const article = newsDatabase.articles[id];
+                const isNew = newUnlocks.includes(id);
+
+                html += `
+                    <div class="result-item ${isNew ? 'new' : ''}" onclick="openNewsDetail('${id}')">
+                        <div class="result-title">${isNew ? '🔓 ' : ''}${article.title}</div>
+                        <div class="result-meta">${article.date} | ${article.section}</div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function highlightNewsNodes(articleIds) {
+            // 清除之前的高亮
+            document.querySelectorAll('.node').forEach(node => {
+                node.style.boxShadow = '';
+            });
+
+            // 高亮匹配的节点
+            articleIds.forEach(id => {
+                const node = document.querySelector(`.node[data-news-id="${id}"]`);
+                if (node) {
+                    node.style.boxShadow = '0 0 20px #ff0040, 4px 4px 0 rgba(0,0,0,0.3)';
+                }
+            });
+        }
+
+        function updateHistoryDisplay() {
+            const history = GameState.getSearchHistory();
+            const section = document.getElementById('historySection');
+            const tags = document.getElementById('historyTags');
+
+            if (history.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            tags.innerHTML = history.map(k => 
+                `<span class="history-tag" onclick="document.getElementById('searchInput').value='${k}';performSearch()">${k}</span>`
+            ).join('');
+        }
+
+        // ==================== 合并功能 ====================
+        function tryMerge(node1Id, node2Id) {
+            const rule = MERGE_RULES.find(r => 
+                (r.sources[0] === node1Id && r.sources[1] === node2Id) ||
+                (r.sources[0] === node2Id && r.sources[1] === node1Id)
+            );
+
+            if (rule) {
+                const node1 = nodes.find(n => n.id === node1Id);
+                const node2 = nodes.find(n => n.id === node2Id);
+
+                const avgX = (parseFloat(node1.element.dataset.x) + parseFloat(node2.element.dataset.x)) / 2;
+                const avgY = (parseFloat(node1.element.dataset.y) + parseFloat(node2.element.dataset.y)) / 2;
+
+                const clueNode = createNodeElement({
+                    id: rule.id,
+                    text: '💡 ' + rule.result.substring(0, 20) + (rule.result.length > 20 ? '...' : ''),
+                    x: avgX,
+                    y: avgY - 100,
+                    level: 3
+                }, true);
+
+                createConnection(node1Id, rule.id);
+                createConnection(node2Id, rule.id);
+
+                addClueToPanel(rule.result, rule.id);
+
+                GameState.addMergedClue(rule.id);
+
+                drawConnections();
+                updateStats();
+
+                clueCounter++;
+                checkFinalClues();
+
+                return true;
+            }
+            return false;
+        }
+
+        function tryMergeFromContext() {
+            if (selectedNodes.length === 2) {
+                const success = tryMerge(selectedNodes[0], selectedNodes[1]);
+                if (!success) {
+                    alert('这两个节点无法合并，请尝试其他组合。');
+                }
+            }
+            hideContextMenu();
+        }
+
+        function addClueToPanel(clueText, clueId) {
+            if (discoveredClues.includes(clueId)) return;
+            discoveredClues.push(clueId);
+
+            const clueList = document.getElementById('clue-list');
+            const clueItem = document.createElement('div');
+            clueItem.className = 'clue-item';
+            clueItem.innerHTML = `<strong>线索 #${discoveredClues.length}:</strong> ${clueText}`;
+            clueList.appendChild(clueItem);
+
+            updateStats();
+        }
+
+        function checkFinalClues() {
+            if (clueCounter >= TOTAL_CLUES && !finalCluesShown) {
+                finalCluesShown = true;
+                showFinalClues();
+            }
+        }
+
+        function showFinalClues() {
+            const panel = document.getElementById('final-clue-panel');
+            const list = document.getElementById('final-clue-list');
+
+            list.innerHTML = `
+                <div class="final-clue-item">
+                    <h4>🗝️ 第一条线索：神秘口令</h4>
+                    <p>你获得了三个关键口令：</p>
+                    <div class="password-list">
+                        <span class="password-tag">能耗数据</span>
+                        <span class="password-tag">清朗监测</span>
+                        <span class="password-tag">智慧入住</span>
+                    </div>
+                </div>
+                <div class="final-clue-item">
+                    <h4>📧 第二条线索：邮箱指令</h4>
+                    <p>结合新闻 <strong>【27】</strong>、<strong>【28】</strong>、<strong>【36】</strong> 的内容，</p>
+                    <p>点击邮箱侧边栏的联系人，在邮箱中发送对应口令以获取新的线索。</p>
+                    <p style="margin-top:10px; color:#daa520; font-size:12px;">
+                        * 提示：仔细分析这三条新闻的内容，找出与口令相关的信息
+                    </p>
+                </div>
+            `;
+
+            panel.classList.add('active');
+        }
+
+        // ==================== 工具功能 ====================
+        function addNode() {
+            const newNode = createNodeElement({
+                id: 'n' + (++nodeIdCounter),
+                text: '新节点',
+                x: offsetX,
+                y: offsetY,
+                level: 2
+            });
+            updateStats();
+        }
+
+        function toggleConnectMode() {
+            connectMode = !connectMode;
+            mergeMode = false;
+            connectStart = null;
+            document.getElementById('connectBtn').classList.toggle('active', connectMode);
+            document.getElementById('mergeBtn').classList.remove('active');
+            document.getElementById('modeIndicator').classList.toggle('active', connectMode);
+            document.getElementById('modeIndicator').textContent = '连接模式：点击两个节点创建连接';
+            document.getElementById('merge-hint').classList.remove('active');
+            document.querySelectorAll('.node.selected').forEach(n => n.classList.remove('selected'));
+            selectedNodes = [];
+            updateStats();
+        }
+
+        function toggleMergeMode() {
+            mergeMode = !mergeMode;
+            connectMode = false;
+            mergeStart = null;
+            document.getElementById('mergeBtn').classList.toggle('active', mergeMode);
+            document.getElementById('connectBtn').classList.remove('active');
+            document.getElementById('modeIndicator').classList.toggle('active', mergeMode);
+            document.getElementById('modeIndicator').textContent = '合并模式：选择两个节点进行线索合并';
+            document.getElementById('merge-hint').classList.toggle('active', mergeMode);
+            document.querySelectorAll('.node.selected').forEach(n => n.classList.remove('selected'));
+            selectedNodes = [];
+            updateStats();
+        }
+
+        function deleteSelected() {
+            selectedNodes.forEach(nodeId => {
+                const nodeEl = document.getElementById(nodeId);
+                if (nodeEl) nodeEl.remove();
+                nodes = nodes.filter(n => n.id !== nodeId);
+                connections = connections.filter(c => c.from !== nodeId && c.to !== nodeId);
+            });
+            selectedNodes = [];
+            drawConnections();
+            updateStats();
+            hideContextMenu();
+        }
+
+        function toggleBookmark() {
+            selectedNodes.forEach(nodeId => {
+                const node = document.getElementById(nodeId);
+                if (node) node.classList.toggle('bookmarked');
+            });
+            hideContextMenu();
+        }
+
+        function toggleUnknown() {
+            selectedNodes.forEach(nodeId => {
+                const node = document.getElementById(nodeId);
+                if (node) node.classList.toggle('unknown-node');
+            });
+            hideContextMenu();
+        }
+
+        function toggleCluePanel() {
+            document.getElementById('clue-panel').classList.toggle('active');
+        }
+
+        function editNode() {
+            if (selectedNodes.length === 1) {
+                const node = document.getElementById(selectedNodes[0]);
+                if (node) handleNodeDblClick({ currentTarget: node });
+            }
+            hideContextMenu();
+        }
+
+        function zoomIn() {
+            scale = Math.min(CONFIG.scaleMax, scale + CONFIG.zoomStep);
+            updateTransform();
+        }
+
+        function zoomOut() {
+            scale = Math.max(CONFIG.scaleMin, scale - CONFIG.zoomStep);
+            updateTransform();
+        }
+
+        function resetView() {
+            scale = 0.3;
+            centerView();
+        }
+
+        function centerView() {
+            if (nodes.length === 0) return;
+
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            nodes.forEach(node => {
+                const x = parseFloat(node.element.dataset.x);
+                const y = parseFloat(node.element.dataset.y);
+                minX = Math.min(minX, x);
+                maxX = Math.max(maxX, x);
+                minY = Math.min(minY, y);
+                maxY = Math.max(maxY, y);
+            });
+
+            offsetX = (minX + maxX) / 2;
+            offsetY = (minY + maxY) / 2;
+
+            updateTransform();
+        }
+
+        function updateTransform() {
+            nodes.forEach(node => {
+                updateNodePosition(node.element, parseFloat(node.element.dataset.x), parseFloat(node.element.dataset.y));
+            });
+            drawGrid();
+            drawConnections();
+            updateStats();
+        }
+
+        function updateStats() {
+            const clueCount = document.querySelectorAll('.node.clue-node').length;
+            document.getElementById('statNodes').textContent = nodes.length;
+            document.getElementById('statConnections').textContent = connections.length;
+            document.getElementById('statClues').textContent = clueCount;
+            document.getElementById('statSelected').textContent = selectedNodes.length;
+            document.getElementById('statusText').textContent = 
+                `就绪 - 节点数: ${nodes.length} | 连接数: ${connections.length} | 线索: ${clueCount} | 选中: ${selectedNodes.length} | 缩放: ${Math.round(scale * 100)}%`;
+        }
+
+        function updateStatus(text) {
+            if (text) {
+                document.getElementById('statusText').textContent = text;
+            } else {
+                updateStats();
+            }
+        }
+
+        // ==================== 新增：节点定位功能 ====================
+        function focusSelectedNode() {
+            if (selectedNodes.length === 0) {
+                alert('请先选择一个节点');
+                return;
+            }
+            
+            const nodeId = selectedNodes[0];
+            const node = document.getElementById(nodeId);
+            if (!node) return;
+            
+            // 获取节点的世界坐标
+            const worldX = parseFloat(node.dataset.x);
+            const worldY = parseFloat(node.dataset.y);
+            
+            // 将视口中心设置为节点位置
+            offsetX = worldX;
+            offsetY = worldY;
+            
+            updateTransform();
+            
+            // 可选：高亮显示
+            node.classList.add('selected');
+            setTimeout(() => {
+                node.classList.remove('selected');
+            }, 500);
+        }
+
+        function findLostNodes() {
+            if (nodes.length === 0) return;
+            
+            // 计算所有节点的中心位置
+            let sumX = 0, sumY = 0;
+            nodes.forEach(node => {
+                sumX += parseFloat(node.element.dataset.x);
+                sumY += parseFloat(node.element.dataset.y);
+            });
+            
+            // 设置视口中心为所有节点的平均位置
+            offsetX = sumX / nodes.length;
+            offsetY = sumY / nodes.length;
+            
+            updateTransform();
+        }
+
+        // ==================== 存档操作 ====================
+        window.resetGameState = function() {
+            if (confirm('清除所有存档？游戏进度将重置。')) {
+                GameState.resetState();
+                location.reload();
+            }
+        };
+
+        window.handleFileImport = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (GameState.importState(e.target.result)) {
+                    alert('导入成功，页面将重新加载。');
+                    location.reload();
+                } else {
+                    alert('导入失败，文件格式不正确。');
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        // ==================== 事件监听 ====================
+        function setupEventListeners() {
+            // 全局鼠标事件
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging && dragNode) {
+                    const worldPos = screenToWorld(e.clientX - dragOffset.x, e.clientY - dragOffset.y);
+                    dragNode.dataset.x = worldPos.x;
+                    dragNode.dataset.y = worldPos.y;
+                    updateNodePosition(dragNode, worldPos.x, worldPos.y);
+                    drawConnections();
+
+                    
+                    if (e.clientY > window.innerHeight - 100) {
+                        document.getElementById('trash-zone')?.classList.add('active');
+                    } else {
+                        document.getElementById('trash-zone')?.classList.remove('active');
+                    }
+                }
+
+                if (isPanning) {
+                    offsetX = panOffsetStart.x - (e.clientX - panStart.x) / scale;
+                    offsetY = panOffsetStart.y - (e.clientY - panStart.y) / scale;
+                    updateTransform();
+                }
+            });
+
+            document.addEventListener('mouseup', (e) => {
+                if (isDragging && dragNode) {
+                    if (e.clientY > window.innerHeight - 100) {
+                        const nodeId = dragNode.id;
+                        dragNode.remove();
+                        nodes = nodes.filter(n => n.id !== nodeId);
+                        connections = connections.filter(c => c.from !== nodeId && c.to !== nodeId);
+                        selectedNodes = selectedNodes.filter(id => id !== nodeId);
+                    } else {
+                        // 将最终屏幕坐标转换回世界坐标并保存
+                        const finalWorldPos = screenToWorld(parseFloat(dragNode.style.left), parseFloat(dragNode.style.top));
+                        if (dragNode) {
+                            dragNode.dataset.x = finalWorldPos.x;
+                            dragNode.dataset.y = finalWorldPos.y;
+                            // 使用updateNodePosition确保位置正确（它会应用当前的scale和offset）
+                            updateNodePosition(dragNode, finalWorldPos.x, finalWorldPos.y);
+                        }
+                    }
+                    
+                    if (dragNode) {
+                        dragNode.classList.remove('dragging');
+                    }
+                    nodeLayer.classList.remove('dragging-node');
+                    isDragging = false;
+                    dragNode = null;
+                    drawConnections();
+                    updateStats();
+                    
+                    // 隐藏删除区域高亮
+                    document.getElementById('trash-zone')?.classList.remove('active');
+                }
+
+                isPanning = false;
+            });
+
+            // 画布拖拽
+            nodeLayer.addEventListener('mousedown', (e) => {
+                if (e.target === nodeLayer && !connectMode) {
+                    isPanning = true;
+                    panStart = { x: e.clientX, y: e.clientY };
+                    panOffsetStart = { x: offsetX, y: offsetY };
+                    nodeLayer.style.cursor = 'grabbing';
+                }
+            });
+
+            nodeLayer.addEventListener('mouseup', () => {
+                nodeLayer.style.cursor = 'grab';
+            });
+
+            // 滚轮缩放
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -CONFIG.zoomStep : CONFIG.zoomStep;
+                scale = Math.max(CONFIG.scaleMin, Math.min(CONFIG.scaleMax, scale + delta));
+                updateTransform();
+            }, { passive: false });
+
+            // 键盘事件
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Delete' && selectedNodes.length > 0) {
+                    deleteSelected();
+                }
+                if (e.key === 'Escape') {
+                    connectMode = false;
+                    mergeMode = false;
+                    connectStart = null;
+                    mergeStart = null;
+                    document.getElementById('connectBtn').classList.remove('active');
+                    document.getElementById('mergeBtn').classList.remove('active');
+                    document.getElementById('modeIndicator').classList.remove('active');
+                    document.getElementById('merge-hint').classList.remove('active');
+                    document.querySelectorAll('.node.selected').forEach(n => n.classList.remove('selected'));
+                    selectedNodes = [];
+                    drawConnections();
+                    updateStats();
+                }
+            });
+
+            // 点击空白处关闭右键菜单
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.context-menu')) {
+                    hideContextMenu();
+                }
+            });
+
+            // 返回顶部
+            const goTop = document.getElementById('go-top');
+            if (goTop) {
+                goTop.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 400) {
+                        goTop.style.opacity = 1;
+                        goTop.style.pointerEvents = 'auto';
+                    } else {
+                        goTop.style.opacity = 0;
+                        goTop.style.pointerEvents = 'none';
+                    }
+                });
+            }
+        }
+
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', init);
+
+        // 将必要函数挂载到window对象，供HTML onclick调用
+        window.performSearch = performSearch;
+        window.openNewsDetail = openNewsDetail;
+        window.addNode = addNode;
+        window.toggleConnectMode = toggleConnectMode;
+        window.toggleMergeMode = toggleMergeMode;
+        window.deleteSelected = deleteSelected;
+        window.toggleBookmark = toggleBookmark;
+        window.toggleUnknown = toggleUnknown;
+        window.toggleCluePanel = toggleCluePanel;
+        window.exportGameProgress = exportGameProgress;
+        window.resetView = resetView;
+        window.zoomIn = zoomIn;
+        window.zoomOut = zoomOut;
+        window.editNode = editNode;
+        window.openNewsFromContext = openNewsFromContext;
+        window.tryMergeFromContext = tryMergeFromContext;
+        window.toggleLegend = toggleLegend;
+        window.focusSelectedNode = focusSelectedNode;
+        window.findLostNodes = findLostNodes;
+    </script>
+</body>
+</html>

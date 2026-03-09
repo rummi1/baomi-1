@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我们来了</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #8B0000;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+            font-family: "Microsoft YaHei", "SimHei", sans-serif;
+        }
+
+        /* 故障抖动动画 */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes glitch-intense {
+            0% { transform: translate(0) scale(1); filter: hue-rotate(0deg); }
+            10% { transform: translate(-5px, 5px) scale(1.02); }
+            20% { transform: translate(5px, -5px) scale(0.98); filter: hue-rotate(90deg); }
+            30% { transform: translate(-5px, -5px) scale(1.01); }
+            40% { transform: translate(5px, 5px) scale(1.03); filter: hue-rotate(180deg); }
+            50% { transform: translate(-3px, 3px) scale(0.99); }
+            60% { transform: translate(3px, -3px) scale(1.02); filter: hue-rotate(270deg); }
+            70% { transform: translate(-3px, -3px) scale(1); }
+            80% { transform: translate(3px, 3px) scale(0.98); }
+            90% { transform: translate(-2px, 2px) scale(1.01); }
+            100% { transform: translate(0) scale(1); filter: hue-rotate(360deg); }
+        }
+
+        @keyframes rgb-split {
+            0%, 100% { text-shadow: -3px 0 #ff0000, 3px 0 #00ffff; }
+            25% { text-shadow: 3px 0 #ff0000, -3px 0 #00ffff; }
+            50% { text-shadow: -2px 0 #ff00ff, 2px 0 #00ff00; }
+            75% { text-shadow: 4px 0 #ffff00, -4px 0 #0000ff; }
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+            52% { opacity: 0.2; }
+            54% { opacity: 1; }
+            90% { opacity: 0.9; }
+            92% { opacity: 0.3; }
+            94% { opacity: 1; }
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+
+        @keyframes float-up {
+            0% { 
+                transform: translateY(100vh) rotate(0deg) scale(0.5); 
+                opacity: 0; 
+            }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { 
+                transform: translateY(-100vh) rotate(360deg) scale(1.5); 
+                opacity: 0; 
+            }
+        }
+
+        @keyframes pulse-scale {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* 背景容器 */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            animation: glitch 0.3s infinite, flicker 0.1s infinite;
+        }
+
+        /* 重复文字卡片 */
+        .text-card {
+            position: absolute;
+            font-size: 60px;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.4);
+            animation: float-up 8s linear infinite;
+            pointer-events: none;
+            text-shadow: 2px 2px 4px rgba(139, 0, 0, 0.5);
+        }
+
+        .text-card:nth-child(odd) {
+            color: rgba(50, 0, 0, 0.5);
+        }
+
+        /* 扫描线效果 */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(to bottom, 
+                transparent, 
+                rgba(255, 0, 0, 0.3), 
+                transparent
+            );
+            animation: scanline 3s linear infinite;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* 噪点覆盖层 */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 5;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* 中央文字容器 */
+        .center-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            text-align: center;
+        }
+
+        .center-text .char {
+            display: inline-block;
+            font-size: 180px;
+            font-weight: 900;
+            color: #ffffff;
+            animation: rgb-split 0.1s infinite, glitch-intense 0.5s infinite;
+            opacity: 0;
+            transition: opacity 0.1s;
+            text-shadow: 
+                -4px 0 #ff0000, 
+                4px 0 #00ffff,
+                0 0 30px rgba(255, 255, 255, 0.8),
+                0 0 60px rgba(255, 0, 0, 0.5);
+            filter: contrast(1.5) brightness(1.2);
+        }
+
+        .center-text .char.visible {
+            opacity: 1;
+            animation: rgb-split 0.1s infinite, glitch-intense 0.5s infinite, pulse-scale 0.3s ease-in-out;
+        }
+
+        /* 血滴效果 */
+        .blood-drip {
+            position: absolute;
+            width: 3px;
+            height: 20px;
+            background: linear-gradient(to bottom, #8B0000, #4a0000);
+            opacity: 0;
+            animation: drip 2s ease-in infinite;
+        }
+
+        @keyframes drip {
+            0% { transform: translateY(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100px); opacity: 0; }
+        }
+
+        /* 屏幕闪烁 */
+        .flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        @keyframes flash-anim {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.3; }
+        }
+
+        .flash.active {
+            animation: flash-anim 0.1s ease-out;
+        }
+
+        /* 扭曲效果 */
+        .warp {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(139, 0, 0, 0.4) 100%);
+            pointer-events: none;
+            z-index: 3;
+            animation: pulse-scale 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- 噪点层 -->
+    <div class="noise"></div>
+    
+    <!-- 扫描线 -->
+    <div class="scanline"></div>
+    
+    <!-- 扭曲层 -->
+    <div class="warp"></div>
+    
+    <!-- 闪烁层 -->
+    <div class="flash" id="flash"></div>
+    
+    <!-- 背景文字卡片容器 -->
+    <div class="background" id="background"></div>
+    
+    <!-- 中央文字 -->
+    <div class="center-text" id="centerText">
+        <span class="char" id="char1">我</span>
+        <span class="char" id="char2">们</span>
+        <span class="char" id="char3">来</span>
+        <span class="char" id="char4">了</span>
+    </div>
+
+    <script>
+        // 创建背景文字卡片
+        const background = document.getElementById('background');
+        const chars = ['我', '们', '来', '了', '我', '我', '我'];
+        
+        function createTextCard() {
+            const card = document.createElement('div');
+            card.className = 'text-card';
+            card.textContent = chars[Math.floor(Math.random() * chars.length)];
+            card.style.left = Math.random() * 100 + '%';
+            card.style.animationDuration = (6 + Math.random() * 4) + 's';
+            card.style.animationDelay = Math.random() * 2 + 's';
+            card.style.fontSize = (40 + Math.random() * 80) + 'px';
+            card.style.transform = `rotate(${Math.random() * 360}deg)`;
+            background.appendChild(card);
+            
+            // 动画结束后移除
+            setTimeout(() => {
+                card.remove();
+            }, 10000);
+        }
+
+        // 持续创建文字卡片
+        setInterval(createTextCard, 300);
+        
+        // 初始创建一批
+        for (let i = 0; i < 20; i++) {
+            setTimeout(createTextCard, i * 100);
+        }
+
+        // 创建血滴效果
+        function createBloodDrip() {
+            const drip = document.createElement('div');
+            drip.className = 'blood-drip';
+            drip.style.left = Math.random() * 100 + '%';
+            drip.style.top = '0';
+            drip.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(drip);
+            
+            setTimeout(() => drip.remove(), 2000);
+        }
+        setInterval(createBloodDrip, 500);
+
+        // 文字依次显示
+        const chars_to_show = ['char1', 'char2', 'char3', 'char4'];
+        const flash = document.getElementById('flash');
+        let currentIndex = 0;
+
+        function showNextChar() {
+            if (currentIndex < chars_to_show.length) {
+                // 闪烁效果
+                flash.classList.add('active');
+                setTimeout(() => flash.classList.remove('active'), 100);
+                
+                // 显示文字
+                const char = document.getElementById(chars_to_show[currentIndex]);
+                char.classList.add('visible');
+                
+                // 播放音效（如果浏览器允许）
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = 100 + currentIndex * 50;
+                    oscillator.type = 'sawtooth';
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                } catch(e) {}
+                
+                currentIndex++;
+                
+                // 继续下一个或跳转
+                if (currentIndex < chars_to_show.length) {
+                    setTimeout(showNextChar, 3000);
+                } else {
+                    // 所有文字显示完毕，3秒后跳转
+                    setTimeout(() => {
+                        window.location.href = 'end-2.html';
+                    }, 3000);
+                }
+            }
+        }
+
+        // 页面加载后开始
+        setTimeout(showNextChar, 1000);
+
+        // 随机故障效果
+        setInterval(() => {
+            document.body.style.filter = `hue-rotate(${Math.random() * 30}deg) contrast(${1.2 + Math.random()})`;
+            setTimeout(() => {
+                document.body.style.filter = '';
+            }, 50);
+        }, 2000);
+    </script>
+</body>
+</html>
