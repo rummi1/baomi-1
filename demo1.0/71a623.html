@@ -1467,7 +1467,11 @@
             getState() {
                 try {
                     const saved = localStorage.getItem(this.STORAGE_KEY);
-                    if (saved) return JSON.parse(saved);
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (!Array.isArray(parsed.mergedClues)) parsed.mergedClues = [];
+                        return parsed;
+                    }
                 } catch (e) {
                     console.error('读取存档失败:', e);
                 }
@@ -1475,7 +1479,8 @@
                     unlockedArticles: ['article_001'],
                     discoveredClues: [],
                     searchHistory: [],
-                    mindMapScale: 1
+                    mindMapScale: 1,
+                    mergedClues: []
                 };
             },
 
@@ -1485,6 +1490,18 @@
                 } catch (e) {
                     console.error('保存存档失败:', e);
                 }
+            },
+
+            addMergedClue(clueId) {
+                const state = this.getState();
+                if (!state.mergedClues.includes(clueId)) {
+                    state.mergedClues.push(clueId);
+                    this.saveState(state);
+                }
+            },
+
+            getMergedClues() {
+                return this.getState().mergedClues || [];
             },
 
             unlockArticle(articleId) {
@@ -1524,7 +1541,8 @@
                     unlockedArticles: ['article_001'],
                     discoveredClues: [],
                     searchHistory: [],
-                    mindMapScale: 1
+                    mindMapScale: 1,
+                    mergedClues: []
                 }));
             },
 
@@ -1533,7 +1551,8 @@
                 try {
                     const parsed = JSON.parse(jsonStr);
                     if (parsed && Array.isArray(parsed.unlockedArticles)) {
-                        localStorage.setItem(this.STORAGE_KEY, jsonStr);
+                        if (!Array.isArray(parsed.mergedClues)) parsed.mergedClues = [];
+                        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(parsed));
                         return true;
                     }
                 } catch (e) {
@@ -1584,6 +1603,44 @@
         }
 
 
+        // ==================== 恢复合并的线索 ====================
+        function restoreMergedClues() {
+            const mergedClues = GameState.getMergedClues();
+            mergedClues.forEach(clueId => {
+                if (document.getElementById(clueId)) return;
+                const rule = MERGE_RULES.find(r => r.id === clueId);
+                if (!rule) return;
+
+                const sourceA = nodes.find(n => n.id === rule.sources[0]);
+                const sourceB = nodes.find(n => n.id === rule.sources[1]);
+                if (!sourceA || !sourceB) return;
+
+                const avgX = (parseFloat(sourceA.element.dataset.x) + parseFloat(sourceB.element.dataset.x)) / 2;
+                const avgY = (parseFloat(sourceA.element.dataset.y) + parseFloat(sourceB.element.dataset.y)) / 2;
+
+                createNodeElement({
+                    id: rule.id,
+                    text: '💡 ' + rule.result.substring(0, 20) + (rule.result.length > 20 ? '...' : ''),
+                    x: avgX,
+                    y: avgY - 100,
+                    level: 3
+                }, true);
+
+                rule.sources.forEach(sourceId => {
+                    createConnection(sourceId, rule.id);
+                });
+
+                addClueToPanel(rule.result, rule.id);
+                clueCounter++;
+            });
+
+            if (mergedClues.length > 0) {
+                drawConnections();
+                updateStats();
+                checkFinalClues();
+            }
+        }
+
         // ==================== 核心功能 ====================
         function init() {
             resizeCanvas();
@@ -1617,6 +1674,8 @@
                 initialData.connections.forEach(([from, to]) => {
                     connections.push({ from, to });
                 });
+
+                restoreMergedClues();
 
                 centerView();
                 updateStats();
@@ -2167,6 +2226,8 @@
                 createConnection(node2Id, rule.id);
 
                 addClueToPanel(rule.result, rule.id);
+
+                GameState.addMergedClue(rule.id);
 
                 drawConnections();
                 updateStats();
