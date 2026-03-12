@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>新闻检索系统 - 澳港省日报</title>
-    <link rel="stylesheet" href="./fcyym.css" />
     <style>
         /* 全局背景改为白色 - 与news_detail一致 */
         body {
@@ -962,10 +961,10 @@
             color: #666;
         }
 
-        /* 引入在线行楷字体 */
+        /* 使用系统字体 */
         @font-face {
             font-family: 'STXingkai';
-            src: url('https://fonts.gstatic.com/s/notosanssc/v24/k3k68XPNpWRmgQ73v60CSLpGF90me5j.woff2') format('woff2');
+            src: local('STXingkai'), local('华文行楷'), local('楷体');
             font-weight: normal;
             font-style: normal;
         }
@@ -1266,7 +1265,7 @@
         ];
 
         // 总线索数量
-        const TOTAL_CLUES = 13;
+        const TOTAL_CLUES = MERGE_RULES.length;
 
         // ==================== 状态管理 ====================
         let nodes = [];
@@ -1565,39 +1564,88 @@
         // ==================== 恢复合并的线索 ====================
         function restoreMergedClues() {
             const mergedClues = GameState.getMergedClues();
-            mergedClues.forEach(clueId => {
-                if (document.getElementById(clueId)) return;
-                const rule = MERGE_RULES.find(r => r.id === clueId);
-                if (!rule) return;
-
-                const sourceA = nodes.find(n => n.id === rule.sources[0]);
-                const sourceB = nodes.find(n => n.id === rule.sources[1]);
-                if (!sourceA || !sourceB) return;
-
-                const avgX = (parseFloat(sourceA.element.dataset.x) + parseFloat(sourceB.element.dataset.x)) / 2;
-                const avgY = (parseFloat(sourceA.element.dataset.y) + parseFloat(sourceB.element.dataset.y)) / 2;
-
-                createNodeElement({
-                    id: rule.id,
-                    text: '💡 ' + rule.result.substring(0, 20) + (rule.result.length > 20 ? '...' : ''),
-                    x: avgX,
-                    y: avgY - 100,
-                    level: 3
-                }, true);
-
-                rule.sources.forEach(sourceId => {
-                    createConnection(sourceId, rule.id);
-                });
-
-                addClueToPanel(rule.result, rule.id);
-                clueCounter++;
-            });
-
-            if (mergedClues.length > 0) {
-                drawConnections();
+            
+            // 清空当前面板
+            const clueList = document.getElementById('clue-list');
+            clueList.innerHTML = '';
+            discoveredClues = [];
+            clueCounter = 0;
+            
+            if (!Array.isArray(mergedClues) || mergedClues.length === 0) {
                 updateStats();
-                checkFinalClues();
+                return;
             }
+            
+            // 直接遍历所有MERGE_RULES，按照存储顺序恢复
+            mergedClues.forEach((clueId, index) => {
+                const rule = MERGE_RULES.find(r => r.id === clueId);
+                if (!rule) {
+                    console.warn('未知的线索规则:', clueId);
+                    return;
+                }
+                
+                // 检查节点是否已存在
+                let clueNode = document.getElementById(clueId);
+                
+                if (!clueNode) {
+                    // 查找源节点
+                    const sourceA = nodes.find(n => n.id === rule.sources[0]);
+                    const sourceB = nodes.find(n => n.id === rule.sources[1]);
+                    
+                    // 如果源节点不存在，尝试使用线索节点作为源（处理依赖关系）
+                    let nodeA = sourceA;
+                    let nodeB = sourceB;
+                    
+                    if (!nodeA) {
+                        nodeA = nodes.find(n => n.id === rule.sources[0]);
+                    }
+                    if (!nodeB) {
+                        nodeB = nodes.find(n => n.id === rule.sources[1]);
+                    }
+                    
+                    if (!nodeA || !nodeB) {
+                        console.warn(`无法创建线索 ${clueId}: 缺少源节点`);
+                        return;
+                    }
+                    
+                    const avgX = (parseFloat(nodeA.element.dataset.x) + parseFloat(nodeB.element.dataset.x)) / 2;
+                    const avgY = (parseFloat(nodeA.element.dataset.y) + parseFloat(nodeB.element.dataset.y)) / 2;
+                    
+                    clueNode = createNodeElement({
+                        id: rule.id,
+                        text: '💡 ' + rule.result.substring(0, 20) + (rule.result.length > 20 ? '...' : ''),
+                        x: avgX,
+                        y: avgY - 100,
+                        level: 3
+                    }, true);
+                    
+                    // 创建连接
+                    rule.sources.forEach(sourceId => {
+                        if (!connections.some(c => c.from === sourceId && c.to === rule.id)) {
+                            createConnection(sourceId, rule.id);
+                        }
+                    });
+                }
+                
+                // 添加到线索面板
+                if (!discoveredClues.includes(clueId)) {
+                    discoveredClues.push(clueId);
+                    
+                    const clueItem = document.createElement('div');
+                    clueItem.className = 'clue-item';
+                    clueItem.dataset.clueId = clueId;
+                    clueItem.innerHTML = `<strong>线索 #${discoveredClues.length}:</strong> ${rule.result}`;
+                    clueList.appendChild(clueItem);
+                    
+                    clueCounter++;
+                }
+            });
+            
+            drawConnections();
+            updateStats();
+            checkFinalClues();
+            
+            console.log('已恢复线索:', discoveredClues);
         }
 
         // ==================== 核心功能 ====================
@@ -2167,6 +2215,8 @@
             );
 
             if (rule) {
+                console.log('合并规则找到:', rule.id, rule.result);
+                
                 const node1 = nodes.find(n => n.id === node1Id);
                 const node2 = nodes.find(n => n.id === node2Id);
 
@@ -2185,13 +2235,16 @@
                 createConnection(node2Id, rule.id);
 
                 addClueToPanel(rule.result, rule.id);
+                
+                console.log('已添加到面板，当前discoveredClues:', discoveredClues);
 
                 GameState.addMergedClue(rule.id);
+                
+                console.log('已保存到GameState，当前mergedClues:', GameState.getMergedClues());
 
                 drawConnections();
                 updateStats();
 
-                clueCounter++;
                 checkFinalClues();
 
                 return true;
@@ -2209,16 +2262,31 @@
             hideContextMenu();
         }
 
-        function addClueToPanel(clueText, clueId) {
-            if (discoveredClues.includes(clueId)) return;
-            discoveredClues.push(clueId);
+        function addClueToPanel(clueText, clueId, skipCounter = false) {
+            // 正常模式：如果已存在则返回
+            if (!skipCounter && discoveredClues.includes(clueId)) return;
+            
+            // 确保 clueId 在 discoveredClues 中
+            if (!discoveredClues.includes(clueId)) {
+                discoveredClues.push(clueId);
+            }
 
             const clueList = document.getElementById('clue-list');
+            
+            // 检查面板中是否已存在该线索
+            const existingItem = clueList.querySelector(`[data-clue-id="${clueId}"]`);
+            if (existingItem) return;
+            
             const clueItem = document.createElement('div');
             clueItem.className = 'clue-item';
-            clueItem.innerHTML = `<strong>线索 #${discoveredClues.length}:</strong> ${clueText}`;
+            clueItem.dataset.clueId = clueId;
+            const clueIndex = discoveredClues.indexOf(clueId) + 1;
+            clueItem.innerHTML = `<strong>线索 #${clueIndex}:</strong> ${clueText}`;
             clueList.appendChild(clueItem);
 
+            if (!skipCounter) {
+                clueCounter++;
+            }
             updateStats();
         }
 
@@ -2382,12 +2450,25 @@
 
         function updateStats() {
             const clueCount = document.querySelectorAll('.node.clue-node').length;
-            document.getElementById('statNodes').textContent = nodes.length;
-            document.getElementById('statConnections').textContent = connections.length;
-            document.getElementById('statClues').textContent = clueCount;
-            document.getElementById('statSelected').textContent = selectedNodes.length;
-            document.getElementById('statusText').textContent = 
-                `就绪 - 节点数: ${nodes.length} | 连接数: ${connections.length} | 线索: ${clueCount} | 选中: ${selectedNodes.length} | 缩放: ${Math.round(scale * 100)}%`;
+            
+            // 安全地更新统计信息，检查元素是否存在
+            const statNodes = document.getElementById('statNodes');
+            if (statNodes) statNodes.textContent = nodes.length;
+            
+            const statConnections = document.getElementById('statConnections');
+            if (statConnections) statConnections.textContent = connections.length;
+            
+            const statClues = document.getElementById('statClues');
+            if (statClues) statClues.textContent = clueCount;
+            
+            const statSelected = document.getElementById('statSelected');
+            if (statSelected) statSelected.textContent = selectedNodes.length;
+            
+            const statusText = document.getElementById('statusText');
+            if (statusText) {
+                statusText.textContent = 
+                    `就绪 - 节点数: ${nodes.length} | 连接数: ${connections.length} | 线索: ${clueCount} | 选中: ${selectedNodes.length} | 缩放: ${Math.round(scale * 100)}%`;
+            }
         }
 
         function updateStatus(text) {
