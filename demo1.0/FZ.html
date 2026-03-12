@@ -322,6 +322,61 @@
             z-index: 20;
             display: flex;
             gap: 20px;
+            align-items: center;
+        }
+
+        /* 背景大小控制 */
+        .size-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            padding: 12px 20px;
+            font-family: 'Courier New', 'Noto Serif SC', 'SimSun', serif;
+        }
+
+        .size-label {
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .size-slider {
+            width: 120px;
+            height: 4px;
+            background: var(--border-color);
+            outline: none;
+            -webkit-appearance: none;
+            opacity: 0.6;
+        }
+
+        .size-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--accent-color);
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+        }
+
+        .size-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: var(--accent-color);
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+        }
+
+        .size-value {
+            font-size: 11px;
+            min-width: 35px;
+            text-align: right;
+            letter-spacing: 0.1em;
+            font-family: 'Courier New', monospace;
         }
 
         /* 返回按钮 */
@@ -558,6 +613,12 @@
 
         <!-- 底部控制栏 -->
         <div class="bottom-controls">
+            <!-- 背景大小控制 -->
+            <div class="size-control">
+                <span class="size-label">背景大小</span>
+                <input type="range" class="size-slider" id="sizeSlider" min="30" max="100" value="70">
+                <span class="size-value" id="sizeValue">70%</span>
+            </div>
             <button class="back-button" id="returnButton">返回</button>
         </div>
     </div>
@@ -574,6 +635,9 @@
             const opacityPanel = document.getElementById('opacityPanel');
             const opacitySlider = document.getElementById('opacitySlider');
             const opacityValue = document.getElementById('opacityValue');
+            const sizeSlider = document.getElementById('sizeSlider');
+            const sizeValue = document.getElementById('sizeValue');
+            const background = document.querySelector('.background');
             
             let isDragging = false;
             let isResizing = false;
@@ -585,6 +649,15 @@
             let startAngle = 0;
             let activeHandle = null;
             let isHintImage = false;
+            
+            // 背景大小滑块控制
+            sizeSlider.addEventListener('input', function() {
+                const value = this.value;
+                const size = value + 'vw';
+                background.style.width = size;
+                background.style.height = size;
+                sizeValue.textContent = value + '%';
+            });
             
             // 修改按钮 - 跳转到FZ2.html
             modifyBtn.addEventListener('click', function() {
