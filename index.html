@@ -2,14 +2,15 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>游戏启动 - 苞米的推理之旅</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>作者主页 - | 汉化 & 原创游戏</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --border-color: #000000;
             --accent-green: #16a34a;
+            --accent-amber: #d97706;
             --bg-color: #fafafa;
             --text-color: #171717;
         }
@@ -26,7 +27,7 @@
             overflow-x: hidden;
         }
 
-        /* 几何背景装饰 */
+        /* 几何背景装饰 (与游戏页完全一致) */
         .geo-bg {
             position: fixed;
             top: 0;
@@ -58,13 +59,12 @@
             transform: rotate(45deg);
         }
 
-        /* 内容容器 */
         .content-wrapper {
             position: relative;
             z-index: 10;
         }
 
-        /* 边框基础类 */
+        /* 粗野主义边框 */
         .brutal-border {
             border: 2px solid var(--border-color);
         }
@@ -73,13 +73,12 @@
             border: 3px solid var(--border-color);
         }
 
-        /* 左侧绿色强调条 */
-        .accent-bar {
+        /* 左侧强调条 (双色变体) */
+        .accent-bar-green {
             position: relative;
             padding-left: 1.5rem;
         }
-
-        .accent-bar::before {
+        .accent-bar-green::before {
             content: '';
             position: absolute;
             left: 0;
@@ -89,20 +88,29 @@
             background-color: var(--accent-green);
         }
 
-        /* 卡片样式 */
-        .info-card {
+        .accent-bar-amber {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        .accent-bar-amber::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--accent-amber);
+        }
+
+        /* 卡片悬停效果 */
+        .game-card {
             background: white;
             transition: all 0.2s ease;
-            position: relative;
+            cursor: pointer;
         }
-
-        .info-card:hover {
+        .game-card:hover {
             transform: translateX(4px);
             background-color: #f5f5f5;
-        }
-
-        .info-card:hover::before {
-            background-color: #15803d;
         }
 
         /* 标签样式 */
@@ -117,109 +125,42 @@
             margin-bottom: 0.5rem;
         }
 
-        /* 按钮样式 */
-        .start-btn {
+        .tag-dark {
+            background: #000;
+            color: #fff;
+        }
+
+        /* 按钮样式 (与游戏页启动按钮同源) */
+        .action-btn {
             background: #000;
             color: #fff;
             border: 2px solid #000;
             transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
-
-        .start-btn:hover {
+        .action-btn:hover {
             background: #fff;
             color: #000;
             transform: translate(-2px, -2px);
             box-shadow: 4px 4px 0 #000;
         }
-
-        .start-btn:active {
+        .action-btn:active {
             transform: translate(0, 0);
             box-shadow: 0 0 0 #000;
         }
 
-        /* 黑屏过渡 */
-        #black-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            z-index: 9999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #black-screen.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        /* 竖排文字容器 - 从右往左排列 */
-        .vertical-text-container {
-            display: flex;
-            flex-direction: row-reverse; /* 关键：从右往左排列 */
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            gap: 4rem;
-        }
-
-        /* 竖排文字 */
-        .vertical-text {
-            writing-mode: vertical-rl;
-            text-orientation: upright;
-            color: #fff;
-            font-size: 1.6rem !important;;
-            letter-spacing: 0.6em;
-            font-family: 'Noto Serif SC', serif;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: slideUp 1.5s ease forwards;
-            text-shadow: 0 0 20px rgba(255,255,255,0.2);
-            white-space: nowrap;
-        }
-
-        /* 从右往左的动画延迟：最右边（视觉上的第一列）最先出现 */
-        .vertical-text:nth-child(1) { animation-delay: 0.3s; } /* 同壤生就神性与幽暗 - 最右 */
-        .vertical-text:nth-child(2) { animation-delay: 0.9s; } /* 罪愆藏圣 - 中间 */
-        .vertical-text:nth-child(3) { animation-delay: 1.8s; } /* 颂赞染尘 - 最左 */
-
-        @keyframes slideUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* 编号样式 */
-        .num-badge {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            font-weight: 700;
-            border: 1px solid #000;
-            width: 1.5rem;
-            height: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        /* 分隔线 */
+        /* 分隔线装饰 */
         .section-divider {
             height: 2px;
             background: #000;
             margin: 2rem 0;
             position: relative;
         }
-
         .section-divider::after {
             content: '◆';
             position: absolute;
@@ -228,48 +169,61 @@
             transform: translate(-50%, -50%);
             background: var(--bg-color);
             padding: 0 0.5rem;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
 
-        /* 警告框特殊样式 */
-        .warning-box {
-            background: #fff;
-            position: relative;
+        /* 底部个人信息小字 */
+        .footer-note {
+            border-top: 2px solid #000;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            font-size: 0.7rem;
+            text-align: center;
+            letter-spacing: 0.02em;
         }
-
-        .warning-box::after {
-            content: '';
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            right: -4px;
-            bottom: -4px;
-            background: repeating-linear-gradient(
-                45deg,
-                #000,
-                #000 1px,
-                transparent 1px,
-                transparent 4px
-            );
-            opacity: 0.1;
-            z-index: -1;
+        
+        /* 响应式双栏 */
+        @media (max-width: 768px) {
+            .grid-cols-1.md\:grid-cols-2 {
+                gap: 1.5rem;
+            }
         }
-
-        /* 小标签 */
-        .label-sm {
-            font-size: 0.6rem;
-            letter-spacing: 0.15em;
+        
+        /* 悬停图片示意（占位块风格，纯色块加斜线纹理，模拟缩略图） */
+        .game-thumb {
+            background: repeating-linear-gradient(45deg, #eee, #eee 2px, #fff 2px, #fff 8px);
+            border: 1px solid #000;
+            height: 120px;
+            width: 100%;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
             text-transform: uppercase;
-            color: #666;
-            margin-bottom: 0.25rem;
-            display: block;
+            color: #333;
+        }
+        
+        /* 小徽章 */
+        .status-badge {
+            font-size: 0.6rem;
+            background: #fff;
+            border: 1px solid #000;
+            padding: 0.1rem 0.4rem;
+            display: inline-block;
+            font-weight: bold;
+        }
+        
+        /* 标题内点缀 */
+        .link-icon {
+            font-family: monospace;
         }
     </style>
-<base target="_blank">
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
-    <!-- 几何背景装饰 -->
+    <!-- 几何背景装饰 (原汁原味复制) -->
     <div class="geo-bg">
         <div class="geo-line" style="width: 1px; height: 100%; left: 10%;"></div>
         <div class="geo-line" style="width: 1px; height: 100%; left: 90%;"></div>
@@ -280,201 +234,254 @@
         <div class="geo-square" style="width: 40px; height: 40px; bottom: 30%; right: 12%;"></div>
     </div>
 
-    <!-- 主内容 -->
-    <main class="content-wrapper max-w-4xl mx-auto">
-        
-        <!-- 顶部标识 -->
+    <main class="content-wrapper max-w-5xl mx-auto">
+        <!-- 顶部状态栏 (呼应游戏页面氛围) -->
         <div class="flex justify-between items-center mb-8 text-xs tracking-widest uppercase border-b-2 border-black pb-2">
-            <span>SYS.INIT</span>
-            <span>VER.1.0.0</span>
-            <span>LOCAL_MODE</span>
+            <span>AUTHOR.PORTFOLIO</span>
+            <span>VER.1.1.0</span>
         </div>
 
-        <!-- 标题区 -->
-        <header class="mb-10 p-6 brutal-border-thick bg-white">
-            <div class="tag bg-black text-white">WELCOME</div>
-            <h1 class="text-3xl md:text-4xl font-bold leading-tight tracking-tight">
-                哈喽～欢迎进入<br>我的这个游戏！
+        <!-- 头部欢迎区: 作者简介 沿用粗野标题框 -->
+        <header class="mb-12 p-6 brutal-border-thick bg-white">
+            <div class="tag tag-dark bg-black text-white">CREATOR / B.M</div>
+            <h1 class="text-3xl md:text-5xl font-black leading-tight tracking-tighter mt-2">
+                明日太远<br>
+                <span class="text-xl md:text-2xl font-mono tracking-normal">------------</span>
             </h1>
+            <p class="text-sm leading-relaxed mt-4 border-l-2 border-black pl-4 max-w-2xl">
+                这里放入了我的游戏，还有我和Deepseek老师汉化的一些游戏！有能力还希望各位可以去多多支持原版哦！
+            </p>            
         </header>
 
-        <!-- 世界观介绍 -->
-        <section class="mb-8">
-            <div class="flex items-center gap-2 mb-4">
-                <div class="w-2 h-2 bg-black"></div>
-                <span class="text-xs font-bold tracking-widest uppercase">World Connection</span>
-            </div>
+        <!-- 核心双栏区: 汉化游戏 / 原创游戏 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             
-            <div class="info-card brutal-border p-6 accent-bar bg-white">
-                <span class="label-sm">联动作品 / CROSSOVER</span>
-                <p class="text-sm leading-relaxed mb-4">
-                    本作与《南山的羔羊》这一游戏内容有所联动，是属于《南山的羔羊》游戏正传中，和剧情涉及最少的角色的视角。
-                </p>
-                <p class="text-sm leading-relaxed border-l-2 border-black pl-3">
-                    两个游戏发生在同一世界观下同一时间，可以将其和《南山的羔羊》一起当作<span class="font-bold bg-black text-white px-1">双视角交叉探索</span>同一个阴谋背后的真相。
-                </p>
-                <div class="mt-4 pt-4 border-t border-black">
-                    <p class="text-sm">
-                        在本作中，你将跟随/作为主角<span class="font-bold text-lg">"苞米"</span>，调查一起发生在朋友身上的案件，找到案件背后的真相，沉浸式过一把推理解谜瘾。
+            <!-- 左侧: 汉化的游戏 联动绿标强调 -->
+            <div>
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-3 h-3 bg-black"></div>
+                    <div class="w-6 h-0.5 bg-black"></div>
+                    <span class="text-xs font-bold tracking-widest uppercase text-gray-800">Localization · 汉化作品</span>
+                </div>
+                <div class="brutal-border bg-white p-6 h-full flex flex-col accent-bar-green">
+                    <div class="flex justify-between items-start flex-wrap gap-2 mb-2">
+                        <span class="tag" style="background: #16a34a20; border-color:#000;">汉化</span>
+                        <span class="text-[10px] uppercase opacity-50">↓ 点击跳转</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 tracking-tight">汉化作品</h3>
+                    <p class="text-sm leading-relaxed mb-5">
+                        以下为已完成汉化并上线的作品，点击按钮进入专属页面。
                     </p>
+                    
+                    <!-- 汉化游戏列表（可扩展，展示两个示例） -->
+                    <div class="space-y-4 mt-2 flex-1">
+                        <!-- 游戏条目 1 -->
+                        <div class="border-t border-black pt-3 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                            <div class="flex-1">
+                                <div class="font-bold text-base flex items-center gap-2">
+                                    <span class="text-lg">①</span> What happened to the crew?
+                                    <span class="text-[10px] bg-black text-white px-1">汉化版</span>
+                                </div>
+                                <p class="text-xs opacity-70 mt-1">类typehelp | 英译中完整版</p>
+                            </div>
+                            <button class="action-btn px-4 py-2 text-xs whitespace-nowrap" data-url="https://rummi1.github.io/baomi-1/What happend to the crew/index.html" data-game="黄昏低语·重构">
+                                前往游戏 ›
+                            </button>
+                        </div>
+                        <!-- 游戏条目 2 -->
+                        <div class="border-t border-black pt-3 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                            <div class="flex-1">
+                                <div class="font-bold text-base flex items-center gap-2">
+                                    <span class="text-lg">②</span>The archives of Trevosa trevosa       <span class="text-[10px] bg-black text-white px-1">纯英文</span>
+                                </div>
+                                <p class="text-xs opacity-70 mt-1">家族树+自创语言，类《鲁特里一家死了》|无法汉化</p>
+                            </div>
+                            <button class="action-btn px-4 py-2 text-xs whitespace-nowrap" data-url="https://example.com/local/logic-labyrinth" data-game="罪与逻辑迷宫">
+                                前往游戏 ›
+                            </button>
+                        </div>
+                        <!-- 汉化作品第三条 增加丰富度 -->
+                        <div class="border-t border-black pt-3 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                            <div class="flex-1">
+                                <div class="font-bold text-base flex items-center gap-2">
+                                    <span class="text-lg">🔦</span> ？？？
+                                    <span class="text-[10px] bg-gray-100 border border-black px-1">？？</span>
+                                </div>
+                                <p class="text-xs opacity-70 mt-1">？？</p>
+                            </div>
+                            <button class="action-btn px-4 py-2 text-xs whitespace-nowrap" data-url="https://example.com/local/rust-room" data-game="逃出锈色房间">
+                                前往游戏 ›
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-5 pt-3 text-right text-[11px] border-t border-dashed border-black">
+                        <span class="font-mono">✧ 持续汉化更多优秀作品 ✧</span>
+                    </div>
                 </div>
             </div>
-        </section>
 
-        <div class="section-divider"></div>
-
-        <!-- 游戏科普 -->
-        <section class="mb-8">
-            <div class="flex items-center gap-2 mb-4">
-                <div class="w-2 h-2 bg-black"></div>
-                <span class="text-xs font-bold tracking-widest uppercase">Game Info</span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="info-card brutal-border p-5 accent-bar bg-white">
-                    <span class="label-sm">类型 / TYPE</span>
-                    <div class="text-2xl font-bold mb-2">55%推理 + 45%解谜</div>
-                    <p class="text-xs leading-relaxed">
-                        纯单机沉浸式体验，不用联网，一个人就能尽情玩！
+            <!-- 右侧: 我制作的游戏 琥珀色强调 -->
+            <div>
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-3 h-3 bg-black"></div>
+                    <div class="w-6 h-0.5 bg-black"></div>
+                    <span class="text-xs font-bold tracking-widest uppercase text-gray-800">Original Games · 自研作品</span>
+                </div>
+                <div class="brutal-border bg-white p-6 h-full flex flex-col accent-bar-amber">
+                    <div class="flex justify-between items-start flex-wrap gap-2 mb-2">
+                        <span class="text-[10px] uppercase opacity-50">独立开发</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 tracking-tight">JO老师创建的南山世界观</h3>
+                    <p class="text-sm leading-relaxed mb-5">
+                        还没写的简介
                     </p>
+                    
+                    <div class="space-y-4 mt-2 flex-1">
+                        <div class="border-t border-black pt-3 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                            <div class="flex-1">
+                                <div class="font-bold text-base flex items-center gap-2">
+                                    <span class="text-xl">①</span> 南羔demo1
+                                </div>
+                                <p class="text-xs opacity-70 mt-1">55%推理+45%解谜 · 南山的羔羊联动 · 4.5-6小时体验</p>
+                            </div>
+                            <button class="action-btn px-4 py-2 text-xs whitespace-nowrap" data-url="https://rummi1.github.io/baomi-1/demo1.0/index.html" data-game="南羔demo1" data-core="true">
+                                开始探索 ›
+                            </button>
+                        </div>
+                        <!-- 第二部原创游戏 demo概念 -->
+                        <div class="border-t border-black pt-3 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                            <div class="flex-1">
+                                <div class="font-bold text-base flex items-center gap-2">
+                                    <span class="text-lg">②</span> 南山的羔羊
+                                    <span class="text-[10px] bg-gray-100 border border-black px-1">开发中</span>
+                                </div>
+                                <p class="text-xs opacity-70 mt-1">？？？</p>
+                            </div>
+                            <button class="action-btn px-4 py-2 text-xs whitespace-nowrap" data-url="https://example.com/original/school-7days" data-game="旧校舍七日谈">
+                                敬请期待 ›
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-5 pt-3 text-right text-[11px] border-t border-dashed border-black">
+                        <span class="font-mono">✦ 所有原创游戏均无内购无广告 ✦</span>
+                    </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="info-card brutal-border p-5 accent-bar bg-white">
-                    <span class="label-sm">时长 / DURATION</span>
-                    <div class="text-2xl font-bold mb-2">5.5-6 小时</div>
-                    <p class="text-xs leading-relaxed">
-                        目前内测平均通关时间。不同人的速度有所差异很正常，不用着急，慢慢玩就好～
+        <!-- 额外信息栏：联动说明/作者寄语 类似原有警告框风格 -->
+        <div class="mt-10 warning-box brutal-border-thick p-5 bg-white relative" style="background:#fff;">
+            <div class="flex gap-3 items-start flex-wrap">
+                <div class="text-2xl leading-none">💬</div>
+                <div class="flex-1">
+                    <span class="text-xs font-bold uppercase tracking-wider border-b border-black">From Creator</span>
+                    <p class="text-sm mt-2 leading-relaxed">
+                       
                     </p>
+                    <div class="mt-3 flex gap-3 text-[11px] font-mono">
+                        <span>小红书：哄哄</span>
+                        <span></span>
+                    </div>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <div class="section-divider"></div>
-
-        <!-- 重要提醒 -->
-        <section class="mb-10">
-            <div class="flex items-center gap-2 mb-4">
-                <div class="w-2 h-2 bg-black"></div>
-                <span class="text-xs font-bold tracking-widest uppercase">Warning & Notice</span>
-            </div>
-
-            <div class="warning-box brutal-border-thick p-6 space-y-6">
-                
-                <!-- 提醒1 -->
-                <div class="flex gap-4 group cursor-default">
-                    <div class="num-badge group-hover:bg-black group-hover:text-white transition-colors">01</div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-sm mb-1 uppercase tracking-wide">适配人群提示</h4>
-                        <p class="text-xs leading-relaxed">
-                            游戏里有悬疑元素，还需要一些逻辑推理、细节观察和信息整合能力。<span class="font-bold border-b border-black">12岁以下的小朋友、对悬疑暴力元素敏感的玩家，建议谨慎选择！</span>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="h-px bg-black opacity-20"></div>
-
-                <!-- 提醒2 -->
-                <div class="flex gap-4 group cursor-default">
-                    <div class="num-badge group-hover:bg-black group-hover:text-white transition-colors">02</div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-sm mb-1 uppercase tracking-wide">操作建议</h4>
-                        <p class="text-xs leading-relaxed">
-                            内测的时候有玩家说本作可能不适合利用碎片化时间进行摸鱼，所以推荐使用<span class="font-bold bg-black text-white px-1">备忘录、思维导图、excel等工具</span>记下你已找到的内容、编号、关键词和大致信息。这能很好的帮助你理清思路，也能避免如果你使用碎片时间分段玩的时候，忘了之前的剧情和线索。
-                        </p>
-                    </div>
-                </div>
-
-                <div class="h-px bg-black opacity-20"></div>
-
-                <!-- 提醒3 -->
-                <div class="flex gap-4 group cursor-default">
-                    <div class="num-badge group-hover:bg-black group-hover:text-white transition-colors">03</div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-sm mb-1 uppercase tracking-wide">体验提示</h4>
-                        <p class="text-xs leading-relaxed">
-                            本作推荐使用PC端进行游玩，当前还没有做移动端适配版本，可能游玩体验会差一些。另，游戏中所有人物、系统、案件细节均为剧情设定，请勿与现实关联；剧情包含伏笔，建议全程专注体验，影响体验乐趣。
-                        </p>
-                    </div>
-                </div>
-
-                <div class="h-px bg-black opacity-20"></div>
-
-                <!-- 提醒4 -->
-                <div class="flex gap-4 group cursor-default">
-                    <div class="num-badge group-hover:bg-black group-hover:text-white transition-colors">04</div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-sm mb-1 uppercase tracking-wide">其他小说明</h4>
-                        <p class="text-xs leading-relaxed">
-                            游戏全程无付费、无广告弹窗，放心玩！如果遇到页面卡顿，刷新一下就好，已经搜集的线索会自动保存，不用重复操作，其中也会有页面专门记录你搜索过的浏览记录，可以直接跳转前往。
-                        </p>
-                    </div>
-                </div>
-                
-            
-            </div>
-        </section>
-
-        <!-- 底部行动区 -->
-        <footer class="text-center py-8 border-t-2 border-black">
-            <p class="text-sm mb-6 font-serif italic">
-                如果已经备好你的观察力和推理力，<br>
-                就可以正式开启咱们的推理之旅了！
-            </p>
-            
-            <button id="startBtn" class="start-btn px-10 py-4 text-sm font-bold tracking-widest uppercase">
-                [ 进入游戏 ]
-            </button>
-            
-            <div class="mt-4 text-xs opacity-50 tracking-widest">
-                PRESS TO INITIALIZE
+        <!-- 底部声明 (模仿原页面结尾风格) -->
+        <footer class="footer-note">
+            <div class="flex flex-wrap justify-center gap-6 text-[11px] uppercase tracking-wider">
+                <span>纯个人学习使用，无商业推广，如有侵权立刻删除</span>
+                <span>◆</span>
+                <span>All games recommended on PC</span>
+                <span>◆</span>
             </div>
         </footer>
-
     </main>
 
-    <!-- 黑屏过渡层 - 竖排文字（从右往左读） -->
-    <div id="black-screen">
-        <div class="vertical-text-container">
-            <!-- HTML顺序：从右到左（视觉阅读顺序） -->
-            <div class="vertical-text">颂赞染尘</div> <!-- 最右边，最先出现 -->
-            <div class="vertical-text">罪愆藏圣</div>              <!-- 中间，第二出现 -->
-            <div class="vertical-text">同壤生就神性与幽暗</div>              <!-- 最左边，最后出现 -->
-        </div>
+    <!-- 黑屏过渡层（优雅跳转，参考原页面效果，但保留过渡动画更干净） -->
+    <div id="black-screen" style="position: fixed; top:0; left:0; width:100%; height:100%; background-color:#000; z-index: 9999; opacity:0; pointer-events: none; transition: opacity 0.4s ease; display: flex; justify-content: center; align-items: center;">
+        <div class="text-white text-xl font-mono tracking-widest animate-pulse"> ⟳ 正在跳转 </div>
     </div>
 
     <script>
-        document.getElementById('startBtn').addEventListener('click', function() {
-            const btn = this;
-            const blackScreen = document.getElementById('black-screen');
+        // 获取所有跳转按钮
+        const btns = document.querySelectorAll('.action-btn');
+        const blackScreen = document.getElementById('black-screen');
+        let pendingUrl = '';
+
+        // 辅助函数：执行跳转过渡（原游戏页面类似效果）
+        function navigateWithTransition(url) {
+            if (!url) return;
+            // 防止重复快速点击黑屏叠加
+            if (blackScreen.classList.contains('active')) return;
+            blackScreen.style.transition = 'opacity 0.4s ease';
+            blackScreen.style.opacity = '1';
+            blackScreen.style.pointerEvents = 'all';
+            blackScreen.classList.add('active');
             
-            // 按钮点击反馈
-            btn.style.transform = 'scale(0.95)';
+            // 增加微震动反馈
             setTimeout(() => {
-                btn.style.transform = '';
-            }, 100);
-            
-            // 延迟启动黑屏
-            setTimeout(() => {
-                blackScreen.classList.add('active');
+                window.location.href = url;
+            }, 380);  // 过渡完成跳转
+        }
+
+        // 绑定按钮点击事件 + 优雅反馈（模仿原startBtn的缩放效果）
+        btns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // 获取自定义数据-url
+                let targetUrl = this.getAttribute('data-url');
+                if (!targetUrl) {
+                    console.warn('未定义跳转链接');
+                    // 若没有链接但有默认指向 story0.html 作为备选（针对苞米推理之旅可单独处理）
+                    if (this.getAttribute('data-game') === '南羔demo1') {
+                        targetUrl = 'https://rummi1.github.io/baomi-1/demo1.0/index.html';
+                    } else {
+                        targetUrl = '#';
+                        alert('当前游戏页面尚未配置完整地址，请稍后访问～');
+                        return;
+                    }
+                }
                 
-                // 3秒后跳转
+                // 按钮点击微动画
+                const originalTransform = this.style.transform;
+                this.style.transform = 'scale(0.96)';
                 setTimeout(() => {
-                    window.location.href = 'story0.html';
-                }, 3000);
-            }, 200);
+                    this.style.transform = originalTransform;
+                }, 120);
+                
+                // 判断链接有效性, 如果#或者空不跳
+                if (targetUrl === '#' || !targetUrl) {
+                    alert('游戏入口正在搭建中，关注后续更新。');
+                    return;
+                }
+                navigateWithTransition(targetUrl);
+            });
         });
 
-        // 添加卡片悬停音效（可选，视觉反馈）
-        document.querySelectorAll('.info-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.borderLeftWidth = '4px';
-                this.style.borderLeftColor = '#16a34a';
-            });
-            card.addEventListener('mouseleave', function() {
-                this.style.borderLeftWidth = '';
-                this.style.borderLeftColor = '';
-            });
+        // 增加卡片悬停质感（类似于游戏页的左侧边框高亮）
+        document.querySelectorAll('.game-card, .brutal-border').forEach(card => {
+            if(card.classList.contains('accent-bar-green') || card.classList.contains('accent-bar-amber')) {
+                card.addEventListener('mouseenter', function() {
+                    const pseudoType = this.classList.contains('accent-bar-green') ? 'green' : 'amber';
+                    this.style.borderLeftWidth = '4px';
+                    if(pseudoType === 'green') this.style.borderLeftColor = '#16a34a';
+                    else this.style.borderLeftColor = '#d97706';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.borderLeftWidth = '';
+                    this.style.borderLeftColor = '';
+                });
+            }
         });
+        
+        
+        // 为防止story0.html过渡完美衔接，若本地不存在回退提示温柔提醒
+        // 给“苞米的推理之旅”特殊验证 (可用但不强制)
+        const specialBtn = Array.from(btns).find(btn => btn.getAttribute('data-game') === '南羔demo1' && btn.getAttribute('data-url') === 'https://rummi1.github.io/baomi-1/demo1.0/index.html');
+        if(specialBtn) {
+            // 保持功能性
+        }
+        
     </script>
 </body>
 </html>
