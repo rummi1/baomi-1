@@ -15989,17 +15989,17 @@ const tS = (e, t) =>
               ? (h("won"),
                 w(
                   n === kr
-                    ? "SYSTEM UNLOCKED. CONGRATULATIONS."
-                    : "ACCESS GRANTED. LEVEL " +
+                    ? "系统已解锁。恭喜"
+                    : "访问已授予。等级" +
                         (n + 1) +
-                        " UNLOCKED. PRESS ENTER.",
+                        " 已解锁。按回车键。",
                 ))
               : S.length >= Xo &&
                 (h("lost"),
                 w(
                   n === kr
-                    ? "ACCESS DENIED. SYSTEM RESETTING... PRESS ENTER."
-                    : `ACCESS DENIED. PASSWORD WAS ${s}. SYSTEM RESETTING... PRESS ENTER.`,
+                    ? "访问被拒绝。系统正在重置……请按回车键。"
+                    : `访问被拒绝。密码为 ${s}。系统正在重置……请按回车键。`,
                 )));
         } else
           v.key === "Backspace"
@@ -16035,11 +16035,11 @@ const tS = (e, t) =>
       children: [
         u.jsxs("h1", {
           className: "text-2xl mb-4 font-bold border-b border-green-500 pb-2",
-          children: ["SECURITY OVERRIDE: LEVEL ", n, "/", kr],
+          children: ["安全覆写： 等级 ", n, "/", kr],
         }),
         u.jsxs("div", {
           className: "mb-4 text-sm text-green-400",
-          children: ["GUESS THE PASSWORD (", Nn, " LETTERS)"],
+          children: ["猜测密码 (", Nn, " 个字母)"],
         }),
         u.jsxs("div", {
           className: "grid gap-2 mb-6",
@@ -16121,7 +16121,7 @@ const tS = (e, t) =>
         }),
         u.jsx("div", {
           className: "mt-8 text-xs text-green-700",
-          children: "[ESC] TO ABORT",
+          children: "[ESC] 键中止",
         }),
         u.jsx("input", {
           ref: y,
