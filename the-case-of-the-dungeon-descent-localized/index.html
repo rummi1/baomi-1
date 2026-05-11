@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="data/scenes.js"></script>
+        <script type="text/javascript" src="data/coordinates.js"></script>
+        <script type="text/javascript" src="script/game.js"></script>
+        <script type="text/javascript" src="script/tester.js"></script>
+        <script type="text/javascript" src="script/settings.js"></script>
+        <script type="text/javascript" src="script/audio.js"></script>
+        <link rel="stylesheet" type="text/css" href="styles/style.css">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400;1,700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Metamorphous&display=swap" rel="stylesheet">
+
+        <script>
+    window.addEventListener('load', function() {
+        console.log('页面加载完成');
+        console.log('COORDINATES:', typeof COORDINATES);
+        console.log('SPELLS:', typeof SPELLS);
+        console.log('CHARACTERS:', typeof CHARACTERS);
+        console.log('startGame:', typeof startGame);
+        console.log('scenes 对象:', typeof scenes);
+    });
+</script>
+
+        <body>
+        <div class="game">
+            <div id="known-keywords" class="input section box">
+                <div class="character tray"></div>
+                <div class="spell tray"></div>
+                <div class="room tray"></div>
+            </div>
+            <div class="main section">
+                <div id="scry-slots" class="input section">
+                    <div class="scry-slots-container">
+                        <div class="character slot-wrapper">
+                            <div class="slot-outline"></div>
+                            <div class="slot character"><button id="scry-character" class="empty character token" onclick="handleScrySlotButton(this)"></button></div>
+                        </div>
+                        <div class="spell slot-wrapper">
+                            <div class="slot-outline"></div>
+                            <div class="slot spell"><button id="scry-spell" class="empty spell token" onclick="handleScrySlotButton(this)"></button></div>
+                        </div>
+                        <div class="room slot-wrapper">
+                            <div class="slot-outline"></div>
+                            <div class="slot room"><button id="scry-room" class="empty room token" onclick="handleScrySlotButton(this)"></button></div>
+                        </div>
+                        <button id="clear-button" onclick="handleClearButton()">&#10006;</button>
+                    </div>
+                    <div class="buttons">
+                        <div class="secondary-buttons">
+                            <button id="tester-button" class="secondary-btn" onclick="toggleTesterPopup()">记录命运</button>
+                            <button id="settings-button" class="secondary-btn" onclick="toggleSettingsPopup()">?</button>
+                        </div>
+                        <button id="scry-button" onclick="handleScry()" class="disabled">探知</button>
+                    </div>
+                    <div class="nav">
+                        <button id="back-button" onclick="handleBackButton()">&lt;</button>
+                        <button id="forward-button" class="disabled" onclick="handleForwardButton()">&gt;</button>
+                    </div>
+                </div>
+                <div class="output section">
+                    <div class="scene content">
+                        <div class="banner-wrapper">
+                            <img id="banner" src="" />
+                            <div id="banner-peeks"></div>
+                            <div id="banner-snapshot" class="unlockable"></div>
+                        </div>
+                        <div class="scene-output-wrapper">
+                            <!-- <span class="check">&#10004;</span> -->
+                            <div id="scene-output"></div>
+                            <div id="end-text"><span id="the-end">终</span><span id="end-question">?</span></div>
+                            <div id="new-keyword-hint" class="new-keyword-hint">
+                                已发现的探知目标：<div id="new-keyword-counter" class="new-keyword-counter token">
+                                    <span id="new-keyword-count">0</span>/<span id="total-keyword-count">0</span>
+                                </div>
+                            </div>
+                            <div id="all-keywords-hint" class="new-keyword-hint">
+                                已发现所有探知目标。
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scry content">
+                        <div class="message" id="multiple-result-text">
+                            <p>你瞥见了多个涉及 <span class="keywords">关键词</span> 的场景片段。
+                                <span class="to-reveal">要揭示某个场景的细节，请添加更多探知目标，直到只锁定一个场景。</span></p>
+                        </div>
+                        <div class="message" id="single-result-text">
+                            <p>一个涉及 <span class="keywords">关键词</span> 的场景逐渐清晰呈现。</p>
+                        </div>
+                        <div id="scry-options">
+                            <div class="hint unseen"><img src="images/hint.gif" /></div>
+                            <div class="hint seen"> <img src="images/hint.gif" /> </div>
+                            <div class="hint unseen"><img src="images/hint.gif" /></div>
+                        </div>
+                    </div>
+                    <div class="message content" id="no-result-text">
+                        <p>你没有看到任何涉及 <span class="keywords">关键词</span> 的场景。</p>
+                    </div>
+                    <div class="message content" id="cleared-text">
+                        <p>要使用探知，请选择目标（法术、角色或房间）进行搜索。</p>
+                    </div>
+                </div>
+            </div>
+            <div id="popup-backdrop" class="hidden" onclick="closePopups(event)">
+                <div id="tester" class="hidden popup">
+                    <h2 class="message"></h2>
+                    <div id="testers"></div>
+                    <button class="close-button" onclick="toggleTesterPopup()">X</button>
+                    <button id="complete-button" class="secondary-btn" onclick="completeTest()">返回城堡</button>
+                </div>
+                <div id="settings" class="hidden popup">
+                    <div id="settings-wrapper">
+                        <div id="settings-top-row">
+                            <div class="settings">
+                                <h2>设置</h2>
+                                <div class="setting">
+                                    <div class="toggle-switch" onclick="toggleMusic()">
+                                        <input type="checkbox" id="music-toggle" checked/>
+                                        <span class="toggle-slider"></span>
+                                    </div>
+                                    <label for="music-toggle">背景音乐</label>
+                                </div>
+                                <!-- <div class="setting">
+                                    <div class="toggle-switch" onclick="toggleSound()">
+                                        <input type="checkbox" id="sound-toggle" checked/>
+                                        <span class="toggle-slider"></span>
+                                    </div>
+                                    <label for="sound-toggle">音效</label>
+                                </div> -->
+                                <div class="setting">
+                                    <div class="toggle-switch" onclick="toggleSave()">
+                                        <input type="checkbox" id="save-toggle" checked/>
+                                        <span class="toggle-slider"></span>
+                                    </div>
+                                    <label for="save-toggle">浏览器自动保存</label>
+                                    <div class="setting-note">取消勾选将删除当前存档。</div>
+                                </div>
+                            </div>
+                            <div id="hint-section">
+                                <h2>提示</h2>
+                                <button id="hint-button" class="secondary-btn" onclick="showHint()">显示提示</button>
+                                <div id="hint-box" class="box">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="how-to-play-section">
+                            <h2>玩法说明</h2>
+                            <div class="how-to-play-content">
+                                <p>通过探知目标并发现新场景，探索地牢中发生的故事。</p>
+                                <ul>
+                                    <li>当你看到新的<strong>角色</strong>、<strong>地牢楼层</strong>，或者<strong>法术</strong>或魔法物品的名称时，点击它们即可收集探知目标。</li>
+                                    <li><strong>选择一个或多个目标</strong>，然后点击<strong>探知</strong>来搜索相关场景。</li>
+                                    <li>要揭示某个场景的完整内容，你需要找到一组能够<strong>唯一锁定一个场景</strong>的目标组合。</li>
+                                    <li>点击<strong>记录命运</strong>按钮，记录每个角色的最终结局。</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="credits-section">
+                            <h2>制作名单</h2>
+                            <div>
+                                <p>一款由 Jamwitch 制作的叙事推理游戏。</p>
+                                <ul>
+                                    <li>Celia：设计、剧本、代码</li>
+                                    <li>Rose：美术、代码</li>
+                                    <li>音乐："Emerald Therapy" by Audionautix.com</li>
+                                    <li>更多信息请访问 itch.io，搜索 The Case of the Dungeon Descent 获取</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="close-button" onclick="toggleSettingsPopup()">X</button>
+                </div>
+            </div>
+        </div>
+
+        <audio loop style="display: none;" id="background-music">
+            <source src="audio/EmeraldTherapy.mp3" type="audio/mp3">
+        </audio>
+
+        <div id="keyword-tooltip" class="tooltip"></div>
+
+        <img id="preloader" style="width: 0; height: 0; visibility: hidden;" />
+
+        <script type="text/javascript">startGame();</script>
+    </body>
+</html>
