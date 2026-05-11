@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script type="text/javascript" src="data/scenes.js"></script>
+        <script type="text/javascript" src="data/coordinates.js"></script>
+        <script type="text/javascript" src="script/game.js"></script>
+        <script type="text/javascript" src="script/tester.js"></script>
+        <script type="text/javascript" src="script/settings.js"></script>
+        <script type="text/javascript" src="script/audio.js"></script>
+        <link rel="stylesheet" type="text/css" href="styles/style.css">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400;1,700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Metamorphous&display=swap" rel="stylesheet">
+
+        <body>
+        <div class="game">
+            <div id="known-keywords" class="input section box">
+                <div class="character tray"></div>
+                <div class="spell tray"></div>
+                <div class="room tray"></div>
+            </div>
+            <div class="main section">
+                <div id="scry-slots" class="input section">
+                    <div class="scry-slots-container">
+                        <div class="character slot-wrapper">
+                            <div class="slot-outline"></div>
+                            <div class="slot character"><button id="scry-character" class="empty character token" onclick="handleScrySlotButton(this)"></button></div>
+                        </div>
+                        <div class="spell slot-wrapper">
+                            <div class="slot-outline"></div>
+                            <div class="slot spell"><button id="scry-spell" class="empty spell token" onclick="handleScrySlotButton(this)"></button></div>
+                        </div>
+                        <div class="room slot-wrapper">
+                            <div class="slot-outline"></div>
+                            <div class="slot room"><button id="scry-room" class="empty room token" onclick="handleScrySlotButton(this)"></button></div>
+                        </div>
+                        <button id="clear-button" onclick="handleClearButton()">&#10006;</button>
+                    </div>
+                    <div class="buttons">
+                        <div class="secondary-buttons">
+                            <button id="tester-button" class="secondary-btn" onclick="toggleTesterPopup()">Record fates</button>
+                            <button id="settings-button" class="secondary-btn" onclick="toggleSettingsPopup()">?</button>
+                        </div>
+                        <button id="scry-button" onclick="handleScry()" class="disabled">Scry</button>
+                    </div>
+                    <div class="nav">
+                        <button id="back-button" onclick="handleBackButton()">&lt;</button>
+                        <button id="forward-button" class="disabled" onclick="handleForwardButton()">&gt;</button>
+                    </div>
+                </div>
+                <div class="output section">
+                    <div class="scene content">
+                        <div class="banner-wrapper">
+                            <img id="banner" src="" />
+                            <div id="banner-peeks"></div>
+                            <div id="banner-snapshot" class="unlockable"></div>
+                        </div>
+                        <div class="scene-output-wrapper">
+                            <!-- <span class="check">&#10004;</span> -->
+                            <div id="scene-output"></div>
+                            <div id="end-text"><span id="the-end">THE END</span><span id="end-question">?</span></div>
+                            <div id="new-keyword-hint" class="new-keyword-hint">
+                                Scry targets discovered: <div id="new-keyword-counter" class="new-keyword-counter token">
+                                    <span id="new-keyword-count">0</span>/<span id="total-keyword-count">0</span>
+                                </div>
+                            </div>
+                            <div id="all-keywords-hint" class="new-keyword-hint">
+                                All scry targets discovered.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scry content">
+                        <div class="message" id="multiple-result-text">
+                            <p>You see glimpses of multiple scenes involving <span class="keywords">keywords</span>.
+                                <span class="to-reveal">To reveal the details of a scene, add additional scry targets to identify exactly one scene.</span></p>
+                        </div>
+                        <div class="message" id="single-result-text">
+                            <p>A single scene involving <span class="keywords">keywords</span> comes into focus.</p>
+                        </div>
+                        <div id="scry-options">
+                            <div class="hint unseen"><img src="images/hint.gif" /></div>
+                            <div class="hint seen"> <img src="images/hint.gif" /> </div>
+                            <div class="hint unseen"><img src="images/hint.gif" /></div>
+                        </div>
+                    </div>
+                    <div class="message content" id="no-result-text">
+                        <p>You see no scenes involving <span class="keywords">keywords</span>.</p>
+                    </div>
+                    <div class="message content" id="cleared-text">
+                        <p>To scry, select targets (spell, hero, or room) to search for.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="popup-backdrop" class="hidden" onclick="closePopups(event)">
+                <div id="tester" class="hidden popup">
+                    <h2 class="message"></h2>
+                    <div id="testers"></div>
+                    <button class="close-button" onclick="toggleTesterPopup()">X</button>
+                    <button id="complete-button" class="secondary-btn" onclick="completeTest()">Return to the castle</button>
+                </div>
+                <div id="settings" class="hidden popup">
+                    <div id="settings-wrapper">
+                        <div id="settings-top-row">
+                            <div class="settings">
+                                <h2>Settings</h2>
+                                <div class="setting">
+                                    <div class="toggle-switch" onclick="toggleMusic()">
+                                        <input type="checkbox" id="music-toggle" checked/>
+                                        <span class="toggle-slider"></span>
+                                    </div>
+                                    <label for="music-toggle">Background music</label>
+                                </div>
+                                <!-- <div class="setting">
+                                    <div class="toggle-switch" onclick="toggleSound()">
+                                        <input type="checkbox" id="sound-toggle" checked/>
+                                        <span class="toggle-slider"></span>
+                                    </div>
+                                    <label for="sound-toggle">Sound effects</label>
+                                </div> -->
+                                <div class="setting">
+                                    <div class="toggle-switch" onclick="toggleSave()">
+                                        <input type="checkbox" id="save-toggle" checked/>
+                                        <span class="toggle-slider"></span>
+                                    </div>
+                                    <label for="save-toggle">Autosave in browser</label>
+                                    <div class="setting-note">Uncheck to delete the current save.</div>
+                                </div>
+                            </div>
+                            <div id="hint-section">
+                                <h2>Hint</h2>
+                                <button id="hint-button" class="secondary-btn" onclick="showHint()">Reveal a hint</button>
+                                <div id="hint-box" class="box">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="how-to-play-section">
+                            <h2>How to play</h2>
+                            <div class="how-to-play-content">
+                                <p>Explore what happened in the dungeon by scrying on targets and discovering new scenes.</p>
+                                <ul>
+                                    <li>When you see new <strong>heroes</strong>, <strong>dungeon floors</strong>, or the names of <strong>spells</strong> or magical items, click them to collect scry targets.</li>
+                                    <li><strong>Chose one or more targets</strong> and click <strong>Scry</strong> to search for scenes.</li>
+                                    <li>To reveal the details of a scene, you must find the combination of targets that identify <strong>exactly one scene</strong>.</li>
+                                    <li>Click the <strong>Record Fates</strong> button to enter what happened to each hero.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="credits-section">
+                            <h2>Credits</h2>
+                            <div>
+                                <p>A narrative deduction game by Jamwitch.</p>
+                                <ul>
+                                    <li>Celia: design, writing, code</li>
+                                    <li>Rose: art, code</li>
+                                    <li>Music: "Emerald Therapy" by Audionautix.com</li>
+                                    <li>更多信息请登录ITCH，并搜索the case of the dungeon descent获取</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="close-button" onclick="toggleSettingsPopup()">X</button>
+                </div>
+            </div>
+        </div>
+
+        <audio loop style="display: none;" id="background-music">
+            <source src="audio/EmeraldTherapy.mp3" type="audio/mp3">
+        </audio>
+
+        <div id="keyword-tooltip" class="tooltip"></div>
+
+        <img id="preloader" style="width: 0; height: 0; visibility: hidden;" />
+
+        <script type="text/javascript">startGame();</script>
+    </body>
+</html><script defer type="text/javascript"></script>
