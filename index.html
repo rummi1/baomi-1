@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>作者主页 - 玩过 & 汉化游戏</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -28,7 +29,6 @@
             overflow-x: hidden;
         }
 
-        /* 几何背景装饰 */
         .geo-bg {
             position: fixed;
             top: 0;
@@ -65,7 +65,6 @@
             z-index: 10;
         }
 
-        /* 粗野主义边框 */
         .brutal-border {
             border: 2px solid var(--border-color);
         }
@@ -74,7 +73,6 @@
             border: 3px solid var(--border-color);
         }
 
-        /* 左侧强调条 (三色) */
         .accent-bar-green {
             position: relative;
             padding-left: 1.5rem;
@@ -117,7 +115,6 @@
             background-color: var(--accent-blue);
         }
 
-        /* 卡片悬停效果 */
         .game-card {
             background: white;
             transition: all 0.2s ease;
@@ -128,7 +125,6 @@
             background-color: #f5f5f5;
         }
 
-        /* 标签样式 */
         .tag {
             font-size: 0.65rem;
             letter-spacing: 0.1em;
@@ -145,7 +141,6 @@
             color: #fff;
         }
 
-        /* 按钮样式 */
         .action-btn {
             background: #000;
             color: #fff;
@@ -169,7 +164,6 @@
             box-shadow: 0 0 0 #000;
         }
 
-        /* 分类卡片按钮 */
         .category-card {
             background: white;
             border: 2px solid #000;
@@ -187,7 +181,6 @@
             box-shadow: 4px 4px 0 #000;
         }
 
-        /* 弹出模态框 (列表样式) */
         .modal {
             position: fixed;
             top: 0;
@@ -247,77 +240,348 @@
             line-height: 1;
         }
 
-        /* 游戏详情弹窗 (三个按钮) */
-        .detail-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 10001;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease;
+        .detail-view {
+            display: none;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
         }
-        .detail-modal.active {
-            opacity: 1;
-            visibility: visible;
+        .detail-view.active {
+            display: block;
         }
-        .detail-card {
-            background: #fff;
+        .detail-header {
+            background: white;
             border: 3px solid #000;
-            padding: 2rem;
-            text-align: center;
-            min-width: 280px;
-            max-width: 90%;
-            box-shadow: 16px 16px 0 rgba(0,0,0,0.2);
-        }
-        .detail-card h4 {
-            font-size: 1.4rem;
-            font-weight: bold;
+            padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
-        .detail-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-top: 1rem;
+        .detail-header h2 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
         }
-        .detail-btn {
+        .detail-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .detail-link-btn {
             background: #fff;
             border: 2px solid #000;
-            padding: 0.7rem;
+            padding: 0.5rem 1rem;
             font-weight: bold;
-            cursor: pointer;
+            text-decoration: none;
+            color: #000;
             transition: all 0.2s ease;
-            font-family: monospace;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .detail-btn:hover {
+        .detail-link-btn:hover {
             background: #000;
             color: #fff;
             transform: translate(-2px, -2px);
             box-shadow: 3px 3px 0 #000;
         }
-
-        .section-divider {
-            height: 2px;
-            background: #000;
-            margin: 2rem 0;
+        .detail-search {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #000;
+            font-family: 'JetBrains Mono', 'Noto Serif SC', 'Microsoft YaHei', monospace;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
             position: relative;
+            z-index: 10;
+            color: #222;
+            background: #fff;
+            outline: none;
         }
-        .section-divider::after {
-            content: '◆';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--bg-color);
-            padding: 0 0.5rem;
-            font-size: 0.7rem;
+        .detail-search:focus {
+            border-color: #333;
+        }
+        .game-note {
+            margin-top: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-left: 3px solid #000;
+            background: #f9f9f9;
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.6;
+        }
+        .back-home-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .back-home-btn:hover {
+            background: #333;
+        }
+
+        .detail-body-wrapper {
+            position: relative;
+            display: flex;
+        }
+        .detail-guide {
+            flex: 1;
+            min-width: 0;
+            background: transparent;
+            padding: 1.5rem;
+            transition: margin-right 0.3s ease, padding-right 0.3s ease;
+            line-height: 1.8;
+        }
+        .detail-guide.sidebar-open {
+            margin-right: 0;
+            padding-right: 1.5rem;
+        }
+
+        .detail-sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100vh;
+            background: #f7f9fc;
+            border-left: 2px solid #000;
+            z-index: 9000;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.3s ease;
+            box-shadow: -4px 0 12px rgba(0,0,0,0.08);
+        }
+        .detail-sidebar.open {
+            right: 0;
+        }
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 2px solid #000;
+            background: #fff;
+            flex-shrink: 0;
+        }
+        .sidebar-header-title {
+            font-weight: bold;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+        }
+        .sidebar-close-btn {
+            width: 28px;
+            height: 28px;
+            background: #000;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+        .sidebar-close-btn:hover {
+            background: #333;
+            transform: scale(1.1);
+        }
+        .sidebar-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+        }
+        .sidebar-body::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-body::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .sidebar-body::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .toc-h2 {
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 6px 8px 4px 8px;
+            border-radius: 4px;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            user-select: none;
+        }
+        .toc-h2:hover {
+            background: #eef2ff;
+        }
+        .toc-h2.active {
+            background: #eef2ff;
+            border-left: 3px solid #2563eb;
+        }
+        .toc-h2 .toc-arrow {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            transition: transform 0.25s ease;
+            font-size: 10px;
+            color: #888;
+            text-align: center;
+            line-height: 14px;
+        }
+        .toc-h2.expanded .toc-arrow {
+            transform: rotate(90deg);
+        }
+        .toc-children {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+        }
+        .toc-children.open {
+            max-height: 2000px;
+            opacity: 1;
+            padding-left: 1rem;
+        }
+        .toc-children li {
+            margin-bottom: 0.35rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.15s;
+            font-size: 0.82rem;
+            color: #444;
+        }
+        .toc-children li:hover {
+            background: #f0f4ff;
+            text-decoration: none;
+        }
+        .toc-children li.active {
+            background: #dbeafe;
+            border-left: 2px solid #2563eb;
+            font-weight: 500;
+        }
+
+        .toc-toggle-btn {
+            position: fixed;
+            right: 16px;
+            bottom: 24px;
+            width: 48px;
+            height: 48px;
+            background: #000;
+            color: #fff;
+            border: 2px solid #000;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9001;
+            transition: all 0.2s;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+        }
+        .toc-toggle-btn.visible {
+            display: flex;
+        }
+        .toc-toggle-btn:hover {
+            background: #fff;
+            color: #000;
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .guide-content h2 {
+            font-size: 1.4rem;
+            margin: 1.2rem 0 0.8rem 0;
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid #eef2ff;
+            scroll-margin-top: 20px;
+        }
+        .guide-content h3 {
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem 0;
+            color: #2c5a7a;
+            scroll-margin-top: 20px;
+        }
+        .guide-content h4 {
+            font-size: 1rem;
+            margin: 0.8rem 0 0.4rem 0;
+            color: #555;
+            scroll-margin-top: 20px;
+        }
+        .guide-content p {
+            margin-bottom: 0.8rem;
+            line-height: 1.6;
+        }
+        .guide-content ul, .guide-content ol {
+            margin: 0.5rem 0 1rem 1.5rem;
+        }
+        .guide-content li {
+            margin: 0.3rem 0;
+        }
+        .guide-content blockquote {
+            border-left: 4px solid #f59e0b;
+            background: #fffbeb;
+            padding: 0.5rem 1rem;
+            margin: 0.8rem 0;
+        }
+        .guide-content .highlight {
+            background: #fde047;
+        }
+        .guide-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.8rem 0;
+        }
+        .guide-content th, .guide-content td {
+            border: 1px solid #ccc;
+            padding: 0.4rem 0.6rem;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+        .guide-content th {
+            background: #f1f5f9;
+            font-weight: bold;
+        }
+        .guide-content code {
+            background: #f1f5f9;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-size: 0.85em;
+        }
+        .guide-content pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+        }
+        .guide-content pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-family: monospace;
+        }
+        .error {
+            text-align: center;
+            padding: 2rem;
+            color: red;
         }
         .footer-note {
             border-top: 2px solid #000;
@@ -328,23 +592,21 @@
             letter-spacing: 0.02em;
         }
         @media (max-width: 768px) {
-            .grid-cols-1.md\:grid-cols-2 {
-                gap: 1.5rem;
+            .detail-guide.sidebar-open {
+                margin-right: 0;
             }
-        }
-        .status-badge {
-            font-size: 0.6rem;
-            background: #fff;
-            border: 1px solid #000;
-            padding: 0.1rem 0.4rem;
-            display: inline-block;
-            font-weight: bold;
+            .detail-sidebar {
+                width: 260px;
+                right: -280px;
+            }
+            .detail-sidebar.open {
+                right: 0;
+            }
         }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
 
-    <!-- 几何背景装饰 -->
     <div class="geo-bg">
         <div class="geo-line" style="width: 1px; height: 100%; left: 10%;"></div>
         <div class="geo-line" style="width: 1px; height: 100%; left: 90%;"></div>
@@ -361,356 +623,845 @@
             <span>VER.2.0.0</span>
         </div>
 
-        <header class="mb-12 p-6 brutal-border-thick bg-white">
-            <div class="tag tag-dark bg-black text-white">CREATOR</div>
-            <h1 class="text-3xl md:text-5xl font-black leading-tight tracking-tighter mt-2">
-                明日太远<br>
-                <span class="text-xl md:text-2xl font-mono tracking-normal">------------</span>
-            </h1>
-            <p class="text-sm leading-relaxed mt-4 border-l-2 border-black pl-4 max-w-2xl">
-                这里放入了我的游戏，还有我和Deepseek老师汉化的一些游戏！有能力还希望各位可以去多多支持原版哦！
-            </p>            
-        </header>
+        <!-- 首页视图 -->
+        <div id="homeView">
+            <header class="mb-12 p-6 brutal-border-thick bg-white">
+                <div class="tag tag-dark bg-black text-white">CREATOR</div>
+                <h1 class="text-3xl md:text-5xl font-black leading-tight tracking-tighter mt-2">
+                    明日太远<br>
+                    <span class="text-xl md:text-2xl font-mono tracking-normal">------------</span>
+                </h1>
+                <p class="text-sm leading-relaxed mt-4 border-l-2 border-black pl-4 max-w-2xl">
+                    我是明日太远！欢迎来到我的主页！这里放入了我制作、汉化和有玩过的游戏，汉化的游戏有能力还希望各位可以去多多支持原版喔！
+                </p>            
+            </header>
 
-        <!-- 核心双栏区: 左栏玩过的游戏 / 右栏原创游戏 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            
-            <!-- 左侧: 玩过的游戏 (新栏) 蓝调强调 -->
-            <div>
-                <div class="flex items-center gap-2 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <!-- 左侧: 玩过的游戏 -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-3 h-3 bg-black"></div>
+                        <div class="w-6 h-0.5 bg-black"></div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-gray-800">Played · 玩过的游戏</span>
+                    </div>
+                    <div class="brutal-border bg-white p-6 h-full flex flex-col accent-bar-blue">
+                        <div class="flex justify-between items-start flex-wrap gap-2 mb-2">
+                            <span class="tag" style="background: #2563eb20; border-color:#000;">记录</span>
+                            <span class="text-[10px] uppercase opacity-50">点击分类展开</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2 tracking-tight">网页类游戏汇总——“明日也闲“</h3>
+                        <p class="text-sm leading-relaxed mb-5" id="gameCountText">加载中...</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="category-card" data-category="itch">
+                                ITCH.IO
+                            </div>
+                            <div class="category-card" data-category="xhs">
+                                XHS /国内网页
+                            </div>
+                        </div>
+                        <div class="text-right text-[11px] border-t border-dashed border-black pt-3 mt-2">
+                            <span class="font-mono">✧ 游玩记录持续更新 ✧</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧: 我制作的游戏 -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-3 h-3 bg-black"></div>
+                        <div class="w-6 h-0.5 bg-black"></div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-gray-800">Original Games · 自研作品</span>
+                    </div>
+                    <div class="brutal-border bg-white p-6 h-full flex flex-col accent-bar-amber">
+                        <div class="flex justify-between items-start flex-wrap gap-2 mb-2">
+                            <span class="text-[10px] uppercase opacity-50">个人开发</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2 tracking-tight">和JO老师一起创建的南山世界观</h3>
+                        <p class="text-sm leading-relaxed mb-5">还没写的简介</p>
+                        
+                        <div class="space-y-4 mt-2 flex-1">
+                            <div class="border-t border-black pt-3 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                                <div class="flex-1">
+                                    <div class="font-bold text-base flex items-center gap-2">
+                                        <span class="text-xl">①</span> 南羔demo1
+                                    </div>
+                                    <p class="text-xs opacity-70 mt-1">55%推理+45%解谜 · 南山的羔羊联动 · 4.5-6小时体验</p>
+                                </div>
+                                <button class="action-btn px-4 py-2 text-xs whitespace-nowrap" data-url="https://rummi1.github.io/baomi-1/demo1.0/index.html">开始探索 ›</button>
+                            </div>
+                            <div class="border-t border-black pt-3 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                                <div class="flex-1">
+                                    <div class="font-bold text-base flex items-center gap-2">
+                                        <span class="text-lg">②</span> 南山的羔羊
+                                        <span class="text-[10px] bg-gray-100 border border-black px-1">开发中</span>
+                                    </div>
+                                    <p class="text-xs opacity-70 mt-1">？？？</p>
+                                </div>
+                                <button class="action-btn px-4 py-2 text-xs whitespace-nowrap" data-url="#">敬请期待 ›</button>
+                            </div>
+                        </div>
+                        <div class="mt-5 pt-3 text-right text-[11px] border-t border-dashed border-black">
+                            <span class="font-mono">✰ 所有原创游戏均无内购无广告 ✰</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 汉化作品区域 -->
+            <div class="mt-6">
+                <div class="flex items-center gap-2 mb-3">
                     <div class="w-3 h-3 bg-black"></div>
                     <div class="w-6 h-0.5 bg-black"></div>
-                    <span class="text-xs font-bold tracking-widest uppercase text-gray-800">Played · 玩过的游戏</span>
+                    <span class="text-xs font-bold tracking-widest uppercase text-gray-800">Localization · 汉化作品</span>
                 </div>
-                <div class="brutal-border bg-white p-6 h-full flex flex-col accent-bar-blue">
-                    <div class="flex justify-between items-start flex-wrap gap-2 mb-2">
-                        <span class="tag" style="background: #2563eb20; border-color:#000;">推荐与记录</span>
-                        <span class="text-[10px] uppercase opacity-50">点击分类展开</span>
+                <div class="brutal-border bg-white p-6 accent-bar-green">
+                    <div class="flex flex-wrap justify-between items-start gap-2 mb-3">
+                        <span class="tag" style="background: #16a34a20;">汉化项目</span>
+                        <span class="text-[10px]">⬇ 原版按钮可以进入来支持原作者</span>
                     </div>
-                    <h3 class="text-2xl font-bold mb-2 tracking-tight">游戏档案馆</h3>
-                    <p class="text-sm leading-relaxed mb-5">
-                        根据分类可以查看我玩过的游戏，点击游戏名可打开游戏页面、作者主页和我的攻略笔记。
-                    </p>
-                    
-                    <!-- 两个大类按钮: ITCH 和 xhs -->
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="category-card" data-category="itch">
-                            ITCH.IO
-                        </div>
-                        <div class="category-card" data-category="xhs">
-                            XHS /国内网解
-                        </div>
-                    </div>
-                    <div class="text-right text-[11px] border-t border-dashed border-black pt-3 mt-2">
-                        <span class="font-mono">✧ 游玩记录持续更新 ✧</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 右侧: 我制作的游戏 (原创) 琥珀色 -->
-            <div>
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-3 h-3 bg-black"></div>
-                    <div class="w-6 h-0.5 bg-black"></div>
-                    <span class="text-xs font-bold tracking-widest uppercase text-gray-800">Original Games · 自研作品</span>
-                </div>
-                <div class="brutal-border bg-white p-6 h-full flex flex-col accent-bar-amber">
-                    <div class="flex justify-between items-start flex-wrap gap-2 mb-2">
-                        <span class="text-[10px] uppercase opacity-50">个人开发</span>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-2 tracking-tight">和JO老师一起创建的南山世界观</h3>
-                    <p class="text-sm leading-relaxed mb-5">
-                        还没写的简介
-                    </p>
-                    
-                    <div class="space-y-4 mt-2 flex-1">
-                        <div class="border-t border-black pt-3 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                            <div class="flex-1">
-                                <div class="font-bold text-base flex items-center gap-2">
-                                    <span class="text-xl">①</span> 南羔demo1
-                                </div>
-                                <p class="text-xs opacity-70 mt-1">55%推理+45%解谜 · 南山的羔羊联动 · 4.5-6小时体验</p>
+                    <div class="space-y-5">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 border-b border-black pb-3">
+                            <div>
+                                <div class="font-bold text-base">what happened to the crew <span class="text-[10px] bg-black text-white px-1 ml-1">汉化</span></div>
+                                <p class="text-xs opacity-70">类typehelp（TH）</p>
                             </div>
-                            <button class="action-btn px-4 py-2 text-xs whitespace-nowrap" data-url="https://rummi1.github.io/baomi-1/demo1.0/index.html" data-game="南羔demo1" data-core="true">
-                                开始探索 ›
-                            </button>
-                        </div>
-                        <div class="border-t border-black pt-3 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                            <div class="flex-1">
-                                <div class="font-bold text-base flex items-center gap-2">
-                                    <span class="text-lg">②</span> 南山的羔羊
-                                    <span class="text-[10px] bg-gray-100 border border-black px-1">开发中</span>
-                                </div>
-                                <p class="text-xs opacity-70 mt-1">？？？</p>
+                            <div class="flex gap-2 flex-wrap">
+                                <button class="action-btn px-3 py-2 text-xs" data-url="https://rummi1.github.io/baomi-1/What%20happend%20to%20the%20crew/index.html">汉化版</button>
+                                <button class="action-btn px-3 py-2 text-xs" data-url="https://bushmonkey.itch.io/what-happened-to-the-crew">原版</button>
                             </div>
-                            <button class="action-btn px-4 py-2 text-xs whitespace-nowrap" data-url="#" data-game="旧校舍七日谈">
-                                敬请期待 ›
-                            </button>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 border-b border-black pb-3">
+                            <div>
+                                <div class="font-bold text-base">manifest 333 <span class="text-[10px] bg-black text-white px-1 ml-1">汉化</span></div>
+                                <p class="text-xs opacity-70">类WHTTC+TH</p>
+                            </div>
+                            <div class="flex gap-2 flex-wrap">
+                                <button class="action-btn px-3 py-2 text-xs" data-url="https://rummi1.github.io/baomi-1/manifest-333/index.html">汉化版</button>
+                                <button class="action-btn px-3 py-2 text-xs" data-url="https://falconpilot.itch.io/manifest-333">原版</button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 border-b border-black pb-3">
+                            <div>
+                                <div class="font-bold text-base">the case of the dungeon descent <span class="text-[10px] bg-black text-white px-1 ml-1">汉化</span></div>
+                                <p class="text-xs opacity-70">西幻世界观 | 我虽然没觉得，但是朋友们觉得类TH</p>
+                            </div>
+                            <div class="flex gap-2 flex-wrap">
+                                <button class="action-btn px-3 py-2 text-xs" data-url="https://rummi1.github.io/baomi-1/the-case-of-the-dungeon-descent-localized/index.html">汉化版</button>
+                                <button class="action-btn px-3 py-2 text-xs" data-url="https://jamwitch.itch.io/the-case-of-the-dungeon-descent">原版</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="mt-5 pt-3 text-right text-[11px] border-t border-dashed border-black">
-                        <span class="font-mono">✦ 所有原创游戏均无内购无广告 ✦</span>
+                    <div class="mt-4 pt-2 text-right text-[11px]">
+                        <span class="font-mono">✎ 上述汉化仅作本人代码学习用途，完全支持原作，有正版翻译就会立即删除</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 warning-box brutal-border-thick p-5 bg-white relative">
+                <div class="flex gap-3 items-start flex-wrap">
+                    <div class="text-2xl leading-none"><i data-lucide="message-circle" style="width:24px;height:24px;"></i></div>
+                    <div class="flex-1">
+                        <span class="text-xs font-bold uppercase tracking-wider border-b border-black">From Creator</span>
+                        <p class="text-sm mt-2 leading-relaxed">欢迎交流游戏心得～ 本页面每月更新一次。</p>
+                        <p class="text-sm mt-2 leading-relaxed">另外游戏汇总中不含有任何同人性质的作品，我也玩了像《玛奇莲超市》、《万物共生》等有意思的作品，但由于同人作品我怕引发版权问题，所以就暂时不放，还请见谅</p>
+                        <div class="mt-3 flex gap-3 text-[11px] font-mono"><span>小红书：哄哄</span></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 新增: 汉化作品区域 (放在from creator上方) -->
-        <div class="mt-6">
-            <div class="flex items-center gap-2 mb-3">
-                <div class="w-3 h-3 bg-black"></div>
-                <div class="w-6 h-0.5 bg-black"></div>
-                <span class="text-xs font-bold tracking-widest uppercase text-gray-800">Localization · 汉化作品</span>
+        <!-- 详情页视图 -->
+        <div id="detailView" class="detail-view">
+            <button id="backHomeBtn" class="back-home-btn">← 返回游戏列表</button>
+            <div class="detail-header">
+                <h2 id="detailGameTitle">游戏名称</h2>
+                <div class="detail-links">
+                    <a id="detailGameUrl" href="#" target="_blank" class="detail-link-btn"><i data-lucide="gamepad-2" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>进入游戏</a>
+                    <span id="detailAuthorLinks"></span>
+                    <button id="tocToggleBtnHeader" class="detail-link-btn" style="cursor:pointer;"><i data-lucide="list" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>目录</button>
+                </div>
+                <input type="text" id="detailSearchInput" class="detail-search" placeholder="搜索攻略内容..." autocomplete="off">
+                <div id="detailGameNote" class="game-note" style="display:none;"></div>
             </div>
-            <div class="brutal-border bg-white p-6 accent-bar-green">
-                <div class="flex flex-wrap justify-between items-start gap-2 mb-3">
-                    <span class="tag" style="background: #16a34a20;">汉化项目</span>
-                    <span class="text-[10px]">⬇ 原版按钮可以进入来支持原作者</span>
-                </div>
-                <div class="space-y-5">
-                    <!-- 汉化条目 1 -->
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 border-b border-black pb-3">
-                        <div>
-                            <div class="font-bold text-base">what happened to the crew <span class="text-[10px] bg-black text-white px-1 ml-1">汉化</span></div>
-                            <p class="text-xs opacity-70">类typehelp（TH）</p>
-                        </div>
-                        <div class="flex gap-2 flex-wrap">
-                            <button class="action-btn px-3 py-2 text-xs" data-url="https://rummi1.github.io/baomi-1/What%20happend%20to%20the%20crew/index.html">汉化版</button>
-                            <button class="action-btn px-3 py-2 text-xs" data-url="https://bushmonkey.itch.io/what-happened-to-the-crew">原版</button>
-                        </div>
-                    </div>
-                    <!-- 汉化条目 2 -->
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 border-b border-black pb-3">
-                        <div>
-                            <div class="font-bold text-base">manifest 333 <span class="text-[10px] bg-black text-white px-1 ml-1">汉化</span></div>
-                            <p class="text-xs opacity-70">类WHTTC+TH</p>
-                        </div>
-                        <div class="flex gap-2 flex-wrap">
-                            <button class="action-btn px-3 py-2 text-xs" data-url="https://rummi1.github.io/baomi-1/manifest-333/index.html">汉化版</button>
-                            <button class="action-btn px-3 py-2 text-xs" data-url="https://falconpilot.itch.io/manifest-333">原版</button>
-                        </div>
-                    </div>
-                    <!-- 汉化条目 3 带双按钮 -->
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 border-b border-black pb-3">
-                        <div>
-                            <div class="font-bold text-base">the case of the dungeon descent <span class="text-[10px] bg-black text-white px-1 ml-1">汉化</span></div>
-                            <p class="text-xs opacity-70">西幻世界观 | 我虽然没觉得，但是朋友们觉得类TH</p>
-                        </div>
-                        <div class="flex gap-2 flex-wrap">
-                            <button class="action-btn px-3 py-2 text-xs" data-url="https://rummi1.github.io/baomi-1/the-case-of-the-dungeon-descent-localized/index.html">汉化版</button>
-                            <button class="action-btn px-3 py-2 text-xs" data-url="https://jamwitch.itch.io/the-case-of-the-dungeon-descent">原版</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4 pt-2 text-right text-[11px]">
-                    <span class="font-mono">✎ 上述汉化仅作本人代码学习用途，完全支持原作，有正版翻译就会立即删除</span>
+            <div class="detail-body-wrapper">
+                <div class="detail-guide" id="detailGuideWrap">
+                    <div id="detailGuideContent" class="guide-content"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 额外信息栏：FROM CREATOR -->
-        <div class="mt-10 warning-box brutal-border-thick p-5 bg-white relative">
-            <div class="flex gap-3 items-start flex-wrap">
-                <div class="text-2xl leading-none">💬</div>
-                <div class="flex-1">
-                    <span class="text-xs font-bold uppercase tracking-wider border-b border-black">From Creator</span>
-                    <p class="text-sm mt-2 leading-relaxed">
-                        欢迎交流游戏心得～ 本网站每月更新一次。
-                    </p>
-                    <div class="mt-3 flex gap-3 text-[11px] font-mono">
-                        <span>小红书：哄哄</span>
-                    </div>
-                </div>
+        <!-- 可收缩侧边栏目录 -->
+        <div id="detailSidebar" class="detail-sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-header-title"><i data-lucide="list" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>章节目录</span>
+                <button id="sidebarCloseBtn" class="sidebar-close-btn">&times;</button>
+            </div>
+            <div class="sidebar-body">
+                <ul id="detailTocList" class="toc-list"></ul>
             </div>
         </div>
+
+        <!-- 目录浮动按钮 -->
+        <button id="tocToggleBtnFloat" class="toc-toggle-btn"><i data-lucide="list" style="width:20px;height:20px;"></i></button>
 
         <footer class="footer-note">
             <div class="flex flex-wrap justify-center gap-6 text-[11px] uppercase tracking-wider">
                 <span>纯个人学习使用，无商业推广，如有侵权立刻删除</span>
-                <span>◆</span>
+                <span>◇</span>
                 <span>All games recommended on PC</span>
-                <span>◆</span>
+                <span>◇</span>
             </div>
         </footer>
     </main>
 
-    <!-- 黑屏过渡 (跳转通用) -->
     <div id="black-screen" style="position: fixed; top:0; left:0; width:100%; height:100%; background-color:#000; z-index: 9999; opacity:0; pointer-events: none; transition: opacity 0.4s ease; display: flex; justify-content: center; align-items: center;">
         <div class="text-white text-xl font-mono tracking-widest animate-pulse"> ⟳ 正在跳转 </div>
     </div>
 
-    <!-- 模态框：分类列表 -->
     <div id="category-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h3 id="modal-title">ITCH.IO 游戏</h3>
-            <div id="game-list-container"></div>
-        </div>
-    </div>
-
-    <!-- 详情弹窗 (三个按钮) -->
-    <div id="detail-modal" class="detail-modal">
-        <div class="detail-card">
-            <span id="detail-close" style="float:right; font-size:1.8rem; cursor:pointer;">&times;</span>
-            <h4 id="detail-game-name">游戏名称</h4>
-            <div class="detail-buttons">
-                <button id="play-game-btn" class="detail-btn">🎮 进入游戏</button>
-                <button id="author-page-btn" class="detail-btn">👤 进入作者页面</button>
-                <button id="guide-btn" class="detail-btn">📖 点击查看我的攻略</button>
-            </div>
+            <div id="game-list-container"><div class="loading">加载游戏中...</div></div>
         </div>
     </div>
 
     <script>
-        // ---------- 游戏数据库 (ITCH / XHS分类) ----------
-        const gamesDB = {
-            itch: [
-                { name: "Manifest 333", gameUrl: "https://falconpilot.itch.io/manifest-333", authorUrl: "https://falconpilot.itch.io", guideUrl: "#guide-manifest333" },
-                { name: "The Supper", gameUrl: "https://octavi Navarro.itch.io/the-supper", authorUrl: "https://octavi.itch.io", guideUrl: "#guide-supper" },
-                { name: "Mouth Sweet", gameUrl: "https://vidasgames.itch.io/mouth-sweet", authorUrl: "https://vidasgames.itch.io", guideUrl: "#guide-mouthsweet" },
-                { name: "Haunted PS1 Demo Disc", gameUrl: "https://hauntedps1.itch.io/demodisc", authorUrl: "https://hauntedps1.itch.io", guideUrl: "#guide-ps1" }
-            ],
-            xhs: [
-                { name: "完美的一天", gameUrl: "https://store.steampowered.com/app/1437430", authorUrl: "https://weibo.com/", guideUrl: "#guide-perfectday" },
-                { name: "窗台上的花", gameUrl: "https://indienova.com/game/flower", authorUrl: "https://indienova.com", guideUrl: "#guide-flower" },
-                { name: "海沙风云", gameUrl: "https://store.steampowered.com/app/1516580", authorUrl: "https://weibo.com/u/", guideUrl: "#guide-faraway" },
-                { name: "巴别号漫游指南", gameUrl: "https://store.steampowered.com/app/1543170", authorUrl: "https://www.starward.com", guideUrl: "#guide-babel" }
-            ]
-        };
+        // 全局游戏数据
+        let gamesDB = { itch: [], xhs: [] };
+        let currentGame = null;
+        let currentSearchTerm = '';
+        let sidebarOpen = false;
 
-        let currentCategory = '';
-        let currentGame = null;  // 存储当前选中的游戏对象
-
-        // 获取DOM元素
+        // DOM 元素
+        const homeView = document.getElementById('homeView');
+        const detailView = document.getElementById('detailView');
+        const backHomeBtn = document.getElementById('backHomeBtn');
+        const detailGameTitle = document.getElementById('detailGameTitle');
+        const detailGameUrl = document.getElementById('detailGameUrl');
+        const detailAuthorLinks = document.getElementById('detailAuthorLinks');
+        const detailSearchInput = document.getElementById('detailSearchInput');
+        const detailGuideContent = document.getElementById('detailGuideContent');
+        const detailGuideWrap = document.getElementById('detailGuideWrap');
+        const detailTocList = document.getElementById('detailTocList');
+        const detailSidebar = document.getElementById('detailSidebar');
+        const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+        const tocToggleBtnHeader = document.getElementById('tocToggleBtnHeader');
+        const tocToggleBtnFloat = document.getElementById('tocToggleBtnFloat');
         const modal = document.getElementById('category-modal');
         const modalTitle = document.getElementById('modal-title');
         const gameListContainer = document.getElementById('game-list-container');
         const closeModalBtn = document.querySelector('.close-modal');
-        const detailModal = document.getElementById('detail-modal');
-        const detailGameName = document.getElementById('detail-game-name');
-        const playGameBtn = document.getElementById('play-game-btn');
-        const authorPageBtn = document.getElementById('author-page-btn');
-        const guideBtn = document.getElementById('guide-btn');
-        const detailCloseSpan = document.getElementById('detail-close');
+        const gameCountText = document.getElementById('gameCountText');
 
-        // 打开分类列表弹窗
-        function openCategoryModal(category) {
-            currentCategory = category;
-            const categoryName = category === 'itch' ? 'ITCH.IO ' : 'XHS';
-            modalTitle.innerText = categoryName;
-            const games = gamesDB[category] || [];
-            if(games.length === 0) {
-                gameListContainer.innerHTML = '<div class="py-4 text-center">暂无游戏记录，敬请期待～</div>';
-            } else {
-                gameListContainer.innerHTML = '';
-                games.forEach((game, idx) => {
-                    const gameDiv = document.createElement('div');
-                    gameDiv.className = 'game-list-item';
-                    gameDiv.innerText = `${idx+1}. ${game.name}`;
-                    gameDiv.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        // 选中游戏，打开详细按钮弹窗
-                        currentGame = game;
-                        detailGameName.innerText = game.name;
-                        detailModal.classList.add('active');
-                        modal.classList.remove('active'); // 关闭列表弹窗
-                    });
-                    gameListContainer.appendChild(gameDiv);
+        // ========== 侧边栏目录开关 ==========
+        function openSidebar() {
+            sidebarOpen = true;
+            detailSidebar.classList.add('open');
+            detailGuideWrap.classList.add('sidebar-open');
+            tocToggleBtnFloat.classList.remove('visible');
+        }
+        function closeSidebar() {
+            sidebarOpen = false;
+            detailSidebar.classList.remove('open');
+            detailGuideWrap.classList.remove('sidebar-open');
+            if (detailView.classList.contains('active')) {
+                tocToggleBtnFloat.classList.add('visible');
+            }
+        }
+        function toggleSidebar() {
+            sidebarOpen ? closeSidebar() : openSidebar();
+        }
+
+        sidebarCloseBtn.addEventListener('click', closeSidebar);
+        tocToggleBtnHeader.addEventListener('click', toggleSidebar);
+        tocToggleBtnFloat.addEventListener('click', openSidebar);
+
+        // ========== Markdown 解析器 ==========
+        function parseMarkdown(md) {
+            if (!md) return '';
+            let html = md;
+            html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function(m, lang, code) {
+                return '<pre><code class="language-' + lang + '">' + escapeHtml(code.trim()) + '</code></pre>';
+            });
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            html = html.replace(/^#### (.+)$/gm, function(m, t) {
+                const id = 'md-' + t.trim().replace(/[^\w\u4e00-\u9fff]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+                return '<h4 id="' + id + '">' + t.trim() + '</h4>';
+            });
+            html = html.replace(/^### (.+)$/gm, function(m, t) {
+                const id = 'md-' + t.trim().replace(/[^\w\u4e00-\u9fff]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+                return '<h3 id="' + id + '">' + t.trim() + '</h3>';
+            });
+            html = html.replace(/^## (.+)$/gm, function(m, t) {
+                const id = 'md-' + t.trim().replace(/[^\w\u4e00-\u9fff]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+                return '<h2 id="' + id + '">' + t.trim() + '</h2>';
+            });
+            html = html.replace(/^# (.+)$/gm, function(m, t) {
+                const id = 'md-' + t.trim().replace(/[^\w\u4e00-\u9fff]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+                return '<h1 id="' + id + '">' + t.trim() + '</h1>';
+            });
+            html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:6px;">');
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+            html = html.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+            html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/^\|(.+)\|$/gm, function(m, row) {
+                const cells = row.split('|').map(c => c.trim());
+                if (cells.every(c => /^[-:]+$/.test(c))) return '';
+                return '<tr>' + cells.map(c => '<td>' + c + '</td>').join('') + '</tr>';
+            });
+            html = html.replace(/((?:<tr>.*<\/tr>\n?)+)/g, '<table>$1</table>');
+            html = html.replace(/^(?!<[a-z])((?!<[a-z]).+)$/gm, '<p>$1</p>');
+            html = html.replace(/<p>\s*<\/p>/g, '');
+            return html;
+        }
+
+        // ========== 从 JSON 文件加载游戏数据 ==========
+        async function loadGamesData() {
+            try {
+                const response = await fetch('game.json?t=' + Date.now());
+                if (response.ok) {
+                    const data = await response.json();
+                    gamesDB = {
+                        itch: data.itch || [],
+                        xhs: data.xhs || []
+                    };
+                    console.log('✅ 成功加载 game.json，共 ' + gamesDB.itch.length + ' 个 ITCH 游戏，' + gamesDB.xhs.length + ' 个 XHS 游戏');
+                } else {
+                    console.log('⚠️ game.json 返回错误，使用内嵌数据');
+                    useEmbeddedData();
+                }
+            } catch (error) {
+                console.warn('fetch 失败（可能需要通过 HTTP 服务器访问），使用内嵌数据:', error.message);
+                useEmbeddedData();
+            }
+            updateGameCountDisplay();
+        }
+
+        // 生成 200 个示例游戏（仅在 games.json 不存在时使用）
+        function generateSampleGames() {
+            gamesDB.itch = [];
+            gamesDB.xhs = [];
+            
+            // 生成 100 个 ITCH 示例游戏
+            for (let i = 1; i <= 100; i++) {
+                gamesDB.itch.push({
+                    name: `ITCH 示例游戏 ${i}`,
+                    gameUrl: `https://example-itch-${i}.itch.io/game`,
+                    authorUrl: `https://example-itch-${i}.itch.io`,
+                    guideContent: `
+                        <h2 id="sec-overview-${i}"> 第${i}款游戏 · 游戏概览</h2>
+                        <p>这是第${i}个ITCH游戏的攻略笔记。你可以在这里写下详细的游戏心得、通关技巧和隐藏要素。</p>
+                        <h3 id="sub-basic-${i}">基础操作</h3>
+                        <p>鼠标点击互动，键盘WASD移动。注意收集关键道具。</p>
+                        <h2 id="sec-tips-${i}">通关技巧</h2>
+                        <ul><li>技巧1：注意场景中的隐藏线索</li><li>技巧2：多与NPC对话获取信息</li></ul>
+                        <h3 id="sub-hidden-${i}">隐藏要素</h3>
+                        <p>在特定章节输入密码可解锁隐藏结局。</p>
+                        <h2 id="sec-review-${i}">个人评测</h2>
+                        <p>这款游戏氛围营造极佳，剧情引人入胜，推荐给喜欢解谜的玩家。</p>
+                        <blockquote>"这是我玩过最棒的游戏之一！" —— 玩家评价</blockquote>
+                    `
                 });
             }
+            
+            // 生成 100 个 XHS 示例游戏
+            for (let i = 1; i <= 100; i++) {
+                gamesDB.xhs.push({
+                    name: `XHS 示例游戏 ${i}`,
+                    gameUrl: `https://store.steampowered.com/app/${1437430 + i}`,
+                    authorUrl: `https://weibo.com/u/${5000000000 + i}`,
+                    guideContent: `
+                        <h2 id="sec-story-${i}"> 第${i}款游戏 · 故事背景</h2>
+                        <p>这是第${i}个XHS游戏的详细攻略笔记。包含完整剧情解析和通关指南。</p>
+                        <h3 id="sub-char-${i}">角色分析</h3>
+                        <p>每个角色都有独特的背景故事，深入了解可以触发隐藏剧情。</p>
+                        <h2 id="sec-route-${i}">全结局路线</h2>
+                        <p>通过不同选择可以达成多种结局，建议多周目体验。</p>
+                        <h3 id="sub-gift-${i}">特殊道具获取</h3>
+                        <p>完成特定支线任务可以获得稀有道具。</p>
+                        <h2 id="sec-review-${i}">通关感想</h2>
+                        <p>剧情温暖治愈，美术风格独特，强烈推荐！</p>
+                    `
+                });
+            }
+            
+            console.log(`✅ 已生成示例数据：ITCH ${gamesDB.itch.length} 个，XHS ${gamesDB.xhs.length} 个`);
+        }
+
+        // 更新首页显示的游戏数量
+        function updateGameCountDisplay() {
+            const itchCount = gamesDB.itch?.length || 0;
+            const xhsCount = gamesDB.xhs?.length || 0;
+            const total = itchCount + xhsCount;
+            if (total === 0) {
+                gameCountText.innerHTML = '暂无该游戏，可在页面评论中添加相应内容';
+            } else {
+                gameCountText.innerHTML = '共收录 ' + total + ' 款游戏 · ITCH: ' + itchCount + ' · XHS: ' + xhsCount
+                    + '<br><span style="font-size:0.85rem;color:#666;">根据分类可以查看游戏列表，点击游戏名可打开游戏页面、作者主页和攻略笔记。本页面无游戏内容概略图，如好奇可以点击作者主页进行查看</span>'
+                    + '<br><span style="font-size:0.85rem;color:#666;">当前攻略笔记以尊重游戏作者为先，若作者本人已发攻略/提示，则直接更新为作者链接，无作者分享的点击是查看本人攻略笔记</span>'
+                    + '<br><span style="font-size:0.85rem;color:#666;">希望点进来的各位都可以收获自己喜欢的游戏！❤</span>';
+            }
+        }
+
+        // 提取目录（支持 h1-h4）
+        function extractTocFromHtml(html) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const toc = [];
+            const headers = tempDiv.querySelectorAll('h1, h2, h3, h4');
+            headers.forEach(function(header) {
+                const id = header.id;
+                const text = header.innerText;
+                const level = parseInt(header.tagName.replace('H', ''));
+                if (id) toc.push({ id, text, level });
+            });
+            return toc;
+        }
+
+        // 自动为无 id 的标题生成 id
+        function ensureHeadingIds(html) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const usedIds = {};
+            tempDiv.querySelectorAll('h1, h2, h3, h4').forEach(function(header) {
+                if (!header.id) {
+                    let baseId = header.textContent.trim().replace(/[^\w\u4e00-\u9fff]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+                    let id = baseId || 'section';
+                    if (usedIds[id]) {
+                        usedIds[id]++;
+                        id = id + '-' + usedIds[id];
+                    } else {
+                        usedIds[id] = 1;
+                    }
+                    header.id = id;
+                }
+            });
+            return tempDiv.innerHTML;
+        }
+
+        function renderGuideContent() {
+            if (!currentGame) {
+                detailGuideContent.innerHTML = '<p>暂无攻略笔记，后续补充～</p>';
+                return;
+            }
+            // 检查攻略类型
+            const guideType = currentGame.guideType || 'file'; // 默认按文件处理
+            
+            // 外部链接类型 - 显示跳转提示（使用页面统一样式）
+            if (guideType === 'url' && currentGame.guideUrl) {
+                detailGuideContent.innerHTML = `
+                    <div style="padding:4rem 2rem;text-align:center;">
+                        <div style="margin-bottom:1.5rem;"><i data-lucide="book-open" style="width:48px;height:48px;color:#000;margin:0 auto;display:block;"></i></div>
+                        <p style="color:#666;margin-bottom:2.5rem;">点击下方按钮跳转到攻略页面</p>
+                        <a href="${escapeHtml(currentGame.guideUrl)}" target="_blank" rel="noopener" 
+                           class="detail-link-btn" style="margin-bottom:1.5rem;">
+                            <i data-lucide="external-link" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>打开攻略
+                        </a>
+                        <p style="color:#999;font-size:0.85rem;">链接将在新标签页中打开</p>
+                    </div>
+                `;
+                detailTocList.innerHTML = '<li style="color:#999;font-size:0.85rem;padding:8px;">外部链接，无目录</li>';
+                if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+                return;
+            }
+
+            // 无攻略类型 - 显示情况说明
+            if (guideType === 'none') {
+                detailGuideContent.innerHTML = `
+                    <div style="padding:4rem 2rem;text-align:center;">
+                        <div style="margin-bottom:1.5rem;"><i data-lucide="file-x" style="width:48px;height:48px;color:#000;margin:0 auto;display:block;"></i></div>
+                        <h3 style="margin-bottom:1rem;font-size:1.25rem;color:#000;">暂无攻略笔记</h3>
+                        <p style="color:#666;margin-bottom:0.5rem;line-height:1.8;">
+                            该游戏流程较短，或我未制作电子笔记（使用纸笔/草稿通关），因此暂无攻略内容。
+                        </p>
+                        <p style="color:#666;margin-bottom:2.5rem;line-height:1.8;">
+                            如需攻略参考，建议通过搜索引擎或其他途径查找其他玩家分享的攻略与笔记。
+                        </p>
+                    </div>
+                `;
+                detailTocList.innerHTML = '<li style="color:#999;font-size:0.85rem;padding:8px;">暂无攻略，无目录</li>';
+                if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+                return;
+            }
+            
+            // 文件类型 - 从 MD 文件加载（原有逻辑）
+            // 优先级：guideFile（外部 .md 文件）> guideMarkdown > guideContent
+            if (currentGame.guideFile) {
+                detailGuideContent.innerHTML = '<div class="loading" style="padding:2rem;text-align:center;color:#888;">正在加载攻略文件...</div>';
+                loadGuideFile(currentGame.guideFile);
+                return;
+            }
+            let content = '';
+            if (currentGame.guideMarkdown) {
+                content = parseMarkdown(currentGame.guideMarkdown);
+            } else if (currentGame.guideContent) {
+                content = currentGame.guideContent;
+            } else {
+                content = '<p style="color:#888;">暂无攻略笔记，后续补充～</p>';
+            }
+            applyContent(content);
+        }
+
+        // 统一的内容渲染和搜索高亮处理
+        function applyContent(content) {
+            content = ensureHeadingIds(content);
+            if (currentSearchTerm) {
+                const regex = new RegExp('(' + escapeRegex(currentSearchTerm) + ')', 'gi');
+                content = content.replace(regex, '<mark class="highlight">$1</mark>');
+            }
+            detailGuideContent.innerHTML = content;
+            renderToc();
+        }
+
+        // 异步加载外部 Markdown/HTML 文件
+        async function loadGuideFile(url) {
+            try {
+                detailGuideContent.innerHTML = '<div class="loading" style="padding:2rem;text-align:center;color:#888;">正在加载攻略文件: ' + escapeHtml(url) + '</div>';
+                const response = await fetch(url + '?t=' + Date.now());
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const text = await response.text();
+                let content;
+                if (url.endsWith('.md') || url.endsWith('.markdown')) {
+                    console.log('✅ 从文件加载 Markdown:', url, '(', text.length, ' 字符)');
+                    content = parseMarkdown(text);
+                } else {
+                    content = text;
+                }
+                applyContent(content);
+            } catch (err) {
+                console.warn('⚠️ 加载 MD 文件失败:', url, err.message);
+                // 尝试使用内嵌的备份内容
+                if (embeddedGuides[url]) {
+                    console.log('✅ 使用内嵌备份内容');
+                    const content = parseMarkdown(embeddedGuides[url]);
+                    applyContent(content);
+                } else {
+                    detailGuideContent.innerHTML = '<div style="padding:2rem;text-align:center;"><p style="color:#e53e3e;font-weight:bold;">攻略文件加载失败</p><p style="color:#888;font-size:0.85rem;margin-top:0.5rem;">' + escapeHtml(err.message) + '</p><p style="color:#888;font-size:0.8rem;margin-top:0.5rem;">请确认 MD/ 文件夹中存在该 .md 文件，或通过 HTTP 服务器访问本页面</p></div>';
+                    renderToc();
+                }
+            }
+        }
+
+        function renderToc() {
+            const toc = extractTocFromHtml(detailGuideContent.innerHTML);
+            if (toc.length === 0) {
+                detailTocList.innerHTML = '<li style="color:#999;font-size:0.85rem;padding:8px;">暂无章节</li>';
+                return;
+            }
+            let html = '';
+            let h2Count = 0;
+            let currentH2Children = [];
+            let currentH2Id = '';
+            let currentH2Text = '';
+
+            function flushH2() {
+                if (currentH2Text) {
+                    var hasChildren = currentH2Children.length > 0;
+                    html += '<div class="toc-h2" data-id="' + escapeHtml(currentH2Id) + '" data-has-children="' + hasChildren + '">';
+                    html += '<span class="toc-arrow">' + (hasChildren ? '▶' : '') + '</span>';
+                    html += '<span class="toc-label">' + escapeHtml(currentH2Text) + '</span>';
+                    html += '</div>';
+                    if (hasChildren) {
+                        html += '<ul class="toc-children">' + currentH2Children.join('') + '</ul>';
+                    }
+                }
+                currentH2Children = [];
+                currentH2Text = '';
+                currentH2Id = '';
+            }
+
+            toc.forEach(function(item) {
+                if (item.level === 2) {
+                    flushH2();
+                    h2Count++;
+                    currentH2Id = item.id;
+                    currentH2Text = h2Count + '. ' + item.text;
+                } else if (item.level === 1) {
+                    flushH2();
+                    html += '<div class="toc-h2 toc-h1-style" data-id="' + escapeHtml(item.id) + '" data-has-children="false">';
+                    html += '<span class="toc-arrow"></span>';
+                    html += '<span class="toc-label">' + escapeHtml(item.text) + '</span></div>';
+                } else if (item.level >= 3) {
+                    currentH2Children.push('<li data-id="' + escapeHtml(item.id) + '" data-level="' + item.level + '">' + escapeHtml(item.text) + '</li>');
+                }
+            });
+            flushH2();
+
+            detailTocList.innerHTML = html;
+
+            // H2 点击：手风琴效果 — 收起其他所有，只展开当前
+            detailTocList.querySelectorAll('.toc-h2[data-has-children="true"]').forEach(function(h2El) {
+                h2El.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    var wasExpanded = this.classList.contains('expanded');
+                    // 1. 收起所有其他已展开的 H2
+                    detailTocList.querySelectorAll('.toc-h2.expanded').forEach(function(otherH2) {
+                        if (otherH2 !== this) {
+                            otherH2.classList.remove('expanded');
+                            var otherChildren = otherH2.nextElementSibling;
+                            if (otherChildren && otherChildren.classList.contains('toc-children')) {
+                                otherChildren.classList.remove('open');
+                            }
+                        }
+                    });
+                    // 2. 切换当前项（展开/收起）
+                    if (wasExpanded) {
+                        this.classList.remove('expanded');
+                        var myChildren = this.nextElementSibling;
+                        if (myChildren && myChildren.classList.contains('toc-children')) {
+                            myChildren.classList.remove('open');
+                        }
+                    } else {
+                        this.classList.add('expanded');
+                        var myChildren = this.nextElementSibling;
+                        if (myChildren && myChildren.classList.contains('toc-children')) {
+                            myChildren.classList.add('open');
+                        }
+                    }
+                    // 滚动到对应位置
+                    scrollToSection(this.getAttribute('data-id'));
+                });
+            });
+
+            // 无子项的 H2 / H1 点击直接滚动
+            detailTocList.querySelectorAll('.toc-h2[data-has-children="false"]').forEach(function(h2El) {
+                h2El.addEventListener('click', function() {
+                    scrollToSection(this.getAttribute('data-id'));
+                });
+            });
+
+            // 子项点击滚动
+            detailTocList.querySelectorAll('.toc-children li').forEach(function(li) {
+                li.addEventListener('click', function() {
+                    scrollToSection(this.getAttribute('data-id'));
+                });
+            });
+        }
+
+        function scrollToSection(sectionId) {
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                target.style.transition = 'background 0.3s';
+                target.style.background = '#fef3c7';
+                setTimeout(function() { target.style.background = ''; }, 1500);
+                // 清除所有高亮
+                detailTocList.querySelectorAll('.toc-h2').forEach(function(el) { el.classList.remove('active'); });
+                detailTocList.querySelectorAll('.toc-children li').forEach(function(el) { el.classList.remove('active'); });
+                // 高亮当前项
+                var activeH2 = detailTocList.querySelector('.toc-h2[data-id="' + sectionId + '"]');
+                var activeLi = detailTocList.querySelector('.toc-children li[data-id="' + sectionId + '"]');
+                if (activeH2) {
+                    activeH2.classList.add('active');
+                    // 自动展开父级
+                    if (activeH2.getAttribute('data-has-children') === 'true') {
+                        activeH2.classList.add('expanded');
+                        var children = activeH2.nextElementSibling;
+                        if (children && children.classList.contains('toc-children')) {
+                            children.classList.add('open');
+                        }
+                    }
+                } else if (activeLi) {
+                    activeLi.classList.add('active');
+                    // 高亮父级 H2
+                    var parentH2 = activeLi.closest('.toc-children')?.previousElementSibling;
+                    if (parentH2) parentH2.classList.add('active');
+                }
+            }
+        }
+
+        // 滚动追踪（监听页面滚动而非容器内滚动）
+        function setupScrollSpy() {
+            window.addEventListener('scroll', function() {
+                if (!detailView.classList.contains('active')) return;
+                var headings = detailGuideContent.querySelectorAll('h1, h2, h3, h4');
+                var currentId = '';
+                headings.forEach(function(h) {
+                    var rect = h.getBoundingClientRect();
+                    if (rect.top <= 100) {
+                        currentId = h.id;
+                    }
+                });
+                if (currentId) {
+                    // 清除旧高亮
+                    detailTocList.querySelectorAll('.toc-h2').forEach(function(el) { el.classList.remove('active'); });
+                    detailTocList.querySelectorAll('.toc-children li').forEach(function(el) { el.classList.remove('active'); });
+                    // 设置新高亮
+                    var activeH2 = detailTocList.querySelector('.toc-h2[data-id="' + currentId + '"]');
+                    var activeLi = detailTocList.querySelector('.toc-children li[data-id="' + currentId + '"]');
+                    if (activeH2) {
+                        activeH2.classList.add('active');
+                    } else if (activeLi) {
+                        activeLi.classList.add('active');
+                        var parentH2 = activeLi.closest('.toc-children')?.previousElementSibling;
+                        if (parentH2) parentH2.classList.add('active');
+                    }
+                }
+            });
+        }
+
+        function performSearch(term) {
+            currentSearchTerm = term.trim().toLowerCase();
+            renderGuideContent();
+            if (currentSearchTerm) {
+                setTimeout(() => {
+                    const firstMark = detailGuideContent.querySelector('.highlight');
+                    if (firstMark) firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
+        }
+
+        function openGameDetail(game) {
+            currentGame = game;
+            currentSearchTerm = '';
+            detailSearchInput.value = '';
+            detailGameTitle.innerText = game.name;
+            detailGameUrl.href = game.gameUrl;
+            // 动态生成作者链接按钮
+            // 优先使用 authorLinks 数组，兼容旧的 authorUrl 单链接
+            let linksHtml = '';
+            if (game.authorLinks && game.authorLinks.length > 0) {
+                game.authorLinks.forEach(function(link) {
+                    linksHtml += '<a href="' + escapeHtml(link.url) + '" target="_blank" rel="noopener" class="detail-link-btn"><i data-lucide="user" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>' + escapeHtml(link.label) + '</a>';
+                });
+            } else if (game.authorUrl && game.authorUrl !== game.gameUrl) {
+                linksHtml = '<a href="' + escapeHtml(game.authorUrl) + '" target="_blank" rel="noopener" class="detail-link-btn"><i data-lucide="user" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>作者页面</a>';
+            }
+            detailAuthorLinks.innerHTML = linksHtml;
+            // 游戏备注/说明（作者情况、游戏状态等）
+            const detailGameNote = document.getElementById('detailGameNote');
+            if (game.note) {
+                detailGameNote.innerHTML = '<i data-lucide="info" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;display:inline;"></i>' + game.note;
+                detailGameNote.style.display = '';
+            } else {
+                detailGameNote.style.display = 'none';
+                detailGameNote.innerHTML = '';
+            }
+            renderGuideContent();
+            homeView.style.display = 'none';
+            detailView.classList.add('active');
+            tocToggleBtnFloat.classList.add('visible');
+            closeSidebar();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+        }
+
+        function goBackHome() {
+            homeView.style.display = 'block';
+            detailView.classList.remove('active');
+            tocToggleBtnFloat.classList.remove('visible');
+            closeSidebar();
+            currentGame = null;
+            currentSearchTerm = '';
+        }
+
+        // 打开分类列表
+        let currentCategoryFilter = '';
+
+        function openCategoryModal(category) {
+            currentCategoryFilter = '';
+            const categoryName = category === 'itch' ? 'ITCH.IO 游戏' : 'XHS / 国内网页 游戏';
+            const games = gamesDB[category] || [];
+            modalTitle.innerText = `${categoryName} (共 ${games.length} 款)`;
+            // 首次渲染：生成搜索框 + 列表容器（后续搜索不再重建）
+            gameListContainer.innerHTML = `
+                <div style="margin-bottom: 1rem;">
+                    <input type="text" id="gameSearchInput" class="detail-search" placeholder="搜索游戏名... (共 ${games.length} 款)" autocomplete="off" autocapitalize="off" spellcheck="false" style="font-size:0.8rem;">
+                </div>
+                <div id="gameListItems"></div>
+            `;
+            const searchInput = document.getElementById('gameSearchInput');
+            if (searchInput) {
+                let isComposing = false;
+                searchInput.addEventListener('input', handleSearchInput);
+                searchInput.addEventListener('compositionstart', function() { isComposing = true; });
+                searchInput.addEventListener('compositionend', handleCompositionEnd);
+                function handleSearchInput(e) {
+                    if (isComposing) return;
+                    currentCategoryFilter = e.target.value;
+                    updateGameListItems(category);
+                }
+                function handleCompositionEnd(e) {
+                    isComposing = false;
+                    currentCategoryFilter = e.target.value;
+                    updateGameListItems(category);
+                }
+            }
+            updateGameListItems(category);
             modal.classList.add('active');
         }
 
-        // 关闭分类模态框
-        function closeModal() {
-            modal.classList.remove('active');
-        }
-
-        // 关闭详情弹窗
-        function closeDetailModal() {
-            detailModal.classList.remove('active');
-        }
-
-        // 黑屏跳转辅助 (保留原有效果)
-        function navigateWithTransition(url) {
-            if (!url || url === '#') {
-                alert('链接暂未配置，敬请关注后续更新～');
-                return;
+        // 仅更新列表项，不重建搜索框
+        function updateGameListItems(category) {
+            let games = gamesDB[category] || [];
+            if (currentCategoryFilter) {
+                games = games.filter(g => g.name.toLowerCase().includes(currentCategoryFilter.toLowerCase()));
             }
+            const gameListItems = document.getElementById('gameListItems');
+            if (!gameListItems) return;
+            if (games.length === 0) {
+                gameListItems.innerHTML = '<div class="py-4 text-center">没有匹配的游戏</div>';
+            } else {
+                renderGameListItems(games, gameListItems);
+            }
+        }
+
+        function renderGameListItems(games, container) {
+            if (!container) return;
+            container.innerHTML = '';
+            games.forEach((game, idx) => {
+                const gameDiv = document.createElement('div');
+                gameDiv.className = 'game-list-item';
+                gameDiv.innerText = `${idx+1}. ${game.name}`;
+                gameDiv.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    modal.classList.remove('active');
+                    openGameDetail(game);
+                });
+                container.appendChild(gameDiv);
+            });
+        }
+
+        function closeModal() { modal.classList.remove('active'); }
+
+        function navigateWithTransition(url) {
+            if (!url || url === '#') { alert('链接暂未配置，敬请关注后续更新～'); return; }
             const blackScreen = document.getElementById('black-screen');
             blackScreen.style.transition = 'opacity 0.4s ease';
             blackScreen.style.opacity = '1';
             blackScreen.style.pointerEvents = 'all';
-            setTimeout(() => {
-                window.location.href = url;
-            }, 380);
+            setTimeout(() => { window.location.href = url; }, 380);
         }
 
-        // 处理三个按钮点击 (游戏进入、作者页面、攻略)
-        playGameBtn.addEventListener('click', () => {
-            if(currentGame && currentGame.gameUrl) {
-                navigateWithTransition(currentGame.gameUrl);
-            } else {
-                alert('游戏入口暂缺，等作者补充～');
-            }
-            closeDetailModal();
-        });
-
-        authorPageBtn.addEventListener('click', () => {
-            if(currentGame && currentGame.authorUrl) {
-                navigateWithTransition(currentGame.authorUrl);
-            } else {
-                alert('作者页面地址暂未收录');
-            }
-            closeDetailModal();
-        });
-
-        guideBtn.addEventListener('click', () => {
-            if(currentGame && currentGame.guideUrl) {
-                // 新开窗口或者跳转攻略（这里可以用新标签打开）
-                window.open(currentGame.guideUrl, '_blank');
-            } else {
-                // 模拟攻略弹框，因为原需求未提供具体攻略地址，优雅提醒
-                alert(`【${currentGame?.name || '此游戏'} 攻略笔记】\n暂未编写详细攻略，后续会通过小红书记录分享～`);
-            }
-            // 不关闭详情弹窗，但可选不关 
-        });
-
-        // 绑定分类卡片点击
+        // 事件绑定
+        backHomeBtn.addEventListener('click', goBackHome);
+        detailSearchInput.addEventListener('input', (e) => performSearch(e.target.value));
+        
         document.querySelectorAll('.category-card').forEach(card => {
             card.addEventListener('click', (e) => {
                 const category = card.getAttribute('data-category');
-                if(category === 'itch') openCategoryModal('itch');
-                else if(category === 'xhs') openCategoryModal('xhs');
+                if (category === 'itch') openCategoryModal('itch');
+                else if (category === 'xhs') openCategoryModal('xhs');
             });
         });
 
-        // 关闭按钮事件
         closeModalBtn.addEventListener('click', closeModal);
-        detailCloseSpan.addEventListener('click', closeDetailModal);
-        // 点击模态框背景关闭
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) closeModal();
-        });
-        detailModal.addEventListener('click', (e) => {
-            if(e.target === detailModal) closeDetailModal();
-        });
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-        // 为原始的汉化作品按钮以及原创按钮也保留之前的跳转（不破坏原有体验）
         const allActionBtns = document.querySelectorAll('.action-btn');
-        const blackScreenElem = document.getElementById('black-screen');
         allActionBtns.forEach(btn => {
-            // 避免重复绑定，但保留原有data-url跳转
-            if(!btn.getAttribute('data-listener')) {
+            if (!btn.getAttribute('data-listener')) {
                 btn.setAttribute('data-listener', 'true');
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     let targetUrl = this.getAttribute('data-url');
-                    if(!targetUrl || targetUrl === '#') {
-                        alert('该页面入口暂未开放，敬请期待');
-                        return;
-                    }
-                    // 微动效
+                    if (!targetUrl || targetUrl === '#') { alert('该页面入口暂未开放，敬请期待'); return; }
                     this.style.transform = 'scale(0.96)';
                     setTimeout(() => { this.style.transform = ''; }, 120);
                     navigateWithTransition(targetUrl);
@@ -718,8 +1469,14 @@
             }
         });
 
-        // 保持页面感觉与原有悬停样式一致
-        console.log("页面已升级：玩过的游戏（分类列表）＋ 独立汉化板块");
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>"]/g, function(m) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]); }); }
+        function escapeRegex(str) { return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+        // 启动应用
+        loadGamesData();
+        setupScrollSpy();
+        // 初始化 Lucide 图标
+        if (typeof lucide !== 'undefined') { lucide.createIcons(); }
     </script>
 </body>
 </html>
