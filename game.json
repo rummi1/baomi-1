@@ -1656,6 +1656,432 @@
       "guideFile": "MD/刻痕.md"
     },
     {
+      "name": "24宅",
+      "gameUrl": "https://www.serendipitycommunity.com",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/587fbf705e87e70598b114af?xsec_token=ABMYf0rFKjZYUbZtOtTchW-Vk9DFf9dziRjk0LptphM90%3D&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/24宅.md"
+    },
+    {
+      "name": "如月笔记-回忆",
+      "gameUrl": "https://tantanz020918.github.io/remember/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/5b6911fc9c79470001795c11?xsec_token=ABCttd48DP8LdXXI46L7DZqBvni1OdOR2I7uE090dJzXA%3D&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/69eb5307000000001f0010cc?xsec_token=ABZCS5RfRMzLKJn7Qbe0Z5sjG7SooPOiqhGfTMNdXlSSg=&xsec_source=pc_user"
+    },
+    {
+      "name": "遗物整理师--带烧痕的女装",
+      "gameUrl": "https://relic1899.netlify.app/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/60bfb024000000000100955d?xsec_token=ABF9SIQg-lirumKhIeVtW24XkZ1zxdyXG0iDjtRzo2FRY=&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/69ee8a9c0000000038037c14?xsec_token=ABDAJNsXmxJcAYeXUcMqFwZY77-tPB5qlAUurIQqLek_c=&xsec_source=pc_user"
+    },
+    {
+      "name": "校舍幽影",
+      "gameUrl": "https://www.prismirage.tech/?d=xsyy",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/5a693a214eacab2a4490fe1f?xsec_token=ABK7WcETV26TNVK-j9kiEW8bSiwmDSLr4NpWXK-r79L2o=&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/校舍幽影.md"
+    },
+    {
+      "name": "堰青回声",
+      "gameUrl": "https://cindyheidi.github.io/yanqing-huisheng/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/5f2a381f0000000001008265?xsec_token=ABkcpmA2fDjcDbOv5QmeYbQDqgigLLu37HH2YWg5YohcI=&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/堰青回声.md"
+    },
+    {
+      "name": "审讯室--深夜坠落",
+      "gameUrl": "https://sxs.slackoff.icu/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/65412ba30000000004009c28?channelType=web_engagement_notification_page&channelTabId=mentions&xsec_token=ABZZkRWMDtsEM89T4rs86LO7PB4iUcgCc3l5jpO5cWxyU%3D&xsec_source=pc_notice"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/审讯室--深夜坠落.md"
+    },
+    {
+      "name": "邺山彼处",
+      "gameUrl": "https://yeshanbichu.pages.dev/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/602b4a4b000000000101c161?xsec_token=ABNoQ9jojhKXi_qtXIbiSQyjtuP87fsZhJW7-0UffP6-0%3D&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/6a0684c60000000007011eeb?xsec_token=ABKmrGeRRXhTyOTHssS1XgxlZaSaEsWM2JNF7xMCeN8BI=&xsec_source=pc_user"
+    },
+    {
+      "name": "异动区域",
+      "note": "系列作，目前里面有2个故事；目前只更新了攻略1",
+      "gameUrl": "https://tecats.github.io/index.html",
+      "authorLinks": [],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/69ff0d9e000000001b0217e7?xsec_token=ABSPWA7Dmwlf5xfPMFNSAja4S6foAYAM9pS68JxiBJyrY=&xsec_source=pc_user"
+    },
+    {
+      "name": "沉默搜索",
+      "gameUrl": "https://serenova02.github.io/cmsearch-nhj/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/62788f40000000002102addc?xsec_token=AB49yqTNvlboRpDkRqsMF0dqNC_hyCMzFPyDG3BqKBcmA=&xsec_source=pc_search"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/6a0ab31c0000000008024cc0?xsec_token=AB6fI3HF9DYBk-NAOFn6PD9WMq_Z0k5PCUa83KmFUUemw=&xsec_source=pc_user"
+    },
+    {
+      "name": "我朋友留下的电脑界面",
+      "gameUrl": "https://myfriendpc2005.pages.dev/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/6373432c000000001f018b18?xsec_token=ABB3hBi54JF56GnQ_SSIe6QvLZ_yK0Kp4qUAYnlxBkj6w%3D&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/6a05f7e90000000008032996?xsec_token=ABGs8U7XM1jA2xL35c2z5b-VUgLbfZEMKDLbbPN8GvvqY=&xsec_source=pc_user"
+    },
+    {
+      "name": "华恩遗信",
+      "gameUrl": "https://heyx-bmi.pages.dev/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/68189f0d000000001b01fa5d?xsec_token=ABu-kblAJOR95Jb96iHoj2_ZGBJdP7Gzg0xdA73fuYLj0%3D&xsec_source=pc_note"
+        },
+        {
+          "label": "作者作品合集",
+          "url": "https://tongyao-game-wyjm.netlify.app/"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/6a2bdd50000000000701050b?xsec_token=ABLI4KfShmmzZ1dryPrDKsYK64lgTwfU1oHDFtlTpCoss=&xsec_source=pc_user"
+    },
+    {
+      "name": "昏宴",
+      "note": "当前netlify的网址的免费额度没有了，可能会访问受限",
+      "gameUrl": "https://hunyan-gzyt-wyjm.netlify.app/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/68189f0d000000001b01fa5d?xsec_token=ABu-kblAJOR95Jb96iHoj2_ZGBJdP7Gzg0xdA73fuYLj0%3D&xsec_source=pc_note"
+        },
+        {
+          "label": "作者作品合集",
+          "url": "https://tongyao-game-wyjm.netlify.app/"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://tongyao-game-wyjm.netlify.app/"
+    },
+    {
+      "name": "高中生自杀之谜",
+      "note": "当前主页网址的免费额度没有了，可能会访问受限",
+      "gameUrl": "https://gzszszm.pages.dev/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/68189f0d000000001b01fa5d?xsec_token=ABu-kblAJOR95Jb96iHoj2_ZGBJdP7Gzg0xdA73fuYLj0%3D&xsec_source=pc_note"
+        },
+        {
+          "label": "作者作品合集",
+          "url": "https://tongyao-game-wyjm.netlify.app/"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://tongyao-game-wyjm.netlify.app/"
+    },
+    {
+      "name": "找到他的情人",
+      "note": "当前主页网址的免费额度没有了，可能会访问受限",
+      "gameUrl": "https://zdtdqr.pages.dev/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/68189f0d000000001b01fa5d?xsec_token=ABu-kblAJOR95Jb96iHoj2_ZGBJdP7Gzg0xdA73fuYLj0%3D&xsec_source=pc_note"
+        },
+        {
+          "label": "作者作品合集",
+          "url": "https://tongyao-game-wyjm.netlify.app/"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://tongyao-game-wyjm.netlify.app/"
+    },
+    {
+      "name": "消失的丈夫",
+      "gameUrl": "https://arg.lawzip.cn/vh/pages/introduction.html",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/6663ccc1000000001b01573d?xsec_token=ABzxZoBL45zLfNAmHiAMmIHA8GiMtEyn0-DbSovEbqPiE%3D&xsec_source=pc_search"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/消失的丈夫.md"
+    },
+    {
+      "name": "是时候了",
+      "gameUrl": "https://fiona802.github.io/mygame2/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/652ff46a000000002a01bc84?xsec_token=AB28OUF2VEdtW7IvTBvqHfNxhpZTFNpKQaCP2hcGxEHgY=&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/6a11972a00000000370360e0?xsec_token=ABMWUH2JulmxBguC9CjhodJ6vbkYtgdANSMK7crwUwdOI=&xsec_source=pc_user"
+    },
+    {
+      "name": "生物公司杀人案",
+      "gameUrl": "https://ivyzzz519.github.io/bio-corp-mystery",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/6322b8c2000000001902f4f1?xsec_token=ABqQ8tmD6KTs14Dea4iNTSXpErhGFQV4Y_vQ_V7dXpU9M%3D&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/生物公司杀人案.md"
+    },
+    {
+      "name": "百万陷阱",
+      "note": "当前只有序章",
+      "gameUrl": "https://one-million-trap.pages.dev/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/61d847be000000001000418e?xsec_token=AB06sT0Yw7k4WW_5TDx6eUvKXjrjQM41KevyHKx22i-a0=&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/百万陷阱.md"
+    },
+    {
+      "name": "the last phone call",
+      "note": "当前只有demo",
+      "gameUrl": "https://random-995.github.io/the-last-phone-call/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/69ad516600000000260017e9?xsec_token=ABVTjCAZvr5HlOs99-F-GzPB8iYIyeEFjFFv1C3vEme6E=&xsec_source=pc_search"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/the last phone call.md"
+    },
+    {
+      "name": "聊天室的女孩们",
+      "gameUrl": "https://heiziheizi123.github.io/girlsinchat/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/67f33690000000000d008db4?xsec_token=ABCW8BL0JxB3BhuAz1m8YO6OB-tneECSj_Z4ehnO7aic4=&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/聊天室的女孩们.md"
+    },
+    {
+      "name": "未知信号源",
+      "gameUrl": "https://gingerginny.github.io/unknown-signal/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/5ffd5367000000000101d583?xsec_token=AB7oLhEXdzgiG3rSp-nPXExMTdChasdoDAQKn4AfHFcNg=&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/未知信号源.md"
+    },
+    {
+      "name": "La Notte",
+      "gameUrl": "https://lanotte-ristorante.netlify.app/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/5ffa8a400000000001000d94?xsec_token=AB46tdOGphlspRsjz6nG255fZQacwy-c94emfnjl-eXJE=&xsec_source=pc_search"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/La Notte.md"
+    },
+    {
+      "name": "箱庭文库",
+      "gameUrl": "https://reading.a1u.site/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/6a1faa89000000000103c400?xsec_token=ABEEjN56imbdULD0LQW-cngrjQwtESLPMWU2hA2gYrLmE=&xsec_source=pc_search"
+        },
+        {
+          "label": "作者作品合集",
+          "url": "https://a1u.site/"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/箱庭文库.md"
+    },
+    {
+      "name": "南湾一中：找到我",
+      "gameUrl": "https://tjlx0315.github.io/Findme/lead.html",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/63d3a8b400000000250067fa?xsec_token=AB9EsdP-D4EMxgTrS_rKV3E8AE7YiyRnbRMrDGU9OAn4E=&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/6a241672000000001700bf3b?xsec_token=ABWOyP8VplPrdawxQrEgtQNJy5rFzFzhfddj02rZlwMdY=&xsec_source=pc_user"
+    },
+    {
+      "name": "都是加班惹得祸",
+      "gameUrl": "https://resoundzhouerhe.top/%E8%A7%A3%E8%B0%9C%E9%A1%B9%E7%9B%AE/%E9%83%BD%E6%98%AF%E5%8A%A0%E7%8F%AD%E6%83%B9%E7%9A%84%E7%A5%B8/index.html",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/682ec8ff000000000a03c892?xsec_token=ABK3P7ltjkDjzhZaMidm8mtnyevR7X6czLMwu_oi3hP60%3D&xsec_source=pc_note"
+        },
+        {
+          "label": "作者作品合集",
+          "url": "http://resoundzhouerhe.top/"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/都是加班惹得祸.md"
+    },
+    {
+      "name": "meridian-case",
+      "note": "系列作，当前有2集",
+      "gameUrl": "https://meridian-case.heerxingen.cn/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/5f51b43b0000000001007aa0?xsec_token=AB157SH9kBa1RXTQi_Z4vgvhp3Ak9cl-7cvW1wFPwuJAE%3D&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/meridian-case.md"
+    },
+    {
+      "name": "寻找哈基米",
+      "gameUrl": "https://daituzhang.github.io/finding-hajimi/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/60d75c710000000001009f6c?xsec_token=ABMJOHFH8Ghh8CESERTBbRSVYwztNvtXsZRBJhSaQWkpc%3D&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/6a2a5a65000000000d00bc00?xsec_token=ABbM5dUFCpQyO_SOqCszfjvxK6C-W9MpfK51ZX_uelWhI=&xsec_source=pc_user"
+    },
+    {
+      "name": "自寻反脑",
+      "gameUrl": "https://feining117.github.io/feining/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/6248ce17000000001000de45?xsec_token=ABKIoNeQRZTclNwrFU9lZtE8iv_T0l3reuyandLQ2JIiE=&xsec_source=pc_search"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/自寻反脑.md"
+    },
+    {
+      "name": "民俗杀人事件",
+      "gameUrl": "https://15931089603-png.github.io/hotel-part3/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/5e1f581e0000000001004477?xsec_token=AB_D7iIkow_MYJG_hJvCxJhMPyBOhYzAOmqJMvYWYyuYk=&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/6a28ff54000000002103c646?xsec_token=ABZWljl1c9BQ5Kr3eZrWM6z5hCOaW00d9O2wBK9pFpAZ0=&xsec_source=pc_user"
+    },
+    {
+      "name": "明日回拨",
+      "gameUrl": "https://telephone.heriris.cn/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/61c48cfb000000001000d45d?xsec_token=ABf7MjGvU7b3fM_nf1Efrjd1Hz8D4Lvrxip3G1Ayy6wGM=&xsec_source=pc_comment"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/6a2e274100000000070227c9?xsec_token=ABPdMhC19dzD0XKC3jrklENVf7JwNCiYZ1j38SKt0aXFo=&xsec_source=pc_user"
+    },
+    {
+      "name": "最后一次签到",
+      "gameUrl": "https://nmwllwmn-nh-github-io.pages.dev",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/69e958100000000001007000?channel_type=web_search_result_notes&parent_page_channel_type=web_user_board&xsec_token=ABGyrkjSvFEfTM3I8CWUWjs9fuL7wMtWs4nhVJkAbOqh4=&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/最后一次签到.md"
+    },
+    {
+      "name": "迅言ai",
+      "gameUrl": "https://chatbot.a1u.site/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/6a1faa89000000000103c400?channel_type=web_search_result_notes&parent_page_channel_type=web_user_board&xsec_token=ABhbxoAuOP-8jNOF_KjvkiJfj-DIc1IPwI55e1V8GVLHY=&xsec_source=pc_note"
+        },
+        {
+          "label": "作者作品合集",
+          "url": "https://a1u.site/"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/迅言ai.md"
+    },
+    {
+      "name": "夜航",
+      "gameUrl": "https://summersover.github.io/VolDeNuit/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/624fdc2c000000001000df88?xsec_token=ABwbQRD6kzqt13v3skwS6pzaKIIm8gKSCCOmKM6PZI8V4%3D&xsec_source=pc_note"
+        }
+      ],
+      "guideType": "url",
+      "guideUrl": "https://www.xiaohongshu.com/explore/6a2faa600000000022017679?xsec_token=ABcmBRRerSkNSMAJp-smfBz-UndndqZqP-OyHhd-6MHKU=&xsec_source=pc_user"
+    },
+    {
       "name": "她的信号",
       "gameUrl": "https://emith233.github.io/her-signal/",
       "authorLinks": [
