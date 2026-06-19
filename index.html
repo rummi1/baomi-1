@@ -6,6 +6,7 @@
     <title>作者主页 - 玩过 & 汉化游戏</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -301,12 +302,14 @@
         }
         .game-note {
             margin-top: 0.75rem;
-            padding: 0.75rem 1rem;
-            border-left: 3px solid #000;
-            background: #f9f9f9;
-            font-size: 0.85rem;
-            color: #555;
-            line-height: 1.6;
+            padding: 1rem 1.25rem;
+            border: none;
+            border-radius: 0;
+            background: #f3e8ff;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #92400e;
+            line-height: 1.7;
         }
         .back-home-btn {
             background: #000;
@@ -507,17 +510,18 @@
             padding-bottom: 0.3rem;
             border-bottom: 2px solid #eef2ff;
             scroll-margin-top: 20px;
+            color: #1e40af;
         }
         .guide-content h3 {
             font-size: 1.1rem;
             margin: 1rem 0 0.5rem 0;
-            color: #2c5a7a;
+            color: #2563eb;
             scroll-margin-top: 20px;
         }
         .guide-content h4 {
             font-size: 1rem;
             margin: 0.8rem 0 0.4rem 0;
-            color: #555;
+            color: #3b82f6;
             scroll-margin-top: 20px;
         }
         .guide-content p {
@@ -526,9 +530,20 @@
         }
         .guide-content ul, .guide-content ol {
             margin: 0.5rem 0 1rem 1.5rem;
+            list-style-position: outside;
+        }
+        .guide-content ul {
+            list-style-type: disc;
+        }
+        .guide-content ol {
+            list-style-type: decimal;
         }
         .guide-content li {
             margin: 0.3rem 0;
+            padding-left: 0.3rem;
+        }
+        .guide-content li::marker {
+            font-weight: bold;
         }
         .guide-content blockquote {
             border-left: 4px solid #f59e0b;
@@ -555,10 +570,12 @@
             font-weight: bold;
         }
         .guide-content code {
-            background: #f1f5f9;
-            padding: 0.1rem 0.3rem;
+            background: #eff6ff;
+            padding: 0.15rem 0.35rem;
             border-radius: 3px;
-            font-size: 0.85em;
+            font-weight: bold;
+            font-size: 1.05em;
+            color: #1d4ed8;
         }
         .guide-content pre {
             background: #1e293b;
@@ -765,7 +782,7 @@
                         <span class="text-xs font-bold uppercase tracking-wider border-b border-black">From Creator</span>
                         <p class="text-sm mt-2 leading-relaxed">欢迎交流游戏心得～ 本页面每月更新一次。</p>
                         <p class="text-sm mt-2 leading-relaxed">另外游戏汇总中不含有任何同人性质的作品，我也玩了像《玛奇莲超市》、《万物共生》等有意思的作品，但由于同人作品我怕引发版权问题，所以就暂时不放，还请见谅</p>
-                        <div class="mt-3 flex gap-3 text-[11px] font-mono"><span>小红书：哄哄</span></div>
+                        <div class="mt-3 flex gap-3 text-[11px] font-mono"><span>小红书：明日太远</span></div>
                     </div>
                 </div>
             </div>
@@ -878,46 +895,18 @@
         tocToggleBtnHeader.addEventListener('click', toggleSidebar);
         tocToggleBtnFloat.addEventListener('click', openSidebar);
 
-        // ========== Markdown 解析器 ==========
+        // ========== Markdown 解析器（基于 marked.js）==========
+        // 使用 marked.js 解析 Markdown，并自动为标题生成 id（供目录使用）
         function parseMarkdown(md) {
             if (!md) return '';
-            let html = md;
-            html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function(m, lang, code) {
-                return '<pre><code class="language-' + lang + '">' + escapeHtml(code.trim()) + '</code></pre>';
+            // 配置 marked：启用 GFM（支持表格、删除线等），breaks 让单个换行变为 <br>
+            marked.setOptions({
+                gfm: true,
+                breaks: true
             });
-            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-            html = html.replace(/^#### (.+)$/gm, function(m, t) {
-                const id = 'md-' + t.trim().replace(/[^\w\u4e00-\u9fff]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-                return '<h4 id="' + id + '">' + t.trim() + '</h4>';
-            });
-            html = html.replace(/^### (.+)$/gm, function(m, t) {
-                const id = 'md-' + t.trim().replace(/[^\w\u4e00-\u9fff]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-                return '<h3 id="' + id + '">' + t.trim() + '</h3>';
-            });
-            html = html.replace(/^## (.+)$/gm, function(m, t) {
-                const id = 'md-' + t.trim().replace(/[^\w\u4e00-\u9fff]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-                return '<h2 id="' + id + '">' + t.trim() + '</h2>';
-            });
-            html = html.replace(/^# (.+)$/gm, function(m, t) {
-                const id = 'md-' + t.trim().replace(/[^\w\u4e00-\u9fff]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-                return '<h1 id="' + id + '">' + t.trim() + '</h1>';
-            });
-            html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
-            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-            html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:6px;">');
-            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-            html = html.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
-            html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
-            html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-            html = html.replace(/^\|(.+)\|$/gm, function(m, row) {
-                const cells = row.split('|').map(c => c.trim());
-                if (cells.every(c => /^[-:]+$/.test(c))) return '';
-                return '<tr>' + cells.map(c => '<td>' + c + '</td>').join('') + '</tr>';
-            });
-            html = html.replace(/((?:<tr>.*<\/tr>\n?)+)/g, '<table>$1</table>');
-            html = html.replace(/^(?!<[a-z])((?!<[a-z]).+)$/gm, '<p>$1</p>');
-            html = html.replace(/<p>\s*<\/p>/g, '');
+            let html = marked.parse(md);
+            // 为所有标题自动生成 id（ensureHeadingIds 会再次检查，这里先做基础处理）
+            html = ensureHeadingIds(html);
             return html;
         }
 
@@ -1337,7 +1326,7 @@
             // 游戏备注/说明（作者情况、游戏状态等）
             const detailGameNote = document.getElementById('detailGameNote');
             if (game.note) {
-                detailGameNote.innerHTML = '<i data-lucide="info" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;display:inline;"></i>' + game.note;
+                detailGameNote.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><i data-lucide="alert-triangle" style="width:18px;height:18px;vertical-align:middle;"></i></span>' + game.note;
                 detailGameNote.style.display = '';
             } else {
                 detailGameNote.style.display = 'none';

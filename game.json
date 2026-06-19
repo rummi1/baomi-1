@@ -107,19 +107,6 @@
       "authorUrl": "https://example.com/author",
       "guideType": "url",
       "guideUrl": "https://example.com/guide"
-    },
-    {
-      "name": "无攻略示例游戏",
-      "gameUrl": "https://example-itch.itch.io/short-game",
-      "guideType": "file",
-      "guideFile": "MD/无攻略示例游戏.md"
-    },
-    {
-      "name": "备注说明示例游戏",
-      "gameUrl": "https://example-itch.itch.io/note-example",
-      "guideType": "file",
-      "note": "作者页面暂时无法访问，待恢复后更新链接。",
-      "guideFile": "MD/备注说明示例游戏.md"
     }
   ],
   "xhs": [
@@ -176,8 +163,8 @@
           "url": "https://www.xiaohongshu.com/user/profile/632556550000000023024305?xsec_token=ABnqejzYFXd_VEf29TT15Svub9S_n6IkRZjb3czXXiGhI%3D&xsec_source=pc_note"
         }
       ],
-      "guideType": "file",
-      "guideFile": "MD/永安温泉度假酒店2007.md"
+      "guideType": "url",
+      "guideUrl": "https://mp.weixin.qq.com/s/gh_6mXPjnrs8HNwwOKcFfA"
     },
     {
       "name": "宏业电子厂",
@@ -233,7 +220,7 @@
     },
     {
       "name": "圣希尔达的回响",
-      "gameUrl": "https://lj4s2cxphti3.space.minimaxi.com/",
+      "gameUrl": "https://36g6kl86te4s.space.minimaxi.com/",
       "authorLinks": [
         {
           "label": "小红书",
@@ -605,8 +592,7 @@
           "url": "https://roastfish042.neocities.org"
         }
       ],
-      "guideType": "file",
-      "guideFile": "MD/万物有灵.md"
+      "guideType": "none"
     },
     {
       "name": "宴会谜案",
@@ -964,6 +950,7 @@
     },
     {
       "name": "弧光镇晚间新闻",
+      "note": "如果当天没办法凑满新闻，可以在下班前两小时呼叫米米，这样就能凑满四条了，另外这个游戏的excellent分数是随机的，不是凑满就是100分",
       "gameUrl": "https://lemuria1907.github.io/Arclight-Nightcast/",
       "authorLinks": [
         {
@@ -971,8 +958,7 @@
           "url": "https://www.xiaohongshu.com/user/profile/65be4d6a000000000903cffb?xsec_token=ABBV5hEr-ZgW2ZA21VgOeNx1Yxztk_Z8F4WGhVGwoTSqc%3D&xsec_source=pc_note"
         }
       ],
-      "guideType": "file",
-      "guideFile": "MD/弧光镇晚间新闻.md"
+      "guideType": "none"
     },
     {
       "name": "递归回声",
@@ -1065,8 +1051,7 @@
           "url": "https://www.xiaohongshu.com/user/profile/63613cfa000000001f01e39d?xsec_source=pc_hovercard"
         }
       ],
-      "guideType": "file",
-      "guideFile": "MD/笔记侦探.md"
+      "guideType": "none"
     },
     {
       "name": "清越遗嘱",
@@ -1162,8 +1147,7 @@
           "url": "http://resoundzhouerhe.top/"
         }
       ],
-      "guideType": "file",
-      "guideFile": "MD/逃离宿舍.md"
+      "guideType": "none"
     },
     {
       "name": "你的名字",
@@ -1314,8 +1298,7 @@
           "url": "https://www.xiaohongshu.com/user/profile/6076acff0000000001001a12?xsec_source=pc_hovercard"
         }
       ],
-      "guideType": "file",
-      "guideFile": "MD/山茶.md"
+      "guideType": "none"
     },
     {
       "name": "夹在书中的纸条",
@@ -1424,8 +1407,7 @@
           "url": "https://www.xiaohongshu.com/user/profile/655ddefb00000000080021f3?xsec_token=ABn6Y8bngwLtTsdQkFHduTLn2b7cc7QRzRdPM9U8w8T4Q%3D&xsec_source=pc_note"
         }
       ],
-      "guideType": "file",
-      "guideFile": "MD/南山的羔羊Demo_支线.md"
+      "guideType": "none"
     },
     {
       "name": "锦华旧梦·上",
@@ -1453,8 +1435,7 @@
           "url": "https://www.xiaohongshu.com/user/profile/60e844a70000000001001bd9?xsec_token=ABaKtaZMb-xSb5TRQK7G1ANgz9UaB1O4yu00vF39F7vm4=&xsec_source=pc_note"
         }
       ],
-      "guideType": "file",
-      "guideFile": "MD/希尔山菜单规则怪谈.md"
+      "guideType": "none"
     },
     {
       "name": "自我拯救",
@@ -1673,6 +1654,18 @@
       ],
       "guideType": "file",
       "guideFile": "MD/刻痕.md"
+    },
+    {
+      "name": "她的信号",
+      "gameUrl": "https://emith233.github.io/her-signal/",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/62a62164000000001b027c2f?xsec_token=ABccN4sFsaXpQzHx_03FopjfVLIo8YMi7YCes6Rw0yq-k=&xsec_source=pc_search"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/她的信号.md"
     }
   ]
 }
