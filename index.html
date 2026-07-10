@@ -798,7 +798,7 @@
                     <span id="detailAuthorLinks"></span>
                     <button id="tocToggleBtnHeader" class="detail-link-btn" style="cursor:pointer;"><i data-lucide="list" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i>目录</button>
                 </div>
-                <input type="text" id="detailSearchInput" class="detail-search" placeholder="搜索攻略内容..." autocomplete="off">
+                <input type="text" id="detailSearchInput" class="detail-search" placeholder="搜索攻略内容... (上下箭头/回车切换)" autocomplete="off">
                 <div id="detailGameNote" class="game-note" style="display:none;"></div>
             </div>
             <div class="detail-body-wrapper">
@@ -849,6 +849,9 @@
         let gamesDB = { itch: [], xhs: [] };
         let currentGame = null;
         let currentSearchTerm = '';
+        let searchMatches = [];
+        let currentMatchIndex = -1;
+        let originalGuideContent = '';
         let sidebarOpen = false;
 
         // DOM 元素
@@ -1100,12 +1103,23 @@
         // 统一的内容渲染和搜索高亮处理
         function applyContent(content) {
             content = ensureHeadingIds(content);
-            if (currentSearchTerm) {
-                const regex = new RegExp('(' + escapeRegex(currentSearchTerm) + ')', 'gi');
-                content = content.replace(regex, '<mark class="highlight">$1</mark>');
-            }
+            originalGuideContent = content;
             detailGuideContent.innerHTML = content;
+            
+            if (currentSearchTerm) {
+                highlightTextInDom(currentSearchTerm);
+            }
             renderToc();
+            
+            if (currentSearchTerm) {
+                searchMatches = Array.from(detailGuideContent.querySelectorAll('.highlight'));
+                if (searchMatches.length > 0) {
+                    currentMatchIndex = 0;
+                    highlightCurrentMatch();
+                    searchMatches[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                updateSearchIndicator();
+            }
         }
 
         // 异步加载外部 Markdown/HTML 文件
@@ -1295,20 +1309,128 @@
             });
         }
 
+        function highlightTextInDom(searchTerm) {
+            if (!searchTerm) return;
+            const regexPattern = '(' + escapeRegex(searchTerm) + ')';
+            
+            const textNodes = [];
+            const walker = document.createTreeWalker(
+                detailGuideContent,
+                NodeFilter.SHOW_TEXT,
+                {
+                    acceptNode: function(node) {
+                        if (node.parentNode.tagName === 'MARK') return NodeFilter.FILTER_REJECT;
+                        if (node.parentNode.tagName === 'SCRIPT' || node.parentNode.tagName === 'STYLE') return NodeFilter.FILTER_REJECT;
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+                }
+            );
+            
+            while (walker.nextNode()) {
+                textNodes.push(walker.currentNode);
+            }
+            
+            textNodes.forEach(node => {
+                const text = node.nodeValue;
+                const regex = new RegExp(regexPattern, 'gi');
+                let match;
+                let lastIndex = 0;
+                const parent = node.parentNode;
+                
+                while ((match = regex.exec(text)) !== null) {
+                    if (match.index > lastIndex) {
+                        parent.insertBefore(document.createTextNode(text.slice(lastIndex, match.index)), node);
+                    }
+                    const mark = document.createElement('mark');
+                    mark.className = 'highlight';
+                    mark.appendChild(document.createTextNode(match[1]));
+                    parent.insertBefore(mark, node);
+                    lastIndex = regex.lastIndex;
+                }
+                
+                if (lastIndex < text.length) {
+                    parent.insertBefore(document.createTextNode(text.slice(lastIndex)), node);
+                }
+                parent.removeChild(node);
+            });
+        }
+
         function performSearch(term) {
             currentSearchTerm = term.trim().toLowerCase();
-            renderGuideContent();
-            if (currentSearchTerm) {
-                setTimeout(() => {
-                    const firstMark = detailGuideContent.querySelector('.highlight');
-                    if (firstMark) firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
+            currentMatchIndex = -1;
+            searchMatches = [];
+            
+            if (!originalGuideContent || detailGuideContent.querySelector('.loading')) {
+                renderGuideContent();
+            } else {
+                detailGuideContent.innerHTML = originalGuideContent;
+                if (currentSearchTerm) {
+                    highlightTextInDom(currentSearchTerm);
+                }
+                renderToc();
             }
+            
+            if (currentSearchTerm) {
+                searchMatches = Array.from(detailGuideContent.querySelectorAll('.highlight'));
+                if (searchMatches.length > 0) {
+                    currentMatchIndex = 0;
+                    highlightCurrentMatch();
+                    searchMatches[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                updateSearchIndicator();
+            } else {
+                updateSearchIndicator();
+            }
+        }
+
+        function highlightCurrentMatch() {
+            searchMatches.forEach((match, index) => {
+                if (index === currentMatchIndex) {
+                    match.style.backgroundColor = '#f59e0b';
+                    match.style.outline = '2px dashed #d97706';
+                    match.style.outlineOffset = '2px';
+                    match.style.transform = 'scale(1.02)';
+                } else {
+                    match.style.backgroundColor = '#fde047';
+                    match.style.outline = '';
+                    match.style.outlineOffset = '';
+                    match.style.transform = '';
+                }
+            });
+        }
+
+        function updateSearchIndicator() {
+            let indicator = document.getElementById('searchIndicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'searchIndicator';
+                indicator.style.cssText = 'position:fixed;top:80px;right:20px;background:#000;color:#fff;padding:6px 12px;font-size:0.8rem;font-weight:bold;z-index:1000;border:2px solid #000;display:none;';
+                document.body.appendChild(indicator);
+            }
+            if (searchMatches.length > 0) {
+                indicator.textContent = `${currentMatchIndex + 1} / ${searchMatches.length}`;
+                indicator.style.display = 'block';
+            } else {
+                indicator.style.display = 'none';
+            }
+        }
+
+        function navigateMatch(direction) {
+            if (searchMatches.length === 0) return;
+            if (direction === 'next') {
+                currentMatchIndex = (currentMatchIndex + 1) % searchMatches.length;
+            } else {
+                currentMatchIndex = (currentMatchIndex - 1 + searchMatches.length) % searchMatches.length;
+            }
+            highlightCurrentMatch();
+            searchMatches[currentMatchIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            updateSearchIndicator();
         }
 
         function openGameDetail(game) {
             currentGame = game;
             currentSearchTerm = '';
+            originalGuideContent = '';
             detailSearchInput.value = '';
             detailGameTitle.innerText = game.name;
             detailGameUrl.href = game.gameUrl;
@@ -1348,6 +1470,7 @@
             closeSidebar();
             currentGame = null;
             currentSearchTerm = '';
+            originalGuideContent = '';
         }
 
         // 打开分类列表
@@ -1431,6 +1554,15 @@
         // 事件绑定
         backHomeBtn.addEventListener('click', goBackHome);
         detailSearchInput.addEventListener('input', (e) => performSearch(e.target.value));
+        detailSearchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || (e.key === 'Enter' && !e.shiftKey)) {
+                e.preventDefault();
+                navigateMatch('next');
+            } else if (e.key === 'ArrowUp' || (e.key === 'Enter' && e.shiftKey)) {
+                e.preventDefault();
+                navigateMatch('prev');
+            }
+        });
         
         document.querySelectorAll('.category-card').forEach(card => {
             card.addEventListener('click', (e) => {
