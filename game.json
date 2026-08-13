@@ -2103,6 +2103,22 @@
       ],
       "guideType": "file",
       "guideFile": "MD/脑中神探.md"
+    },
+    {
+      "name": "非自愿摄入",
+      "gameUrl": "contemporary.minis.yoroll.ai",
+      "authorLinks": [
+        {
+          "label": "小红书",
+          "url": "https://www.xiaohongshu.com/user/profile/61585950000000000201ccee?xsec_token=AB0QMlnhQ3KwiK4NYvN7UbhxwBfXR62OlsOjtdAlTtIt0%3D&xsec_source=pc_note"
+        },
+        {
+          "label": "作者游戏合集",
+          "url": "https://ginga-light.top/"
+        }
+      ],
+      "guideType": "file",
+      "guideFile": "MD/非自愿摄入.md"
     }
   ]
 }
