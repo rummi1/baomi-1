@@ -62,8 +62,8 @@
     {
       "name": "Manifest 333",
       "gameUrl": "https://falconpilot.itch.io/manifest-333",
-      "guideType": "file",
-      "guideFile": "MD/manifest333.md"
+      "guideType": "url",
+      "guideUrl": "https://rummi1.github.io/baomi-1/manifest-333.svg"
     },
     {
       "name": "i know what you are hiding",
